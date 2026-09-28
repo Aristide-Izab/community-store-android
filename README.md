@@ -1,259 +1,402 @@
 # Community Store 📱
 
-Community Store is a native Android marketplace application developed as a university group project.
+Community Store is a native Android marketplace application developed as a university group project. It is designed to connect students, faculty members, vendors and residence administrators within a campus community.
 
-The application is designed to connect members of a university community, including:
-
-- Students
-- Faculty members
-- Vendors
-- Residence administrators
-
-Community Store aims to provide a trusted campus marketplace where users can buy, sell, discover products and interact with services available within their university community.
+The project focuses on creating a trusted mobile marketplace where users can register, verify their accounts, browse and sell products, and interact with services and information relevant to the university community.
 
 ---
 
-# 📌 Project Background
+## 📌 Project background
 
-Community Store originally started as a web-based project.
-
-Our initial technology stack included:
+Community Store originally started as a web-based project using:
 
 - HTML
 - CSS
 - JavaScript
 - PHP
 - MySQL
-- XAMPP
-- phpMyAdmin
+- XAMPP / phpMyAdmin
 
-During development, the team realised that the project requirements were for a **mobile application rather than a website**.
+During development, the team realised that the required deliverable was a **mobile application rather than a website**. The project was therefore rebuilt as a native Android application.
 
-Because of this, the team decided to redesign and rebuild the project as a native Android application.
+The current Android implementation uses:
 
-The project was migrated to:
+- **Android Studio**
+- **Java** for application logic
+- **XML** for Android layouts
+- **Firebase Authentication** for user authentication
+- **Cloud Firestore** for account/application data
+- **Firebase Hosting + Android App Links** for verification/password-reset links
+- **Figma** for UI/UX design
+- **Git and GitHub** for collaboration and version control
 
-- Android Studio
-- Java
-- XML
-- Firebase Authentication
-- Cloud Firestore
-
-This change required the team to rethink the architecture, user interface and authentication system.
+This transition required the team to rethink the application architecture, user interface and authentication flow.
 
 ---
 
-# 🎯 Project Goal
+## 🎯 Project goal
 
-The goal of Community Store is to create a mobile-first marketplace that allows verified members of a university community to:
+Community Store aims to provide a mobile-first campus marketplace that allows verified members of a university community to:
 
 - Register using different account types
 - Login securely
 - Buy and sell products
 - Browse marketplace listings
-- Communicate within the campus community
-- Access community announcements
-- Manage their profiles
+- Manage their profile
+- Access community announcements and services
 - Support approved vendors
 - Support residence-related communication
 
 ---
 
-# 🛠 Technology Stack
+## 🛠 Technology stack
 
-## Mobile Development
-
-| Technology | Purpose |
+| Area | Technology |
 |---|---|
-| Android Studio | Main development environment |
-| Java | Application logic |
-| XML | Android user interface layouts |
-| Material Design | UI components and styling |
-| Gradle Kotlin DSL | Project dependency and build configuration |
+| Platform | Native Android |
+| IDE | Android Studio |
+| Programming language | Java |
+| UI | XML + Material components |
+| Build system | Gradle Kotlin DSL |
+| Authentication | Firebase Authentication |
+| Database | Cloud Firestore |
+| App-link hosting | Firebase Hosting |
+| Deep links | Android App Links |
+| UI/UX design | Figma |
+| Version control | Git |
+| Repository / collaboration | GitHub |
+
+### Android configuration
+
+- Package: `com.example.communitystore`
+- Minimum SDK: 24
+- Target SDK: 37
+- Compile SDK: 37
 
 ---
 
-## Backend / Cloud Services
+## 👥 Account types
 
-| Technology | Purpose |
-|---|---|
-| Firebase Authentication | User registration, login, email verification and password reset |
-| Cloud Firestore | User and application data |
-| Firebase Hosting | Android App Link support |
-| Android App Links | Opens verification and password reset links inside the application |
+Community Store supports four account types:
 
----
+### 🎓 Student
+Students can register, verify their account and access marketplace functionality intended for the campus community.
 
-## UI / UX
+### 💼 Faculty
+Faculty accounts are handled separately so the application can identify the user's role after login.
 
-| Technology | Purpose |
-|---|---|
-| Figma | UI/UX design and application prototypes |
-| Android XML | Implementation of Figma designs inside Android Studio |
+### 🏪 Vendor
+Vendor onboarding includes a business-verification interface and a manual approval concept before vendor access is granted.
+
+### 🏠 Residence
+Residence onboarding includes residence/campus-house information, warden information and an appointment-letter approval concept for authorised residence representatives.
 
 ---
 
-## Version Control
+## 🔐 Authentication and account flow
 
-| Technology | Purpose |
-|---|---|
-| Git | Source control |
-| GitHub | Team collaboration and repository hosting |
-| Git Branches | Allows each team member to work independently |
-| Pull Requests | Review changes before merging into `main` |
+Authentication is handled with Firebase Authentication. Current onboarding/authentication functionality includes:
 
----
-
-# 🗄 Database
-
-Community Store currently uses **Cloud Firestore** as its main application database.
-
-The previous web implementation used **MySQL**, but after transitioning to Android and Firebase, Firestore became the main database for account-related data.
-
----
-
-# 🔐 Authentication
-
-Authentication is handled using **Firebase Authentication**.
-
-Currently supported functionality includes:
-
-- Email and password registration
-- Email and password login
-- Email verification
-- Password reset
-- Password recovery
-- Firebase session management
-- Logout
+- Email/password registration
+- Email/password login
+- Firebase email verification
+- Forgot-password flow
+- Password reset through Firebase links
 - Account verification checks
 - Role-based account detection
+- Logout / session handling
 
-Users who have not completed the required verification process are not given access to the main application.
+Student and Faculty accounts currently follow this general flow:
 
----
+```text
+Register
+   ↓
+Firebase Authentication account created
+   ↓
+Verification email sent
+   ↓
+User opens verification link
+   ↓
+Verified Firestore user profile created
+   ↓
+Account Verified screen
+   ↓
+Login
+   ↓
+Role retrieved from Firestore
+   ↓
+Application access
+```
 
-# 👥 Account Types
+Password recovery follows this general flow:
 
-Community Store supports four account types.
-
-## 🎓 Student
-
-Students can create accounts that will eventually allow them to:
-
-- Browse products
-- Buy products
-- Sell products
-- Access campus marketplace features
-
-Student accounts currently require account verification before access is granted.
-
----
-
-## 💼 Faculty
-
-Faculty users have their own registration type.
-
-Faculty accounts are separated from Student accounts so that the application can identify the account type after login.
-
-Faculty accounts also require verification before access is granted.
-
----
-
-## 🏪 Vendor
-
-Vendor accounts are intended for businesses or individuals who want to sell products through Community Store.
-
-Vendor onboarding includes an additional verification/approval process.
-
-The Vendor flow includes:
-
-- Vendor registration
-- Business verification interface
-- Business document submission interface
-- Pending approval state
-
-Vendor approval functionality will be completed as the application backend develops further.
+```text
+Login
+   ↓
+Forgot Password
+   ↓
+Enter email
+   ↓
+Firebase password-reset email
+   ↓
+Android App Link opens the app
+   ↓
+Reset Password
+   ↓
+Password Reset Success
+   ↓
+Login
+```
 
 ---
 
-## 🏠 Residence
+## 🗄 Database
 
-Residence accounts are intended for authorised residence representatives or administrators.
+The current Android version uses **Cloud Firestore**.
 
-Residence onboarding includes:
+The previous web implementation used **MySQL**, but the Android rebuild moved account-related data to Firebase/Firestore.
 
-- Residence registration
-- Residence / Campus House information
-- Warden information
-- Appointment letter submission interface
-- Manual approval process
-
-Residence accounts are intended to prevent unauthorised users from posting official residence information.
-
----
-
-# 📱 Current Application Screens
-
-The onboarding system currently contains the following screens:
-
-1. Splash Screen
-2. Welcome Screen
-3. Choose Account Type
-4. Login
-5. Student Registration
-6. Faculty Registration
-7. Vendor Registration
-8. Residence Registration
-9. Account Verification
-10. Account Verified
-11. Forgot Password
-12. Reset Password
-13. Password Reset Confirmation
-14. Vendor Verification
-15. Residence Verification
-
-More screens will be added as the marketplace functionality is developed.
-
----
-
-# ✅ Current Features
-
-| Feature | Status |
-|---|---|
-| Splash Screen | ✅ Completed |
-| Welcome Screen | ✅ Completed |
-| Choose Account Type | ✅ Completed |
-| Student Registration | ✅ Completed |
-| Faculty Registration | ✅ Completed |
-| Vendor Registration UI | ✅ Completed |
-| Residence Registration UI | ✅ Completed |
-| Login | ✅ Completed |
-| Firebase Authentication | ✅ Completed |
-| Cloud Firestore Integration | ✅ Completed |
-| Email Verification | ✅ Completed |
-| Password Reset | ✅ Completed |
-| Forgot Password | ✅ Completed |
-| Account Verified Screen | ✅ Completed |
-| Role Detection | ✅ Completed |
-| Unverified Account Protection | ✅ Completed |
-| Logout | ✅ Testing / Basic Implementation |
-| Vendor Approval Backend | 🚧 In Development |
-| Residence Approval Backend | 🚧 In Development |
-| Marketplace Home | 🚧 To Be Developed |
-| Product Management | 🚧 To Be Developed |
-| Cart | 🚧 To Be Developed |
-| Checkout | 🚧 To Be Developed |
-| Profile | 🚧 To Be Developed |
-| Community Board | 🚧 To Be Developed |
-
----
-
-# 🧠 Role-Based Authentication
-
-Community Store stores the user's role so that the application can identify whether the person logging in is a:
+Current role values used by the application include:
 
 ```text
 student
 faculty
 vendor
 residence
+```
+
+---
+
+## 📱 Current onboarding screens
+
+The current Android project includes screens/activities for:
+
+1. Splash
+2. Welcome
+3. Choose Account Type
+4. Login
+5. Registration
+6. Account verification
+7. Account Verified
+8. Forgot Password
+9. Reset Password
+10. Password Reset confirmation
+11. Vendor Verification
+12. Residence Verification
+13. Main / temporary test area
+14. Logout / temporary test flow
+
+---
+
+## ✅ Current project status
+
+| Feature | Status |
+|---|---|
+| Splash screen | ✅ Implemented |
+| Welcome screen | ✅ Implemented |
+| Account-type selection | ✅ Implemented |
+| Student registration | ✅ Implemented |
+| Faculty registration | ✅ Implemented |
+| Login | ✅ Implemented |
+| Firebase Authentication | ✅ Implemented |
+| Cloud Firestore integration | ✅ Implemented |
+| Email verification | ✅ Implemented |
+| Forgot Password | ✅ Implemented |
+| Reset Password | ✅ Implemented |
+| Account Verified screen | ✅ Implemented |
+| Role detection | ✅ Implemented |
+| Unverified-account protection | ✅ Implemented |
+| Vendor onboarding UI | ✅ Implemented |
+| Residence onboarding UI | ✅ Implemented |
+| Vendor approval backend | 🚧 Not final |
+| Residence approval backend | 🚧 Not final |
+| Marketplace home | 🚧 To be developed |
+| Product management | 🚧 To be developed |
+| Cart / checkout | 🚧 To be developed |
+| Profile | 🚧 To be developed |
+| Community board | 🚧 To be developed |
+
+---
+
+## 👨‍💻 Team members and responsibilities
+
+Each student should add their own name, role and assigned responsibilities below.
+
+### Aristide Izabkora
+
+**Role:** Phase 1 — Onboarding, Account Setup and Authentication
+
+Responsibilities:
+
+- Splash screen
+- Welcome screen
+- Account-type selection
+- Student / Faculty / Vendor / Residence registration flows
+- Login
+- Firebase Authentication integration
+- Cloud Firestore account integration
+- Email verification
+- Account Verified flow
+- Forgot Password
+- Reset Password
+- Password-reset confirmation
+- Role-based login detection
+- Preventing unverified users from accessing the app
+- Android App Links
+- Firebase Hosting configuration for auth links
+- Translating onboarding Figma designs into Android XML
+- Community Store logo / onboarding UI integration
+
+### Team Member 2
+
+**Name:** Add name here  
+**Role:** Add role here
+
+Responsibilities:
+- Add responsibility
+- Add responsibility
+- Add responsibility
+
+### Team Member 3
+
+**Name:** Add name here  
+**Role:** Add role here
+
+Responsibilities:
+- Add responsibility
+- Add responsibility
+- Add responsibility
+
+### Team Member 4
+
+**Name:** Add name here  
+**Role:** Add role here
+
+Responsibilities:
+- Add responsibility
+- Add responsibility
+- Add responsibility
+
+---
+
+## 🤝 Contributing
+
+This is a shared school project. **Do not work directly on `main`.**
+
+Every team member should read [CONTRIBUTING.md](CONTRIBUTING.md) before making changes.
+
+The normal workflow is:
+
+```text
+Update main
+   ↓
+Create your own feature branch
+   ↓
+Code and test
+   ↓
+Commit your work
+   ↓
+Push your branch
+   ↓
+Create a Pull Request
+   ↓
+Teammate review
+   ↓
+Merge into main
+```
+
+---
+
+## 💻 Running the project
+
+### Requirements
+
+- Android Studio
+- Git
+- Android SDK
+- Internet access for Gradle/Firebase dependencies
+- Emulator or physical Android device
+
+### Clone
+
+```bash
+git clone YOUR_REPOSITORY_URL
+cd community-store-android
+```
+
+Open the cloned project folder in Android Studio and allow Gradle to sync.
+
+### Firebase configuration
+
+The Android package is:
+
+```text
+com.example.communitystore
+```
+
+The application uses Firebase project configuration through:
+
+```text
+app/google-services.json
+```
+
+If the team chooses not to store that file in GitHub, obtain the approved copy privately from the project owner and place it inside `app/`.
+
+---
+
+## 📂 Important project structure
+
+```text
+community-store-android/
+├── app/
+│   ├── build.gradle.kts
+│   ├── google-services.json
+│   └── src/main/
+│       ├── java/com/example/communitystore/
+│       ├── res/
+│       └── AndroidManifest.xml
+├── gradle/
+├── public/
+│   └── .well-known/assetlinks.json
+├── .firebaserc
+├── .gitignore
+├── CONTRIBUTING.md
+├── README.md
+├── build.gradle.kts
+├── firebase.json
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+└── settings.gradle.kts
+```
+
+---
+
+## 🔒 Security and repository hygiene
+
+Do not commit:
+
+- `local.properties`
+- `.gradle/`
+- `build/` or `app/build/`
+- `.idea/`
+- keystore/signing files
+- service-account credentials
+- passwords or API secrets
+- real student/user personal data
+
+The repository `.gitignore` is configured to exclude common generated/local files.
+
+---
+
+## ⚠️ Known development note
+
+The current Vendor and Residence verification activities still contain document-upload code that references Firebase Storage. The team decided not to rely on paid Firebase services at this stage, so the final production document-storage/approval backend should be reviewed before those flows are considered complete.
+
+---
+
+## 🎓 Academic project
+
+Community Store is being developed as a university group assignment. This repository is intended for academic collaboration, software-development practice, team version control and project submission.
+
+No public/open-source licence has been assigned unless the team and academic requirements later specify otherwise.

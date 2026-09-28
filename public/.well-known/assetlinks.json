@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.communitystore",
+      "sha256_cert_fingerprints": [
+        "49:C8:B5:0A:41:71:A5:45:21:5E:07:FC:AC:0B:74:C8:F6:6D:C0:CD:13:FB:9C:95:C0:68:C8:87:D6:99:6D:D2"
+      ]
+    }
+  }
+]
