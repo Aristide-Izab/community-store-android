@@ -1,4 +1,6 @@
-package com.example.communitystore;
+package com.example.communitystore.auth;
+
+import com.example.communitystore.R;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;

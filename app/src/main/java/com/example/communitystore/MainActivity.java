@@ -6,6 +6,8 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.communitystore.auth.LogoutActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     private Button openLogoutButton;

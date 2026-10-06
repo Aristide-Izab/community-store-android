@@ -1,4 +1,6 @@
-package com.example.communitystore;
+package com.example.communitystore.auth;
+
+import com.example.communitystore.R;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -6,7 +8,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.Patterns;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,13 +29,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VendorVerificationActivity extends AppCompatActivity {
+public class ResidenceVerificationActivity extends AppCompatActivity {
 
     private static final long MAX_FILE_SIZE =
             10 * 1024 * 1024;
 
     private TextView backButton;
     private TextView selectedFileText;
+
+    private EditText residenceNameInput;
+    private EditText wardenEmailInput;
 
     private Button uploadButton;
     private Button submitButton;
@@ -76,7 +83,7 @@ public class VendorVerificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(
-                R.layout.activity_vendor_verification
+                R.layout.activity_residence_verification
         );
 
         auth =
@@ -98,6 +105,16 @@ public class VendorVerificationActivity extends AppCompatActivity {
                         R.id.selectedFileText
                 );
 
+        residenceNameInput =
+                findViewById(
+                        R.id.residenceNameInput
+                );
+
+        wardenEmailInput =
+                findViewById(
+                        R.id.wardenEmailInput
+                );
+
         uploadButton =
                 findViewById(
                         R.id.uploadButton
@@ -113,6 +130,7 @@ public class VendorVerificationActivity extends AppCompatActivity {
         );
 
         uploadButton.setOnClickListener(v ->
+
                 documentLauncher.launch(
                         new String[]{
                                 "application/pdf"
@@ -120,12 +138,78 @@ public class VendorVerificationActivity extends AppCompatActivity {
                 )
         );
 
-        submitButton.setOnClickListener(v ->
-                submitVendorApplication()
+        submitButton.setOnClickListener(
+                v -> validateAndSubmit()
         );
     }
 
-    private void submitVendorApplication() {
+    private void validateAndSubmit() {
+
+        String residenceName =
+                residenceNameInput
+                        .getText()
+                        .toString()
+                        .trim();
+
+        String wardenEmail =
+                wardenEmailInput
+                        .getText()
+                        .toString()
+                        .trim();
+
+        if (residenceName.isEmpty()) {
+
+            residenceNameInput.setError(
+                    "Enter the residence or campus house"
+            );
+
+            residenceNameInput.requestFocus();
+            return;
+        }
+
+        if (wardenEmail.isEmpty()) {
+
+            wardenEmailInput.setError(
+                    "Enter the warden email"
+            );
+
+            wardenEmailInput.requestFocus();
+            return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS
+                .matcher(wardenEmail)
+                .matches()) {
+
+            wardenEmailInput.setError(
+                    "Enter a valid email address"
+            );
+
+            wardenEmailInput.requestFocus();
+            return;
+        }
+
+        if (selectedPdfUri == null) {
+
+            Toast.makeText(
+                    this,
+                    "Please upload your appointment letter.",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        uploadResidenceApplication(
+                residenceName,
+                wardenEmail
+        );
+    }
+
+    private void uploadResidenceApplication(
+            String residenceName,
+            String wardenEmail
+    ) {
 
         FirebaseUser user =
                 auth.getCurrentUser();
@@ -141,17 +225,6 @@ public class VendorVerificationActivity extends AppCompatActivity {
             return;
         }
 
-        if (selectedPdfUri == null) {
-
-            Toast.makeText(
-                    this,
-                    "Please upload your business document.",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-            return;
-        }
-
         submitButton.setEnabled(false);
         submitButton.setText("Uploading...");
 
@@ -161,39 +234,46 @@ public class VendorVerificationActivity extends AppCompatActivity {
         StorageReference reference =
                 storage.getReference()
                         .child(
-                                "vendor_documents/"
+                                "residence_documents/"
                                         + uid
-                                        + "/business_document.pdf"
+                                        + "/appointment_letter.pdf"
                         );
 
         reference.putFile(selectedPdfUri)
+
                 .continueWithTask(task -> {
 
                     if (!task.isSuccessful()) {
 
                         if (task.getException() != null) {
+
                             throw task.getException();
                         }
                     }
 
                     return reference.getDownloadUrl();
                 })
+
                 .addOnSuccessListener(downloadUri ->
 
-                        saveApplication(
+                        saveResidenceApplication(
                                 user,
+                                residenceName,
+                                wardenEmail,
                                 downloadUri.toString()
                         )
                 )
+
                 .addOnFailureListener(e -> {
 
                     submitButton.setEnabled(true);
+
                     submitButton.setText(
-                            "Submit for Review"
+                            "Submit for Approval"
                     );
 
                     Toast.makeText(
-                            VendorVerificationActivity.this,
+                            this,
                             "Upload failed: "
                                     + e.getMessage(),
                             Toast.LENGTH_LONG
@@ -201,90 +281,94 @@ public class VendorVerificationActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveApplication(
+    private void saveResidenceApplication(
             FirebaseUser user,
+            String residenceName,
+            String wardenEmail,
             String documentUrl
     ) {
 
-        Map<String, Object> vendor =
+        Map<String, Object> data =
                 new HashMap<>();
 
-        vendor.put(
+        data.put(
                 "displayName",
                 PendingRegistrationStore
                         .getDisplayName(this)
         );
 
-        vendor.put(
+        data.put(
                 "email",
                 PendingRegistrationStore
                         .getEmail(this)
         );
 
-        vendor.put(
+        data.put(
                 "role",
-                "vendor"
+                "residence"
         );
 
-        vendor.put(
-                "businessRegDocUrl",
+        data.put(
+                "residenceName",
+                residenceName
+        );
+
+        data.put(
+                "wardenEmail",
+                wardenEmail
+        );
+
+        data.put(
+                "appointmentLetterUrl",
                 documentUrl
         );
 
-        vendor.put(
-                "documentType",
-                "Business Registration/CIPC Doc"
-        );
-
-        vendor.put(
+        data.put(
                 "verificationStatus",
                 "pending"
         );
 
-        vendor.put(
+        data.put(
                 "verified",
                 false
         );
 
-        vendor.put(
+        data.put(
                 "createdAt",
                 FieldValue.serverTimestamp()
         );
 
-        db.collection("vendors")
+        db.collection("residences")
                 .document(user.getUid())
-                .set(vendor)
+                .set(data)
+
                 .addOnSuccessListener(unused -> {
 
-                    /*
-                     * Vendor is NOT added to users.
-                     *
-                     * They remain pending until
-                     * admin approval.
-                     */
-
                     PendingRegistrationStore.clear(
-                            VendorVerificationActivity.this
+                            ResidenceVerificationActivity.this
                     );
 
                     auth.signOut();
 
                     submitButton.setEnabled(true);
+
                     submitButton.setText(
-                            "Submit for Review"
+                            "Submit for Approval"
                     );
 
                     showSubmittedDialog();
                 })
+
                 .addOnFailureListener(e -> {
 
                     submitButton.setEnabled(true);
+
                     submitButton.setText(
-                            "Submit for Review"
+                            "Submit for Approval"
                     );
 
                     Toast.makeText(
-                            VendorVerificationActivity.this,
+                            this,
                             "Could not submit application: "
                                     + e.getMessage(),
                             Toast.LENGTH_LONG
@@ -299,7 +383,7 @@ public class VendorVerificationActivity extends AppCompatActivity {
                         "Application Submitted!"
                 )
                 .setMessage(
-                        "Your vendor documents have been submitted for review. Reviews typically take 24–48 hours."
+                        "Your residence administrator application has been submitted. A residence team member will review your role within 1–2 working days."
                 )
                 .setCancelable(false)
                 .setPositiveButton(
@@ -308,7 +392,7 @@ public class VendorVerificationActivity extends AppCompatActivity {
 
                             Intent intent =
                                     new Intent(
-                                            VendorVerificationActivity.this,
+                                            ResidenceVerificationActivity.this,
                                             LoginActivity.class
                                     );
 
@@ -319,6 +403,7 @@ public class VendorVerificationActivity extends AppCompatActivity {
                             );
 
                             startActivity(intent);
+
                             finish();
                         }
                 )

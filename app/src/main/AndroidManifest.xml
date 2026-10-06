@@ -18,47 +18,47 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".auth.WelcomeActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ChooseAccountTypeActivity"
+            android:name=".auth.ChooseAccountTypeActivity"
             android:exported="false" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".auth.LoginActivity"
             android:exported="false" />
 
         <activity
-            android:name=".RegisterActivity"
+            android:name=".auth.RegisterActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ForgotPasswordActivity"
+            android:name=".auth.ForgotPasswordActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ResetPasswordActivity"
+            android:name=".auth.ResetPasswordActivity"
             android:exported="false" />
 
         <activity
-            android:name=".AccountVerifiedActivity"
+            android:name=".auth.AccountVerifiedActivity"
             android:exported="false" />
 
         <activity
-            android:name=".LogoutActivity"
+            android:name=".auth.LogoutActivity"
             android:exported="false" />
 
         <activity
-            android:name=".VendorVerificationActivity"
+            android:name=".auth.VendorVerificationActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ResidenceVerificationActivity"
+            android:name=".auth.ResidenceVerificationActivity"
             android:exported="false" />
 
         <activity
-            android:name=".VerifyStudentActivity"
+            android:name=".auth.VerifyStudentActivity"
             android:exported="true"
             android:launchMode="singleTop">
 
@@ -80,7 +80,7 @@
         </activity>
 
         <activity
-            android:name=".SplashActivity"
+            android:name=".auth.SplashActivity"
             android:exported="true">
 
             <intent-filter>

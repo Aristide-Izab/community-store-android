@@ -1,4 +1,7 @@
-package com.example.communitystore;
+package com.example.communitystore.auth;
+
+import com.example.communitystore.R;
+import com.example.communitystore.MainActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
