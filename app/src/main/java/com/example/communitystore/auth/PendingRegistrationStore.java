@@ -1,4 +1,4 @@
-package com.example.communitystore;
+package com.example.communitystore.auth;
 
 import android.content.Context;
 import android.content.SharedPreferences;
