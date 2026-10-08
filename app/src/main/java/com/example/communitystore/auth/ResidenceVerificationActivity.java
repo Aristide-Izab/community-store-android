@@ -83,7 +83,7 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(
-                R.layout.activity_residence_verification
+                R.layout.activity_auth_residence_verification
         );
 
         auth =

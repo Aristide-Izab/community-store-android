@@ -17,7 +17,7 @@ public class AccountVerifiedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(
-                R.layout.activity_account_verified
+                R.layout.activity_auth_account_verified
         );
 
         loginButton =

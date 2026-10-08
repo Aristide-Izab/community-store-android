@@ -21,7 +21,7 @@ public class ChooseAccountTypeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(
-                R.layout.activity_choose_account_type
+                R.layout.activity_auth_choose_account_type
         );
 
         studentCard =

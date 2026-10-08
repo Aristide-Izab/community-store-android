@@ -35,7 +35,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reset_password);
+        setContentView(R.layout.activity_auth_reset_password);
 
         auth = FirebaseAuth.getInstance();
 
@@ -226,7 +226,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         View view =
                 getLayoutInflater().inflate(
-                        R.layout.dialog_email_verified,
+                        R.layout.dialog_auth_email_verified,
                         null
                 );
 
@@ -260,7 +260,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         View view =
                 getLayoutInflater().inflate(
-                        R.layout.dialog_password_reset_success,
+                        R.layout.dialog_auth_password_reset_success,
                         null
                 );
 

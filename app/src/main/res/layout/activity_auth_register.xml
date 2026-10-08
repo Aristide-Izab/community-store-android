@@ -79,7 +79,9 @@
             android:background="@drawable/edit_text_background"
             app:layout_constraintTop_toBottomOf="@id/fullNameLabel"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent" 
+            android:textColor="#111111"
+            android:textColorHint="#6B7280" />
 
         <TextView
             android:id="@+id/universityNameLabel"
@@ -108,7 +110,9 @@
             android:background="@drawable/edit_text_background"
             app:layout_constraintTop_toBottomOf="@id/universityNameLabel"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent" 
+            android:textColor="#111111"
+            android:textColorHint="#6B7280" />
 
         <TextView
             android:id="@+id/emailLabel"
@@ -137,7 +141,9 @@
             android:background="@drawable/edit_text_background"
             app:layout_constraintTop_toBottomOf="@id/emailLabel"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent" 
+            android:textColor="#111111"
+            android:textColorHint="#6B7280" />
 
         <TextView
             android:id="@+id/passwordLabel"
@@ -171,7 +177,9 @@
                 android:layout_height="48dp"
                 android:hint="Enter password"
                 android:inputType="textPassword"
-                android:textSize="13sp" />
+                android:textSize="13sp" 
+            android:textColor="#111111"
+            android:textColorHint="#6B7280" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -207,7 +215,9 @@
                 android:layout_height="48dp"
                 android:hint="Confirm password"
                 android:inputType="textPassword"
-                android:textSize="13sp" />
+                android:textSize="13sp" 
+            android:textColor="#111111"
+            android:textColorHint="#6B7280" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
