@@ -1,10 +1,6 @@
 package com.example.communitystore.auth;
 
-import com.example.communitystore.R;
-import com.example.communitystore.MainActivity;
-
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.widget.Button;
@@ -14,6 +10,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.communitystore.R;
+import com.example.communitystore.core.access.AccessManager;
+import com.example.communitystore.core.access.UserRole;
+import com.example.communitystore.core.session.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -33,34 +33,62 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+    private SessionManager sessionManager;
 
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+    @Override
+    protected void onCreate(
+            Bundle savedInstanceState
+    ) {
+
+        super.onCreate(savedInstanceState);
+
+        setContentView(
+                R.layout.activity_auth_login
+        );
+
+        auth =
+                FirebaseAuth.getInstance();
+
+        db =
+                FirebaseFirestore.getInstance();
+
+        sessionManager =
+                new SessionManager(this);
 
         emailInput =
-                findViewById(R.id.emailInput);
+                findViewById(
+                        R.id.emailInput
+                );
 
         passwordInput =
-                findViewById(R.id.passwordInput);
+                findViewById(
+                        R.id.passwordInput
+                );
 
         loginButton =
-                findViewById(R.id.loginButton);
+                findViewById(
+                        R.id.loginButton
+                );
 
         microsoftButton =
-                findViewById(R.id.microsoftButton);
+                findViewById(
+                        R.id.microsoftButton
+                );
 
         signUpText =
-                findViewById(R.id.signUpText);
+                findViewById(
+                        R.id.signUpText
+                );
 
         backButton =
-                findViewById(R.id.backButton);
+                findViewById(
+                        R.id.backButton
+                );
 
         forgotPasswordText =
-                findViewById(R.id.forgotPasswordText);
+                findViewById(
+                        R.id.forgotPasswordText
+                );
 
         backButton.setOnClickListener(
                 v -> finish()
@@ -133,6 +161,7 @@ public class LoginActivity extends AppCompatActivity {
             );
 
             emailInput.requestFocus();
+
             return;
         }
 
@@ -145,6 +174,7 @@ public class LoginActivity extends AppCompatActivity {
             );
 
             emailInput.requestFocus();
+
             return;
         }
 
@@ -155,11 +185,15 @@ public class LoginActivity extends AppCompatActivity {
             );
 
             passwordInput.requestFocus();
+
             return;
         }
 
         loginButton.setEnabled(false);
-        loginButton.setText("Logging in...");
+
+        loginButton.setText(
+                "Logging in..."
+        );
 
         auth.signInWithEmailAndPassword(
                         email,
@@ -176,6 +210,7 @@ public class LoginActivity extends AppCompatActivity {
                         ).show();
 
                         resetLoginButton();
+
                         return;
                     }
 
@@ -185,6 +220,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (user == null) {
 
                         resetLoginButton();
+
                         return;
                     }
 
@@ -204,6 +240,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (!document.exists()) {
 
                         checkVendorApplication(user);
+
                         return;
                     }
 
@@ -212,16 +249,23 @@ public class LoginActivity extends AppCompatActivity {
                                     "verified"
                             );
 
-                    String role =
+                    String roleString =
                             document.getString(
                                     "role"
                             );
 
+                    UserRole role =
+                            UserRole.fromString(
+                                    roleString
+                            );
+
                     if (verified == null
                             || !verified
-                            || !isValidRole(role)) {
+                            || role == null) {
 
                         auth.signOut();
+
+                        sessionManager.clearSession();
 
                         Toast.makeText(
                                 this,
@@ -230,6 +274,7 @@ public class LoginActivity extends AppCompatActivity {
                         ).show();
 
                         resetLoginButton();
+
                         return;
                     }
 
@@ -238,6 +283,8 @@ public class LoginActivity extends AppCompatActivity {
 
                         auth.signOut();
 
+                        sessionManager.clearSession();
+
                         Toast.makeText(
                                 this,
                                 "Please verify your email first.",
@@ -245,17 +292,25 @@ public class LoginActivity extends AppCompatActivity {
                         ).show();
 
                         resetLoginButton();
+
                         return;
                     }
 
-                    saveAccountType(role);
+                    sessionManager.saveUserRole(
+                            role
+                    );
 
-                    openMain(role);
+                    AccessManager.openHome(
+                            LoginActivity.this,
+                            role
+                    );
                 })
 
                 .addOnFailureListener(e -> {
 
                     auth.signOut();
+
+                    sessionManager.clearSession();
 
                     Toast.makeText(
                             this,
@@ -280,6 +335,8 @@ public class LoginActivity extends AppCompatActivity {
 
                         auth.signOut();
 
+                        sessionManager.clearSession();
+
                         String status =
                                 document.getString(
                                         "verificationStatus"
@@ -293,11 +350,16 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
 
-                    checkResidenceApplication(user);
+                    checkResidenceApplication(
+                            user
+                    );
                 })
 
                 .addOnFailureListener(e ->
-                        checkResidenceApplication(user)
+
+                        checkResidenceApplication(
+                                user
+                        )
                 );
     }
 
@@ -311,6 +373,8 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnSuccessListener(document -> {
 
                     auth.signOut();
+
+                    sessionManager.clearSession();
 
                     if (document.exists()) {
 
@@ -339,6 +403,8 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
 
                     auth.signOut();
+
+                    sessionManager.clearSession();
 
                     Toast.makeText(
                             this,
@@ -394,69 +460,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean requiresEmailVerification(
-            String role
+            UserRole role
     ) {
 
-        return "student".equals(role)
-                || "faculty".equals(role);
-    }
-
-    private boolean isValidRole(
-            String role
-    ) {
-
-        return "student".equals(role)
-                || "faculty".equals(role)
-                || "vendor".equals(role)
-                || "residence".equals(role);
-    }
-
-    private void saveAccountType(
-            String role
-    ) {
-
-        SharedPreferences preferences =
-                getSharedPreferences(
-                        "CommunityStorePrefs",
-                        MODE_PRIVATE
-                );
-
-        preferences.edit()
-                .putString(
-                        "accountType",
-                        role
-                )
-                .apply();
-    }
-
-    private void openMain(
-            String role
-    ) {
-
-        Intent intent =
-                new Intent(
-                        LoginActivity.this,
-                        MainActivity.class
-                );
-
-        intent.putExtra(
-                "accountType",
-                role
-        );
-
-        intent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK
-                        |
-                        Intent.FLAG_ACTIVITY_CLEAR_TASK
-        );
-
-        startActivity(intent);
-        finish();
+        return role == UserRole.STUDENT
+                || role == UserRole.FACULTY;
     }
 
     private void resetLoginButton() {
 
         loginButton.setEnabled(true);
-        loginButton.setText("Login");
+
+        loginButton.setText(
+                "Login"
+        );
     }
 }
