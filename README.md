@@ -214,7 +214,7 @@ The current Android project includes screens/activities for:
 | Product management | 🚧 To be developed |
 | Cart / checkout | 🚧 To be developed |
 | Profile | 🚧 To be developed |
-| Community board | 🚧 To be developed |
+| Community board | ✅ Implemented |
 
 ---
 
