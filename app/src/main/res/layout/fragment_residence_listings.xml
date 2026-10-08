@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/residence_purple"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:gravity="top"
+        android:orientation="horizontal"
+        android:paddingEnd="47dp">
+
+        <ImageView
+            android:id="@+id/backButton"
+            style="@style/ResidenceBackButton"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="0dp" />
+
+        <TextView
+            style="@style/ResidenceHeaderTitle"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Manage Products" />
+
+        <FrameLayout
+            android:id="@+id/avatarButton"
+            android:layout_width="39dp"
+            android:layout_height="33dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/ic_avatar_background"
+            android:clickable="true"
+            android:contentDescription="Open profile"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="21dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_avatar_person" />
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <!-- Sheet -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_residence_sheet"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_marginStart="33dp"
+            android:layout_marginTop="47dp"
+            android:layout_marginEnd="43dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/activeTab"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/bg_residence_toggle"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="Active"
+                android:textColor="@color/residence_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/inactiveTab"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="26dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_residence_toggle"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="Inactive"
+                android:textColor="@color/residence_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <View
+            style="@style/ResidenceDivider"
+            android:layout_marginStart="17dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="17dp" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/listingsMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:text="Loading products..."
+                    android:textColor="@color/residence_slate"
+                    android:textSize="14sp" />
+
+                <LinearLayout
+                    android:id="@+id/productsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/addProductButton"
+            android:layout_width="match_parent"
+            android:layout_height="39dp"
+            android:layout_marginStart="34dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="47dp"
+            android:layout_marginBottom="43dp"
+            android:background="@drawable/bg_residence_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="24dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_add_product_plus" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Add Product"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

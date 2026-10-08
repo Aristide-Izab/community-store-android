@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Shared styles for the Residence account screens (Figma: Residence account page). -->
+
+    <style name="ResidenceHeaderTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="ResidenceBackButton">
+        <item name="android:layout_width">40dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">6dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:src">@drawable/ic_back_chevron</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:contentDescription">Back</item>
+    </style>
+
+    <style name="ResidenceDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/residence_divider</item>
+    </style>
+
+    <style name="ResidenceNavItem">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <!-- 27dp tall so the 25dp icons and the 27dp profile icon share a label baseline. -->
+    <style name="ResidenceNavIcon">
+        <item name="android:layout_width">25dp</item>
+        <item name="android:layout_height">27dp</item>
+        <item name="android:duplicateParentState">true</item>
+        <item name="tint">@color/residence_nav_item</item>
+    </style>
+
+    <style name="ResidenceNavLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:duplicateParentState">true</item>
+        <item name="android:textColor">@color/residence_nav_item</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="ResidenceFieldLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">14dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:textColor">@color/residence_text</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="ResidenceFieldInput">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:background">@drawable/bg_residence_input</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@color/residence_text</item>
+        <item name="android:textColorHint">@color/residence_text</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="ResidenceFieldDropdown" parent="ResidenceFieldInput">
+        <item name="android:drawableEnd">@drawable/ic_dropdown_chevron</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+</resources>

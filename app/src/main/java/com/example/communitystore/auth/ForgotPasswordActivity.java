@@ -1,6 +1,7 @@
 package com.example.communitystore.auth;
 
 import com.example.communitystore.R;
+import com.example.communitystore.BuildConfig;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -75,7 +76,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         ActionCodeSettings settings =
                 ActionCodeSettings.newBuilder()
                         .setUrl(
-                                "https://community-store-de45f.firebaseapp.com"
+                                BuildConfig.FIREBASE_AUTH_URL
                         )
                         .setHandleCodeInApp(true)
                         .setAndroidPackageName(

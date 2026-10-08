@@ -2,6 +2,7 @@ package com.example.communitystore.auth;
 
 import com.example.communitystore.R;
 import com.example.communitystore.MainActivity;
+import com.example.communitystore.residence.ResidenceHomeActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -436,7 +437,9 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent =
                 new Intent(
                         LoginActivity.this,
-                        MainActivity.class
+                        "residence".equals(role)
+                                ? ResidenceHomeActivity.class
+                                : MainActivity.class
                 );
 
         intent.putExtra(

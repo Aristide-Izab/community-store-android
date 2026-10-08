@@ -2,6 +2,7 @@ package com.example.communitystore.auth;
 
 import com.example.communitystore.R;
 import com.example.communitystore.MainActivity;
+import com.example.communitystore.residence.ResidenceHomeActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -192,7 +193,9 @@ public class SplashActivity extends AppCompatActivity {
         Intent intent =
                 new Intent(
                         SplashActivity.this,
-                        MainActivity.class
+                        "residence".equals(role)
+                                ? ResidenceHomeActivity.class
+                                : MainActivity.class
                 );
 
         intent.putExtra(

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Converted from Figma asset -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="21dp"
+    android:height="22dp"
+    android:viewportWidth="21"
+    android:viewportHeight="22">
+    <path
+        android:pathData="M1 18.5C1 17.1739 1.50044 15.9022 2.39124 14.9645C3.28204 14.0268 4.49022 13.5 5.75 13.5H15.25C16.5098 13.5 17.718 14.0268 18.6088 14.9645C19.4996 15.9022 20 17.1739 20 18.5C20 19.1631 19.7498 19.799 19.3044 20.2678C18.859 20.7366 18.2549 21 17.625 21H3.375C2.74511 21 2.14102 20.7366 1.69562 20.2678C1.25022 19.799 1 19.1631 1 18.5Z"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="2"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M10.5 8.50003C12.4675 8.50003 14.0625 6.82109 14.0625 4.75001C14.0625 2.67894 12.4675 1 10.5 1C8.53249 1 6.9375 2.67894 6.9375 4.75001C6.9375 6.82109 8.53249 8.50003 10.5 8.50003Z"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="2" />
+</vector>

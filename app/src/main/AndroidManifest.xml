@@ -58,6 +58,18 @@
             android:exported="false" />
 
         <activity
+            android:name=".residence.ResidenceHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".residence.AddProductActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".residence.LeaderboardActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".auth.VerifyStudentActivity"
             android:exported="true"
             android:launchMode="singleTop">
@@ -72,7 +84,7 @@
 
                 <data
                     android:scheme="https"
-                    android:host="community-store-de45f.firebaseapp.com"
+                    android:host="${firebaseAuthHost}"
                     android:pathPrefix="/__/auth/links" />
 
             </intent-filter>
