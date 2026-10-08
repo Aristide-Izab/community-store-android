@@ -20,9 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
 
-/**
- * Shared helpers for the Residence account screens.
- */
+// helper methods for residence screens
 public final class ResidenceUi {
 
     public interface ProfileCallback {
@@ -32,10 +30,7 @@ public final class ResidenceUi {
     private ResidenceUi() {
     }
 
-    /**
-     * Draws the purple header behind the status bar and keeps
-     * content clear of the system bars and keyboard.
-     */
+    // status bar and keyboard padding
     public static void applyEdgeToEdge(
             ComponentActivity activity,
             View root,
@@ -108,9 +103,7 @@ public final class ResidenceUi {
         return "Good evening";
     }
 
-    /**
-     * Returns the first name from a display name, or "Resident" when unknown.
-     */
+    // get first name
     public static String firstName(
             @Nullable String displayName
     ) {
@@ -124,9 +117,7 @@ public final class ResidenceUi {
         return displayName.trim().split("\\s+")[0];
     }
 
-    /**
-     * Loads users/{uid} for the signed-in user. Passes null when signed out or on failure.
-     */
+    // get user data from firestore
     public static void loadProfile(
             ProfileCallback callback
     ) {

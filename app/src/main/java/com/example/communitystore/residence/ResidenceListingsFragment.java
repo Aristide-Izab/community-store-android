@@ -22,9 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-/**
- * Residence "My Listing" tab (Figma: Manage Products).
- */
+// my listings tab
 public class ResidenceListingsFragment extends Fragment {
 
     private static final String STATUS_ACTIVE =

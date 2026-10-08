@@ -17,9 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-/**
- * Residence "Profile" tab (Figma: Profile).
- */
+// profile tab
 public class ResidenceProfileFragment extends Fragment {
 
     private static final String[] MENU_ITEMS = {

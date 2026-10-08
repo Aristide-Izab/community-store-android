@@ -20,16 +20,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-/**
- * Residence "Home" tab (Figma: Dashboard).
- */
+// home tab
 public class ResidenceDashboardFragment extends Fragment {
 
-    /*
-     * Orders are not stored in Firestore yet, so the dashboard
-     * shows the sample orders from the Figma design for now.
-     * Each row: title, price, status.
-     */
+    // dummy orders for now (title, price, status)
     private static final String[][] SAMPLE_RECENT_ORDERS = {
             {"Textbook", "R175", "Processing"},
             {"Textbook", "R175", "Delivered"},

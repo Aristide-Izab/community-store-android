@@ -40,9 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/**
- * Lets a Residence account publish a product (Figma: Add New Product).
- */
+// add product screen
 public class AddProductActivity extends AppCompatActivity {
 
     private static final long MAX_IMAGE_SIZE =
@@ -215,9 +213,7 @@ public class AddProductActivity extends AppCompatActivity {
         updatePhotoSlots();
     }
 
-    /**
-     * Formats a price for display, e.g. 24750 -> "R24,750" and 175.5 -> "R175.50".
-     */
+    // format price
     public static String formatPrice(
             @Nullable Double price
     ) {
@@ -297,9 +293,7 @@ public class AddProductActivity extends AppCompatActivity {
         ).show();
     }
 
-    /**
-     * Shows chosen photos and puts the "+" on the first empty slot, as in the design.
-     */
+    // show photos
     private void updatePhotoSlots() {
 
         boolean plusShown = false;

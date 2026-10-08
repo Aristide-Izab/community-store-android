@@ -14,16 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-/**
- * Residence "Messages" tab (Figma: Messages).
- */
+// messages tab
 public class ResidenceMessagesFragment extends Fragment {
 
-    /*
-     * Messaging is not backed by Firestore yet, so the Chats tab
-     * shows the sample conversations from the Figma design.
-     * Each row: name, last message, unread count ("" when read), time.
-     */
+    // dummy chats for now (name, message, unread, time)
     private static final String[][] SAMPLE_CHATS = {
             {"Campus Eats", "Hi your order ready for pickup", "2", ""},
             {"Smith", "New Items available", "2", ""},

@@ -13,16 +13,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-/**
- * Residence "Sales" tab (Figma: Income/Revenue).
- */
+// sales tab
 public class ResidenceSalesFragment extends Fragment {
 
-    /*
-     * Orders and payouts are not stored in Firestore yet, so this
-     * screen shows the sample figures from the Figma design.
-     * Each row: title, date, amount.
-     */
+    // dummy sales for now (title, date, amount)
     private static final String[][] SAMPLE_RECENT_INCOME = {
             {"Sales- Orders", "29 Aug 2026", "R1,600"},
             {"Sales- Orders", "29 Aug 2026", "R1,600"},

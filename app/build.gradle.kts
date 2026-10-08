@@ -3,10 +3,8 @@ plugins {
     id("com.google.gms.google-services")
 }
 
-// Firebase Hosting domain of YOUR Firebase project (Project settings -> General -> Project ID,
-// then "<project-id>.firebaseapp.com"). Used for email verification and password-reset links.
-// See FIREBASE_SETUP.txt in the project root.
-val firebaseAuthHost = "community-store-de45f.firebaseapp.com"
+// firebase auth domain
+val firebaseAuthHost = "community-store-android.firebaseapp.com"
 
 android {
     namespace = "com.example.communitystore"

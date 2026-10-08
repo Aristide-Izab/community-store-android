@@ -10,22 +10,17 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-/**
- * Residence rewards screen (Figma: Gamify Leaderboard rewards / milestone).
- */
+// leaderboard screen
 public class LeaderboardActivity extends AppCompatActivity {
 
-    /*
-     * Points and rankings are not stored in Firestore yet, so this
-     * screen shows the sample values from the Figma design.
-     */
+    // dummy data for now
     private static final String[][] SAMPLE_SALES_RANK = {
             {"Student Store", "Total Sales R15,000"},
             {"Campus Tech", "Total Sales R10,600"},
             {"Tech Hub", "Total Sales R10,000"}
     };
 
-    // Each perk: title, cost, status.
+    // title, cost, status
     private static final String[][] SAMPLE_PERKS = {
             {"Commission Reduction", "500 points", "Claimed"},
             {"Premium Store listing", "2000 Points", "In Progress"},

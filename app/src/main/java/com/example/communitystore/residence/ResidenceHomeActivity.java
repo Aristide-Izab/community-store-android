@@ -9,9 +9,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-/**
- * Main area for verified Residence accounts: hosts the five bottom-nav tabs.
- */
+// residence home with bottom nav
 public class ResidenceHomeActivity extends AppCompatActivity {
 
     public static final int TAB_HOME = 0;
