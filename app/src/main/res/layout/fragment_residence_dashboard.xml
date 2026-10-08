@@ -43,7 +43,7 @@
             android:layout_height="19.5dp"
             android:layout_marginStart="10dp"
             android:contentDescription="@null"
-            android:src="@drawable/ic_verified_badge"
+            android:src="@drawable/ic_residence_verified_badge"
             app:layout_constraintBottom_toBottomOf="@id/roleText"
             app:layout_constraintStart_toEndOf="@id/roleText"
             app:layout_constraintTop_toTopOf="@id/roleText" />

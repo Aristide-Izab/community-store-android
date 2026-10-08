@@ -33,7 +33,7 @@
             <ImageView
                 style="@style/ResidenceNavIcon"
                 android:contentDescription="@null"
-                android:src="@drawable/ic_nav_home" />
+                android:src="@drawable/ic_residence_nav_home" />
 
             <TextView
                 style="@style/ResidenceNavLabel"
@@ -81,7 +81,7 @@
             <ImageView
                 style="@style/ResidenceNavIcon"
                 android:contentDescription="@null"
-                android:src="@drawable/ic_nav_messages" />
+                android:src="@drawable/ic_residence_nav_messages" />
 
             <TextView
                 style="@style/ResidenceNavLabel"

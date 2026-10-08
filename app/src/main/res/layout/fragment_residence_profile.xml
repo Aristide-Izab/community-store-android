@@ -85,7 +85,7 @@
                     android:layout_height="19.5dp"
                     android:layout_marginStart="10dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_verified_badge"
+                    android:src="@drawable/ic_residence_verified_badge"
                     app:tint="@color/residence_text" />
 
                 <TextView
