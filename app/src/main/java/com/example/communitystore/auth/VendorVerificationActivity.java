@@ -78,7 +78,7 @@ public class VendorVerificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(
-                R.layout.activity_vendor_verification
+                R.layout.activity_auth_vendor_verification
         );
 
         auth =

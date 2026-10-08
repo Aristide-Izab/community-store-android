@@ -1,9 +1,5 @@
 package com.example.communitystore.auth;
 
-import com.example.communitystore.R;
-import com.example.communitystore.MainActivity;
-import com.example.communitystore.residence.ResidenceHomeActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,24 +7,32 @@ import android.os.Looper;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.communitystore.R;
+import com.example.communitystore.core.access.AccessManager;
+import com.example.communitystore.core.access.UserRole;
+import com.example.communitystore.core.session.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DELAY =
-            800;
+    private static final int SPLASH_DELAY = 800;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
 
+    private SessionManager sessionManager;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(
+            Bundle savedInstanceState
+    ) {
+
         super.onCreate(savedInstanceState);
 
         setContentView(
-                R.layout.activity_splash
+                R.layout.activity_auth_splash
         );
 
         auth =
@@ -36,6 +40,9 @@ public class SplashActivity extends AppCompatActivity {
 
         db =
                 FirebaseFirestore.getInstance();
+
+        sessionManager =
+                new SessionManager(this);
 
         new Handler(
                 Looper.getMainLooper()
@@ -53,7 +60,10 @@ public class SplashActivity extends AppCompatActivity {
 
         if (user == null) {
 
+            sessionManager.clearSession();
+
             openWelcome();
+
             return;
         }
 
@@ -65,24 +75,22 @@ public class SplashActivity extends AppCompatActivity {
 
                     if (refreshed == null) {
 
+                        sessionManager.clearSession();
+
                         openWelcome();
+
                         return;
                     }
 
                     /*
-                     * Never automatically send
-                     * unverified users to a
-                     * verification screen.
+                     * Student and Faculty accounts
+                     * require Firebase email verification.
+                     *
+                     * Vendor and Residence accounts may
+                     * use a different approval process,
+                     * so their access is validated using
+                     * the Firestore profile below.
                      */
-
-                    if (!refreshed
-                            .isEmailVerified()) {
-
-                        auth.signOut();
-
-                        openWelcome();
-                        return;
-                    }
 
                     loadUserProfile(
                             refreshed
@@ -105,6 +113,9 @@ public class SplashActivity extends AppCompatActivity {
                     if (!document.exists()) {
 
                         auth.signOut();
+
+                        sessionManager.clearSession();
+
                         openWelcome();
 
                         return;
@@ -115,26 +126,47 @@ public class SplashActivity extends AppCompatActivity {
                                     "verified"
                             );
 
-                    String role =
+                    String roleString =
                             document.getString(
                                     "role"
                             );
 
+                    UserRole role =
+                            UserRole.fromString(
+                                    roleString
+                            );
+
                     if (verified == null
                             || !verified
-                            || !isValidRole(role)) {
+                            || role == null) {
 
                         auth.signOut();
 
+                        sessionManager.clearSession();
+
                         openWelcome();
+
                         return;
                     }
 
-                    saveAccountType(
+                    if (requiresEmailVerification(role)
+                            && !user.isEmailVerified()) {
+
+                        auth.signOut();
+
+                        sessionManager.clearSession();
+
+                        openWelcome();
+
+                        return;
+                    }
+
+                    sessionManager.saveUserRole(
                             role
                     );
 
-                    openMain(
+                    AccessManager.openHome(
+                            SplashActivity.this,
                             role
                     );
                 })
@@ -142,36 +174,19 @@ public class SplashActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
 
                     auth.signOut();
+
+                    sessionManager.clearSession();
+
                     openWelcome();
                 });
     }
 
-    private boolean isValidRole(
-            String role
+    private boolean requiresEmailVerification(
+            UserRole role
     ) {
 
-        return "student".equals(role)
-                || "faculty".equals(role)
-                || "vendor".equals(role)
-                || "residence".equals(role);
-    }
-
-    private void saveAccountType(
-            String role
-    ) {
-
-        getSharedPreferences(
-                "CommunityStorePrefs",
-                MODE_PRIVATE
-        )
-                .edit()
-
-                .putString(
-                        "accountType",
-                        role
-                )
-
-                .apply();
+        return role == UserRole.STUDENT
+                || role == UserRole.FACULTY;
     }
 
     private void openWelcome() {
@@ -182,27 +197,6 @@ public class SplashActivity extends AppCompatActivity {
                         WelcomeActivity.class
                 );
 
-        startActivity(intent);
-        finish();
-    }
-
-    private void openMain(
-            String role
-    ) {
-
-        Intent intent =
-                new Intent(
-                        SplashActivity.this,
-                        "residence".equals(role)
-                                ? ResidenceHomeActivity.class
-                                : MainActivity.class
-                );
-
-        intent.putExtra(
-                "accountType",
-                role
-        );
-
         intent.addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
                         |
@@ -210,6 +204,7 @@ public class SplashActivity extends AppCompatActivity {
         );
 
         startActivity(intent);
+
         finish();
     }
 }

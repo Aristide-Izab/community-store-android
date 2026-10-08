@@ -18,7 +18,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_welcome);
+        setContentView(R.layout.activity_auth_welcome);
 
         getStartedButton =
                 findViewById(R.id.getStartedButton);

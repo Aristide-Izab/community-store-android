@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
@@ -12,10 +14,67 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CommunityStore">
 
+        <!-- MAIN / SHARED -->
+
         <activity
             android:name=".MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+
+        <!-- STUDENT -->
+
+        <activity
+            android:name=".student.StudentHomeActivity"
+            android:exported="false" />
+
+
+        <!-- FACULTY -->
+
+        <activity
+            android:name=".faculty.FacultyHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.product.ProductInfoActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.seller.SellerProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.cart.CartActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.checkout.CheckoutActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- VENDOR -->
+
+        <activity
+            android:name=".vendor.VendorHomeActivity"
+            android:exported="false" />
+
+
+        <!-- RESIDENCE -->
+
+        <activity
+            android:name=".residence.ResidenceHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".residence.AddProductActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".residence.LeaderboardActivity"
+            android:exported="false" />
+
+
+        <!-- AUTHENTICATION -->
 
         <activity
             android:name=".auth.WelcomeActivity"
@@ -27,11 +86,13 @@
 
         <activity
             android:name=".auth.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".auth.RegisterActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name=".auth.ForgotPasswordActivity"
@@ -57,30 +118,26 @@
             android:name=".auth.ResidenceVerificationActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".residence.ResidenceHomeActivity"
-            android:exported="false" />
 
-        <activity
-            android:name=".residence.AddProductActivity"
-            android:exported="false" />
 
-        <activity
-            android:name=".residence.LeaderboardActivity"
-            android:exported="false" />
+        <!-- EMAIL VERIFICATION / PASSWORD RESET APP LINK -->
 
         <activity
             android:name=".auth.VerifyStudentActivity"
             android:exported="true"
             android:launchMode="singleTop">
 
-            <intent-filter android:autoVerify="true">
+            <intent-filter
+                android:autoVerify="true">
 
-                <action android:name="android.intent.action.VIEW" />
+                <action
+                    android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category
+                    android:name="android.intent.category.DEFAULT" />
 
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category
+                    android:name="android.intent.category.BROWSABLE" />
 
                 <data
                     android:scheme="https"
@@ -91,15 +148,20 @@
 
         </activity>
 
+
+        <!-- LAUNCHER -->
+
         <activity
             android:name=".auth.SplashActivity"
             android:exported="true">
 
             <intent-filter>
 
-                <action android:name="android.intent.action.MAIN" />
+                <action
+                    android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
 
             </intent-filter>
 

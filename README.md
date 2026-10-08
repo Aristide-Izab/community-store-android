@@ -214,7 +214,7 @@ The current Android project includes screens/activities for:
 | Product management | 🚧 To be developed |
 | Cart / checkout | 🚧 To be developed |
 | Profile | 🚧 To be developed |
-| Community board | 🚧 To be developed |
+| Community board | ✅ Implemented |
 
 ---
 
@@ -247,15 +247,43 @@ Responsibilities:
 - Translating onboarding Figma designs into Android XML
 - Community Store logo / onboarding UI integration
 
-### Team Member 2
+### Shaakirah Hoedemaker 
 
-**Name:** Add name here  
-**Role:** Add role here
+**Role:** Phase 2 — UI/UX Design and Student & Faculty Application Development
 
-Responsibilities:
-- Add responsibility
-- Add responsibility
-- Add responsibility
+**Responsibilities:**
+
+**UI/UX Design**
+
+* Designed all Community Store application screens and user interfaces in Figma
+* Created the UI designs and layouts for the Student, Faculty, Vendor and Residence account types
+* Maintained consistent navigation, branding, colours, layouts and components across the application
+* Designed account-specific dashboards and functionality according to the project requirements
+
+**Student Account — Android Development**
+
+* Community Board screen
+* My Orders screen
+* View Order / Order Tracking screen
+* Add Review screen
+* Translated the approved Figma designs for these screens into Android XML
+* Implemented the required UI interactions and navigation between these screens
+
+**Faculty Account — Android Development**
+
+* Community Board screen
+* My Orders screen
+* View Order / Order Tracking screen
+* Add Review screen
+* Add Post screen
+* Translated the approved Figma designs for these screens into Android XML
+* Implemented the required UI interactions and navigation between these screens
+
+**UI Testing and Integration**
+
+* Tested the implemented screens in Android Studio
+* Checked screen layouts and navigation against the Figma designs
+* Assisted with maintaining a consistent user experience across the different account types
 
 ### Team Member 3
 

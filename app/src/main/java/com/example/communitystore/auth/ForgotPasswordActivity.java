@@ -3,7 +3,6 @@ package com.example.communitystore.auth;
 import com.example.communitystore.R;
 import com.example.communitystore.BuildConfig;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.widget.Button;
@@ -28,7 +27,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_forgot_password);
+        setContentView(R.layout.activity_auth_forgot_password);
 
         auth = FirebaseAuth.getInstance();
 
