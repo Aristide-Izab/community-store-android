@@ -204,9 +204,12 @@ public class StudentHomeActivity extends AppCompatActivity {
                 BottomNavThemeManager.apply(this, "market")
         );
 
-        navCommunity.setOnClickListener(v ->
-                BottomNavThemeManager.apply(this, "community")
-        );
+        // This correctly launches the student community board activity
+        navCommunity.setOnClickListener(v -> {
+            BottomNavThemeManager.apply(this, "community");
+            Intent intent = new Intent(StudentHomeActivity.this, StudentCommunityBoardActivity.class);
+            startActivity(intent);
+        });
 
         navMessages.setOnClickListener(v ->
                 BottomNavThemeManager.apply(this, "messages")

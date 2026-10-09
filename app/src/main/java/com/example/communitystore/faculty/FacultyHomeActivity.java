@@ -204,9 +204,12 @@ public class FacultyHomeActivity extends AppCompatActivity {
                 BottomNavThemeManager.apply(this, "market")
         );
 
-        navCommunity.setOnClickListener(v ->
-                BottomNavThemeManager.apply(this, "community")
-        );
+        // Connected Community bottom nav item to FacultyCommunityBoardActivity
+        navCommunity.setOnClickListener(v -> {
+            BottomNavThemeManager.apply(this, "community");
+            Intent intent = new Intent(FacultyHomeActivity.this, FacultyCommunityBoardActivity.class);
+            startActivity(intent);
+        });
 
         navMessages.setOnClickListener(v ->
                 BottomNavThemeManager.apply(this, "messages")
