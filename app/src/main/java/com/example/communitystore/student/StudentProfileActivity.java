@@ -53,16 +53,18 @@ public class StudentProfileActivity extends AppCompatActivity {
         loadProfile();
 
         BottomNavHelper.setup(this, "profile");
+        connectCommunity();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         BottomNavHelper.setup(this, "profile");
+        connectCommunity();
     }
 
     protected void openMyOrders() {
-        Toast.makeText(this, "My Orders", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, StudentMyOrdersActivity.class));
     }
 
     private void setupRoleLabel() {
@@ -135,5 +137,10 @@ public class StudentProfileActivity extends AppCompatActivity {
         if (value != null) {
             view.setText(String.valueOf(value));
         }
+    }
+
+    private void connectCommunity() {
+        findViewById(R.id.navCommunity).setOnClickListener(v ->
+                startActivity(new Intent(this, StudentCommunityBoardActivity.class)));
     }
 }

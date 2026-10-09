@@ -1,6 +1,7 @@
 package com.example.communitystore.faculty;
 
 import android.graphics.Color;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -52,6 +53,7 @@ public class FacultyMessagesActivity extends AppCompatActivity {
         findViewById(R.id.backButton).setOnClickListener(v -> finish());
 
         BottomNavHelper.setup(this, "messages");
+        connectCommunity();
         showTab(true);
     }
 
@@ -59,6 +61,7 @@ public class FacultyMessagesActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         BottomNavHelper.setup(this, "messages");
+        connectCommunity();
     }
 
     private void loadSampleData() {
@@ -86,5 +89,10 @@ public class FacultyMessagesActivity extends AppCompatActivity {
             tab.setBackground(ThemeUtils.rounded(this, Color.parseColor("#D9D9D9"), Color.TRANSPARENT, 19));
             tab.setTextColor(Color.parseColor("#222222"));
         }
+    }
+
+    private void connectCommunity() {
+        findViewById(R.id.navCommunity).setOnClickListener(v ->
+                startActivity(new Intent(this, FacultyCommunityBoardActivity.class)));
     }
 }
