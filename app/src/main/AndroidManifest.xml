@@ -45,6 +45,11 @@
             android:exported="false" />
 
 
+        <activity
+            android:name=".student.StudentCommunityBoardActivity"
+            android:exported="false" />
+
+
         <!-- FACULTY -->
 
         <activity
@@ -82,6 +87,14 @@
 
         <activity
             android:name=".faculty.FacultyLeaderboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyCommunityBoardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyAddPostActivity"
             android:exported="false" />
 
 
