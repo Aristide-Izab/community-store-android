@@ -3,6 +3,7 @@ package com.example.communitystore.faculty;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -14,7 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.communitystore.R;
+import com.example.communitystore.shared.utils.ThemeUtils;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import java.util.Calendar;
 
@@ -32,6 +35,7 @@ public class FacultyAddPostActivity extends AppCompatActivity {
         setContentView(R.layout.faculty_post_community);
 
         initializeViews();
+        applyAccountTheme();
         setupDropdown();
         setupListeners();
     }
@@ -51,6 +55,19 @@ public class FacultyAddPostActivity extends AppCompatActivity {
 
         btnPreview = findViewById(R.id.btnPreview);
         btnPublish = findViewById(R.id.btnPublish);
+    }
+
+    private void applyAccountTheme() {
+        int primary = ThemeUtils.primary(this);
+
+        findViewById(R.id.addPostRoot).setBackgroundColor(primary);
+
+        MaterialToolbar toolbar = findViewById(R.id.topAppBar);
+        toolbar.setBackgroundColor(primary);
+
+        btnPublish.setBackgroundTintList(ColorStateList.valueOf(primary));
+        btnPreview.setTextColor(primary);
+        btnPreview.setStrokeColor(ColorStateList.valueOf(primary));
     }
 
     private void setupDropdown() {

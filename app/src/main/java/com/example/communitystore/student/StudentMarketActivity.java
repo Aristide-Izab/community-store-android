@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.communitystore.R;
+import com.example.communitystore.core.access.BottomNavThemeManager;
 import com.example.communitystore.shared.cart.CartActivity;
 import com.example.communitystore.shared.product.ProductInfoActivity;
 import com.example.communitystore.shared.utils.BottomNavHelper;
@@ -70,15 +71,13 @@ public class StudentMarketActivity extends AppCompatActivity {
         setupActions();
 
         BottomNavHelper.setup(this, "market");
-        connectCommunity();
         refresh();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        BottomNavHelper.setup(this, "market");
-        connectCommunity();
+        BottomNavThemeManager.apply(this, "market");
     }
 
     private void loadCatalog() {
@@ -92,7 +91,7 @@ public class StudentMarketActivity extends AppCompatActivity {
                 "Printed summary notes for first-year calculus.", 4.0f, 10, 9,
                 R.drawable.textbook_java_1));
 
-        catalog.add(new StudentMarketProduct("t1", "Iphone 15", "Tech", 16000, "Like New",
+        catalog.add(new StudentMarketProduct("t1", "iPhone 15", "Tech", 16000, "Like New",
                 "Excellent condition. Comes with original accessories.", 4.5f, 95, 7,
                 R.drawable.iphone_15_image_1, R.drawable.iphone_15_image_2));
         catalog.add(new StudentMarketProduct("t2", "Volkano Headphones", "Tech", StudentMarketProduct.MESSAGE_FOR_PRICE, "New",
@@ -194,11 +193,8 @@ public class StudentMarketActivity extends AppCompatActivity {
     }
 
     private void setupActions() {
-        findViewById(R.id.profileHeaderButton).setOnClickListener(v -> {
-            Intent intent = new Intent(this, BottomNavHelper.profileFor(this));
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-        });
+        findViewById(R.id.profileHeaderButton).setOnClickListener(v ->
+                BottomNavHelper.open(this, BottomNavHelper.profileFor(this)));
 
         findViewById(R.id.cartButton).setOnClickListener(v ->
                 startActivity(new Intent(this, CartActivity.class)));
@@ -476,8 +472,4 @@ public class StudentMarketActivity extends AppCompatActivity {
         }
     }
 
-    private void connectCommunity() {
-        findViewById(R.id.navCommunity).setOnClickListener(v ->
-                startActivity(new Intent(this, StudentCommunityBoardActivity.class)));
-    }
 }

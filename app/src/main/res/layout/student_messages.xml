@@ -5,7 +5,7 @@
     android:id="@+id/messagesRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF4B2B">
+    android:background="#168FC1">
 
     <LinearLayout
         android:id="@+id/messagesHeader"

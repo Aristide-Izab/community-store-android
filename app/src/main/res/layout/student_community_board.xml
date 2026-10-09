@@ -356,6 +356,7 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
+            android:id="@+id/navHome"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -363,6 +364,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/navHomeIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:contentDescription="Home"
@@ -370,6 +372,7 @@
                 app:tint="#111827" />
 
             <TextView
+                android:id="@+id/navHomeLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -379,6 +382,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/navMarket"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -386,6 +390,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/navMarketIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:contentDescription="Market"
@@ -393,6 +398,7 @@
                 app:tint="#111827" />
 
             <TextView
+                android:id="@+id/navMarketLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -410,6 +416,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/navCommunityIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:contentDescription="Community"
@@ -417,6 +424,7 @@
                 app:tint="#1081B9" />
 
             <TextView
+                android:id="@+id/navCommunityLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -426,6 +434,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/navMessages"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -433,6 +442,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/navMessagesIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:contentDescription="Messages"
@@ -440,6 +450,7 @@
                 app:tint="#111827" />
 
             <TextView
+                android:id="@+id/navMessagesLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -449,6 +460,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/navProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -456,6 +468,7 @@
             android:orientation="vertical">
 
             <ImageView
+                android:id="@+id/navProfileIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:contentDescription="Profile"
@@ -463,6 +476,7 @@
                 app:tint="#111827" />
 
             <TextView
+                android:id="@+id/navProfileLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"

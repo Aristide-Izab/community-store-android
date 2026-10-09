@@ -107,15 +107,41 @@ public class ResidenceHomeActivity extends AppCompatActivity {
             return;
         }
 
-        selectedTab = tab;
+        String nextTag = tabTag(tab);
+        Fragment nextFragment = getSupportFragmentManager()
+                .findFragmentByTag(nextTag);
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(
-                        R.id.residenceFragmentContainer,
-                        createFragment(tab)
-                )
-                .commit();
+        if (nextFragment == null) {
+            nextFragment = createFragment(tab);
+        }
+
+        androidx.fragment.app.FragmentTransaction transaction =
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true);
+
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (fragment != nextFragment && fragment.isAdded()) {
+                transaction.hide(fragment);
+            }
+        }
+
+        if (nextFragment.isAdded()) {
+            transaction.show(nextFragment);
+        } else {
+            transaction.add(
+                    R.id.residenceFragmentContainer,
+                    nextFragment,
+                    nextTag
+            );
+        }
+
+        selectedTab = tab;
+        transaction.commit();
+    }
+
+    private String tabTag(int tab) {
+        return "residence_tab_" + tab;
     }
 
     private Fragment createFragment(

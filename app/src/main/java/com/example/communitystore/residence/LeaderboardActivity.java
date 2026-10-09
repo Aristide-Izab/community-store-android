@@ -68,7 +68,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         greeting.setText(
                 ResidenceUi.greeting()
-                        + " , "
+                        + ", "
                         + ResidenceUi.firstName(null)
         );
 
@@ -81,7 +81,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
             greeting.setText(
                     ResidenceUi.greeting()
-                            + " , "
+                            + ", "
                             + ResidenceUi.firstName(
                             profile.getString("displayName")
                     )

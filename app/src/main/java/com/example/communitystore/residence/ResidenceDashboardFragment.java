@@ -62,7 +62,7 @@ public class ResidenceDashboardFragment extends Fragment {
 
         greetingText.setText(
                 ResidenceUi.greeting()
-                        + " , "
+                        + ", "
                         + ResidenceUi.firstName(null)
         );
 
@@ -119,7 +119,7 @@ public class ResidenceDashboardFragment extends Fragment {
 
             greetingText.setText(
                     ResidenceUi.greeting()
-                            + " , "
+                            + ", "
                             + ResidenceUi.firstName(
                             profile.getString("displayName")
                     )

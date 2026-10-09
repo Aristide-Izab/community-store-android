@@ -49,6 +49,18 @@
             android:name=".student.StudentCommunityBoardActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".student.StudentMyOrdersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentOrderDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentReviewActivity"
+            android:exported="false" />
+
 
         <!-- FACULTY -->
 
@@ -97,6 +109,18 @@
             android:name=".faculty.FacultyAddPostActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".faculty.FacultyMyOrdersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyOrderDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyReviewActivity"
+            android:exported="false" />
+
 
         <!-- VENDOR -->
 
@@ -109,6 +133,14 @@
 
         <activity
             android:name=".residence.ResidenceHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".residence.AddProductActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".residence.LeaderboardActivity"
             android:exported="false" />
 
 

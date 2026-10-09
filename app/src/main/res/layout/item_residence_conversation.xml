@@ -50,7 +50,7 @@
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-light"
                 android:maxLines="1"
-                android:text="Hi your order ready for pickup"
+                android:text="Hi, your order is ready for pickup."
                 android:textColor="@color/residence_text"
                 android:textSize="16sp" />
 

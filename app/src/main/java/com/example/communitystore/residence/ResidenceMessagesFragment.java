@@ -19,7 +19,7 @@ public class ResidenceMessagesFragment extends Fragment {
 
     // dummy chats for now (name, message, unread, time)
     private static final String[][] SAMPLE_CHATS = {
-            {"Campus Eats", "Hi your order ready for pickup", "2", ""},
+            {"Campus Eats", "Hi, your order is ready for pickup.", "2", ""},
             {"Smith", "New Items available", "2", ""},
             {"Aristide", "Yes,its available", "", "Mon"}
     };

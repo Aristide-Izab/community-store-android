@@ -16,6 +16,8 @@ import androidx.cardview.widget.CardView;
 
 import com.example.communitystore.MainActivity;
 import com.example.communitystore.R;
+import com.example.communitystore.core.access.BottomNavThemeManager;
+import com.example.communitystore.shared.utils.BottomNavHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -54,6 +56,13 @@ public class FacultyCommunityBoardActivity extends AppCompatActivity {
 
         initializeViews();
         setupListeners();
+        BottomNavHelper.setup(this, "community");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BottomNavThemeManager.apply(this, "community");
     }
 
     private void initializeViews() {
@@ -111,7 +120,7 @@ public class FacultyCommunityBoardActivity extends AppCompatActivity {
             favoriteLibrary.setOnClickListener(v -> {
                 isLibraryStarred = !isLibraryStarred;
                 favoriteLibrary.setImageResource(isLibraryStarred ? R.drawable.star_filled : R.drawable.star);
-                Toast.makeText(this, isLibraryStarred ? "Added Library post to Interested" : "Removed from Interested", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, isLibraryStarred ? "Added to Interested posts posts" : "Removed from Interested posts", Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -119,7 +128,7 @@ public class FacultyCommunityBoardActivity extends AppCompatActivity {
             favoriteCafeteria.setOnClickListener(v -> {
                 isCafeteriaStarred = !isCafeteriaStarred;
                 favoriteCafeteria.setImageResource(isCafeteriaStarred ? R.drawable.star_filled : R.drawable.star);
-                Toast.makeText(this, isCafeteriaStarred ? "Added Cafeteria post to Interested" : "Removed from Interested", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, isCafeteriaStarred ? "Added to Interested posts posts" : "Removed from Interested posts", Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -127,7 +136,7 @@ public class FacultyCommunityBoardActivity extends AppCompatActivity {
             favoriteTutor.setOnClickListener(v -> {
                 isTutorStarred = !isTutorStarred;
                 favoriteTutor.setImageResource(isTutorStarred ? R.drawable.star_filled : R.drawable.star);
-                Toast.makeText(this, isTutorStarred ? "Added Tutor post to Interested" : "Removed from Interested", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, isTutorStarred ? "Added to Interested posts posts" : "Removed from Interested posts", Toast.LENGTH_SHORT).show();
             });
         }
     }
@@ -238,7 +247,7 @@ public class FacultyCommunityBoardActivity extends AppCompatActivity {
         favoriteButton.setOnClickListener(v -> {
             isStarred[0] = !isStarred[0];
             favoriteButton.setImageResource(isStarred[0] ? R.drawable.star_filled : R.drawable.star);
-            Toast.makeText(this, isStarred[0] ? "Added to Interested" : "Removed from Interested", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, isStarred[0] ? "Added to Interested posts" : "Removed from Interested posts", Toast.LENGTH_SHORT).show();
         });
         rightContainer.addView(favoriteButton);
 

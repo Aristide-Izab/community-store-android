@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.communitystore.R;
+import com.example.communitystore.core.access.BottomNavThemeManager;
 import com.example.communitystore.auth.LogoutActivity;
 import com.example.communitystore.core.access.UserRole;
 import com.example.communitystore.core.session.SessionManager;
@@ -53,14 +54,12 @@ public class StudentProfileActivity extends AppCompatActivity {
         loadProfile();
 
         BottomNavHelper.setup(this, "profile");
-        connectCommunity();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        BottomNavHelper.setup(this, "profile");
-        connectCommunity();
+        BottomNavThemeManager.apply(this, "profile");
     }
 
     protected void openMyOrders() {
@@ -139,8 +138,4 @@ public class StudentProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void connectCommunity() {
-        findViewById(R.id.navCommunity).setOnClickListener(v ->
-                startActivity(new Intent(this, StudentCommunityBoardActivity.class)));
-    }
 }

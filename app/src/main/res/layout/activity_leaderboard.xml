@@ -48,7 +48,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginEnd="20dp"
                 android:fontFamily="sans-serif-medium"
-                android:text="Good morning , Resident"
+                android:text="Good morning, Resident"
                 android:textColor="@color/residence_text"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="41dp"
                 android:fontFamily="sans-serif-light"
-                android:text="Keep engaging,earn points, BOOST sales"
+                android:text="Keep engaging, earn points, boost sales"
                 android:textColor="@color/residence_text"
                 android:textSize="14sp" />
 
@@ -117,7 +117,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="3dp"
                         android:fontFamily="sans-serif-light"
-                        android:text="next reward at 1500 points"
+                        android:text="Next reward at 1,500 points"
                         android:textColor="@color/residence_text"
                         android:textSize="13sp"
                         android:visibility="gone" />

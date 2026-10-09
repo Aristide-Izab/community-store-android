@@ -16,6 +16,8 @@ import androidx.core.view.ViewCompat;
 import com.example.communitystore.R;
 import com.example.communitystore.core.access.BottomNavThemeManager;
 import com.example.communitystore.core.access.QuickAccessThemeManager;
+import com.example.communitystore.core.access.UserRole;
+import com.example.communitystore.core.session.SessionManager;
 import com.example.communitystore.shared.product.ProductInfoActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,6 +26,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class StudentHomeActivity extends AppCompatActivity {
 
     private TextView greetingText;
+    private TextView roleText;
 
     private LinearLayout postListingButton;
     private LinearLayout newsButton;
@@ -56,6 +59,7 @@ public class StudentHomeActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         greetingText = findViewById(R.id.greetingText);
+        roleText = findViewById(R.id.roleText);
 
         postListingButton = findViewById(R.id.postListingButton);
         newsButton = findViewById(R.id.newsButton);
@@ -76,9 +80,9 @@ public class StudentHomeActivity extends AppCompatActivity {
         favouriteTutor = findViewById(R.id.favouriteTutor);
         favouriteTextbook = findViewById(R.id.favouriteTextbook);
 
+        applyRoleLabel();
         loadStudentName();
 
-        BottomNavThemeManager.apply(this, "home");
         QuickAccessThemeManager.apply(this, "post");
 
         setupQuickAccess();
@@ -90,7 +94,7 @@ public class StudentHomeActivity extends AppCompatActivity {
     private void setupProducts() {
         productIphone.setOnClickListener(v ->
                 openProduct(
-                        "Iphone 15",
+                        "iPhone 15",
                         "R16,000",
                         "Excellent condition. Comes with original accessories.",
                         R.drawable.iphone_15_image_1,
@@ -200,29 +204,38 @@ public class StudentHomeActivity extends AppCompatActivity {
         BottomNavHelper.setup(this, "home");
 
         findViewById(R.id.profileHeaderButton).setOnClickListener(v ->
-                startActivity(new Intent(this, BottomNavHelper.profileFor(this))));
-
-        navCommunity.setOnClickListener(v -> {
-            BottomNavThemeManager.apply(this, "community");
-            Intent intent = new Intent(StudentHomeActivity.this, StudentCommunityBoardActivity.class);
-            startActivity(intent);
-        });
+                BottomNavHelper.open(this, BottomNavHelper.profileFor(this)));
 
         findViewById(R.id.viewRewardsButton).setOnClickListener(v ->
-                startActivity(new Intent(this, StudentLeaderboardActivity.class)));
+                BottomNavHelper.open(this, StudentLeaderboardActivity.class));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        BottomNavHelper.setup(this, "home");
+        BottomNavThemeManager.apply(this, "home");
+    }
+
+    private void applyRoleLabel() {
+        roleText.setText(getRoleDisplayName());
+    }
+
+    private String getRoleDisplayName() {
+        UserRole role = new SessionManager(this).getUserRole();
+
+        if (role == null) {
+            role = UserRole.STUDENT;
+        }
+
+        String value = role.getValue();
+        return value.substring(0, 1).toUpperCase() + value.substring(1);
     }
 
     private void loadStudentName() {
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null) {
-            greetingText.setText("Good morning, Student");
+            greetingText.setText("Good morning, " + getRoleDisplayName());
             return;
         }
 
@@ -237,13 +250,13 @@ public class StudentHomeActivity extends AppCompatActivity {
                     }
 
                     if (name == null || name.trim().isEmpty()) {
-                        name = "Student";
+                        name = getRoleDisplayName();
                     }
 
                     greetingText.setText("Good morning, " + name);
                 })
                 .addOnFailureListener(e ->
-                        greetingText.setText("Good morning, Student")
+                        greetingText.setText("Good morning, " + getRoleDisplayName())
                 );
     }
 }

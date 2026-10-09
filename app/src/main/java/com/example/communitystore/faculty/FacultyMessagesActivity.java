@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.communitystore.R;
+import com.example.communitystore.core.access.BottomNavThemeManager;
 import com.example.communitystore.shared.utils.BottomNavHelper;
 import com.example.communitystore.shared.utils.ThemeUtils;
 
@@ -53,19 +54,17 @@ public class FacultyMessagesActivity extends AppCompatActivity {
         findViewById(R.id.backButton).setOnClickListener(v -> finish());
 
         BottomNavHelper.setup(this, "messages");
-        connectCommunity();
         showTab(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        BottomNavHelper.setup(this, "messages");
-        connectCommunity();
+        BottomNavThemeManager.apply(this, "messages");
     }
 
     private void loadSampleData() {
-        chats.add(new FacultyChatPreview("Campus Eats", "Hi your order ready for pickup", "10:42", 1));
+        chats.add(new FacultyChatPreview("Campus Eats", "Hi, your order is ready for pickup.", "10:42", 1));
         chats.add(new FacultyChatPreview("Smith", "New items available", "09:15", 1));
         chats.add(new FacultyChatPreview("Aristide", "Yes, it's available", "Mon", 0));
 
@@ -91,8 +90,4 @@ public class FacultyMessagesActivity extends AppCompatActivity {
         }
     }
 
-    private void connectCommunity() {
-        findViewById(R.id.navCommunity).setOnClickListener(v ->
-                startActivity(new Intent(this, FacultyCommunityBoardActivity.class)));
-    }
 }
