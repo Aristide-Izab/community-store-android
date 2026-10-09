@@ -1,4 +1,4 @@
-package com.example.communitystore.shared.rewards;
+package com.example.communitystore.faculty;
 
 import android.os.Bundle;
 import android.widget.TextView;
@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class LeaderboardActivity extends AppCompatActivity {
+public class FacultyLeaderboardActivity extends AppCompatActivity {
 
-    private final List<RewardItem> rewards = new ArrayList<>();
-    private final List<RewardItem> milestones = new ArrayList<>();
+    private final List<FacultyRewardItem> rewards = new ArrayList<>();
+    private final List<FacultyRewardItem> milestones = new ArrayList<>();
 
     private int userPoints = 1250;
     private boolean showingRewards = true;
@@ -34,12 +34,12 @@ public class LeaderboardActivity extends AppCompatActivity {
     private TextView nextRewardText;
     private TextView tabRewards;
     private TextView tabMilestones;
-    private RewardAdapter adapter;
+    private FacultyRewardAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_leaderboard);
+        setContentView(R.layout.faculty_leaderboard);
 
         findViewById(R.id.leaderboardRoot).setBackgroundColor(ThemeUtils.primary(this));
 
@@ -55,7 +55,7 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         loadCatalog();
 
-        adapter = new RewardAdapter(item ->
+        adapter = new FacultyRewardAdapter(item ->
                 Toast.makeText(this, "Redeeming " + item.title, Toast.LENGTH_SHORT).show());
 
         RecyclerView recycler = findViewById(R.id.rewardRecycler);
@@ -72,13 +72,13 @@ public class LeaderboardActivity extends AppCompatActivity {
     }
 
     private void loadCatalog() {
-        rewards.add(new RewardItem("R50 Voucher", 500));
-        rewards.add(new RewardItem("Free Delivery", 1000));
-        rewards.add(new RewardItem("R100 Voucher", 1500));
+        rewards.add(new FacultyRewardItem("R50 Voucher", 500));
+        rewards.add(new FacultyRewardItem("Free Delivery", 1000));
+        rewards.add(new FacultyRewardItem("R100 Voucher", 1500));
 
-        milestones.add(new RewardItem("Bronze Tier", 500));
-        milestones.add(new RewardItem("Silver Tier", 1000));
-        milestones.add(new RewardItem("Gold Tier", 1500));
+        milestones.add(new FacultyRewardItem("Bronze Tier", 500));
+        milestones.add(new FacultyRewardItem("Silver Tier", 1000));
+        milestones.add(new FacultyRewardItem("Gold Tier", 1500));
     }
 
     private String defaultName() {
@@ -137,13 +137,13 @@ public class LeaderboardActivity extends AppCompatActivity {
 
         adapter.submit(
                 showingRewards ? rewards : milestones,
-                showingRewards ? RewardAdapter.MODE_REWARDS : RewardAdapter.MODE_MILESTONES,
+                showingRewards ? FacultyRewardAdapter.MODE_REWARDS : FacultyRewardAdapter.MODE_MILESTONES,
                 userPoints
         );
     }
 
     private void updateNextRewardText() {
-        for (RewardItem reward : rewards) {
+        for (FacultyRewardItem reward : rewards) {
             if (userPoints < reward.pointsRequired) {
                 nextRewardText.setText("Next reward at "
                         + NumberFormat.getIntegerInstance(Locale.US).format(reward.pointsRequired)

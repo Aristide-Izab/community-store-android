@@ -14,15 +14,10 @@ import com.example.communitystore.faculty.FacultyHomeActivity;
 import com.example.communitystore.faculty.FacultyMarketActivity;
 import com.example.communitystore.faculty.FacultyMessagesActivity;
 import com.example.communitystore.faculty.FacultyProfileActivity;
-import com.example.communitystore.residence.ResidenceHomeActivity;
-import com.example.communitystore.shared.market.MarketActivity;
-import com.example.communitystore.shared.messages.MessagesActivity;
-import com.example.communitystore.shared.profile.ProfileActivity;
 import com.example.communitystore.student.StudentHomeActivity;
 import com.example.communitystore.student.StudentMarketActivity;
 import com.example.communitystore.student.StudentMessagesActivity;
 import com.example.communitystore.student.StudentProfileActivity;
-import com.example.communitystore.vendor.VendorHomeActivity;
 
 public final class BottomNavHelper {
 
@@ -34,75 +29,41 @@ public final class BottomNavHelper {
 
         bind(activity, R.id.navHome, "home", activeTab, homeFor(activity));
         bind(activity, R.id.navMarket, "market", activeTab, marketFor(activity));
-        bind(activity, R.id.navCommunity, "community", activeTab, communityFor(activity));
+        bind(activity, R.id.navCommunity, "community", activeTab, null);
         bind(activity, R.id.navMessages, "messages", activeTab, messagesFor(activity));
         bind(activity, R.id.navProfile, "profile", activeTab, profileFor(activity));
     }
 
     public static Class<?> marketFor(Context context) {
-        UserRole role = role(context);
-
-        if (role == UserRole.STUDENT) {
-            return StudentMarketActivity.class;
-        }
-
-        if (role == UserRole.FACULTY) {
+        if (role(context) == UserRole.FACULTY) {
             return FacultyMarketActivity.class;
         }
 
-        return MarketActivity.class;
+        return StudentMarketActivity.class;
     }
 
     public static Class<?> messagesFor(Context context) {
-        UserRole role = role(context);
-
-        if (role == UserRole.STUDENT) {
-            return StudentMessagesActivity.class;
-        }
-
-        if (role == UserRole.FACULTY) {
+        if (role(context) == UserRole.FACULTY) {
             return FacultyMessagesActivity.class;
         }
 
-        return MessagesActivity.class;
+        return StudentMessagesActivity.class;
     }
 
     public static Class<?> profileFor(Context context) {
-        UserRole role = role(context);
-
-        if (role == UserRole.STUDENT) {
-            return StudentProfileActivity.class;
-        }
-
-        if (role == UserRole.FACULTY) {
+        if (role(context) == UserRole.FACULTY) {
             return FacultyProfileActivity.class;
         }
 
-        return ProfileActivity.class;
-    }
-
-    public static Class<?> communityFor(Context context) {
-        return null;
+        return StudentProfileActivity.class;
     }
 
     public static Class<?> homeFor(Context context) {
-        UserRole role = role(context);
-
-        if (role == null) {
-            return StudentHomeActivity.class;
+        if (role(context) == UserRole.FACULTY) {
+            return FacultyHomeActivity.class;
         }
 
-        switch (role) {
-            case FACULTY:
-                return FacultyHomeActivity.class;
-            case VENDOR:
-                return VendorHomeActivity.class;
-            case RESIDENCE:
-                return ResidenceHomeActivity.class;
-            case STUDENT:
-            default:
-                return StudentHomeActivity.class;
-        }
+        return StudentHomeActivity.class;
     }
 
     private static UserRole role(Context context) {

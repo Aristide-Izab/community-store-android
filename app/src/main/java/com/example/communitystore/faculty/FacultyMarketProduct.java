@@ -1,6 +1,6 @@
-package com.example.communitystore.shared.market;
+package com.example.communitystore.faculty;
 
-public class MarketProduct {
+public class FacultyMarketProduct {
 
     public static final double MESSAGE_FOR_PRICE = -1;
 
@@ -15,7 +15,7 @@ public class MarketProduct {
     public final int postedOrder;
     public final int[] images;
 
-    public MarketProduct(
+    public FacultyMarketProduct(
             String id,
             String title,
             String category,

@@ -1,11 +1,11 @@
-package com.example.communitystore.shared.rewards;
+package com.example.communitystore.student;
 
-public class RewardItem {
+public class StudentRewardItem {
 
     public final String title;
     public final int pointsRequired;
 
-    public RewardItem(String title, int pointsRequired) {
+    public StudentRewardItem(String title, int pointsRequired) {
         this.title = title;
         this.pointsRequired = pointsRequired;
     }
