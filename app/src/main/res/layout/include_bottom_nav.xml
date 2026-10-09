@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Shared bottom navigation bar. Each tab has a container, icon ID, and label ID.
+     BottomNavHelper.java uses these IDs to highlight the current tab. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -17,12 +19,16 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <!-- Home tab icon; Java applies the active/inactive tint. -->
         <ImageView
+            android:id="@+id/navHomeIcon"
             android:layout_width="27dp"
             android:layout_height="27dp"
             android:src="@drawable/ic_nav_home" />
 
+        <!-- Home tab label; Java changes its colour and weight when active. -->
         <TextView
+            android:id="@+id/navHomeLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
@@ -39,12 +45,16 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <!-- Market tab icon; Java applies the active/inactive tint. -->
         <ImageView
+            android:id="@+id/navMarketIcon"
             android:layout_width="27dp"
             android:layout_height="27dp"
             android:src="@drawable/ic_nav_market" />
 
+        <!-- Market tab label; Java changes its colour and weight when active. -->
         <TextView
+            android:id="@+id/navMarketLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
@@ -61,12 +71,16 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <!-- Community tab icon; Java applies the active/inactive tint. -->
         <ImageView
+            android:id="@+id/navCommunityIcon"
             android:layout_width="27dp"
             android:layout_height="27dp"
             android:src="@drawable/ic_nav_community" />
 
+        <!-- Community tab label; Java changes its colour and weight when active. -->
         <TextView
+            android:id="@+id/navCommunityLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
@@ -83,12 +97,16 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <!-- Messages tab icon; Java applies the active/inactive tint. -->
         <ImageView
+            android:id="@+id/navMessagesIcon"
             android:layout_width="27dp"
             android:layout_height="27dp"
             android:src="@drawable/ic_nav_messages" />
 
+        <!-- Messages tab label; Java changes its colour and weight when active. -->
         <TextView
+            android:id="@+id/navMessagesLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
@@ -105,12 +123,16 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <!-- Profile tab icon; Java applies the active/inactive tint. -->
         <ImageView
+            android:id="@+id/navProfileIcon"
             android:layout_width="27dp"
             android:layout_height="27dp"
             android:src="@drawable/ic_profile_outline" />
 
+        <!-- Profile tab label; Java changes its colour and weight when active. -->
         <TextView
+            android:id="@+id/navProfileLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"

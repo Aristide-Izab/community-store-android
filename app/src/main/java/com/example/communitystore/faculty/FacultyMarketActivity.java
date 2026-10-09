@@ -70,6 +70,7 @@ public class FacultyMarketActivity extends AppCompatActivity {
         setupActions();
 
         BottomNavHelper.setup(this, "market");
+        connectCommunity();
         refresh();
     }
 
@@ -77,6 +78,7 @@ public class FacultyMarketActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         BottomNavHelper.setup(this, "market");
+        connectCommunity();
     }
 
     private void loadCatalog() {
@@ -118,7 +120,7 @@ public class FacultyMarketActivity extends AppCompatActivity {
     }
 
     protected void openMyOrders() {
-        Toast.makeText(this, "My Orders", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, FacultyMyOrdersActivity.class));
     }
 
     private void setupRecycler() {
@@ -472,5 +474,10 @@ public class FacultyMarketActivity extends AppCompatActivity {
         if (parent != null) {
             parent.setBackgroundColor(Color.TRANSPARENT);
         }
+    }
+
+    private void connectCommunity() {
+        findViewById(R.id.navCommunity).setOnClickListener(v ->
+                startActivity(new Intent(this, FacultyCommunityBoardActivity.class)));
     }
 }
