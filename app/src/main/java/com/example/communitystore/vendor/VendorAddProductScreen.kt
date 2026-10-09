@@ -1,5 +1,8 @@
 package com.example.communitystore.vendor
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -21,6 +25,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.communitystore.R
 
 @Composable
@@ -37,6 +42,15 @@ fun VendorAddProductScreen(
     var categoryText by remember { mutableStateOf("") }
     var conditionText by remember { mutableStateOf("") }
     var locationText by remember { mutableStateOf("") }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            imageUri = uri
+        }
+    }
 
     Box(
         modifier = modifier
@@ -89,39 +103,54 @@ fun VendorAddProductScreen(
                         .padding(horizontal = 20.dp, vertical = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
+                    Text(
+                        text = "Upload Product Image (.jpeg, .png, .webp)",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.DarkGray
+                    )
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Box(
                             modifier = Modifier
-                                .width(90.dp)
+                                .width(100.dp)
                                 .height(120.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFFE2E8F0)),
+                                .background(Color(0xFFE2E8F0))
+                                .clickable { imagePickerLauncher.launch("image/*") },
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_plus),
-                                contentDescription = null,
-                                tint = Color(0xFF64748B),
-                                modifier = Modifier.size(32.dp)
-                            )
+                            if (imageUri != null) {
+                                AsyncImage(
+                                    model = imageUri,
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_plus),
+                                        contentDescription = null,
+                                        tint = Color(0xFF64748B),
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text(
+                                        text = "Add Image",
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF64748B),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
                         }
-                        Box(
-                            modifier = Modifier
-                                .width(90.dp)
-                                .height(120.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFFE2E8F0))
-                        )
-                        Box(
-                            modifier = Modifier
-                                .width(90.dp)
-                                .height(120.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFFE2E8F0))
-                        )
                     }
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -137,7 +166,7 @@ fun VendorAddProductScreen(
                         label = stringResource(id = R.string.category),
                         value = categoryText,
                         placeholder = stringResource(id = R.string.select_category),
-                        onDropdownClick = {}
+                        onDropdownClick = { categoryText = "Textbooks & Notes" }
                     )
 
                     ProductFormField(
@@ -152,7 +181,7 @@ fun VendorAddProductScreen(
                         label = stringResource(id = R.string.condition),
                         value = conditionText,
                         placeholder = stringResource(id = R.string.select_condition),
-                        onDropdownClick = {}
+                        onDropdownClick = { conditionText = "New" }
                     )
 
                     ProductFormMultilineField(
@@ -162,11 +191,11 @@ fun VendorAddProductScreen(
                         placeholder = stringResource(id = R.string.description_hint)
                     )
 
-                    ProductDropdownField(
+                    ProductFormField(
                         label = stringResource(id = R.string.location),
                         value = locationText,
-                        placeholder = stringResource(id = R.string.location_hint),
-                        onDropdownClick = {}
+                        onValueChange = { locationText = it },
+                        placeholder = stringResource(id = R.string.location_hint)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -193,7 +222,21 @@ fun VendorAddProductScreen(
                         }
 
                         Button(
-                            onClick = onPublishClick,
+                            onClick = {
+                                if (titleText.isNotBlank()) {
+                                    VendorProductRepository.addProduct(
+                                        ProductItem(
+                                            title = titleText,
+                                            price = if (priceText.startsWith("R") || priceText.isEmpty()) priceText else "R$priceText",
+                                            category = if (categoryText.isEmpty()) "Textbooks" else categoryText,
+                                            condition = if (conditionText.isEmpty()) "New" else conditionText,
+                                            description = descriptionText,
+                                            location = if (locationText.isEmpty()) "Campus" else locationText
+                                        )
+                                    )
+                                }
+                                onPublishClick()
+                            },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(50.dp),

@@ -247,55 +247,6 @@ fun VendorDashboardScreen(
                 }
             }
         }
-
-        Surface(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .navigationBarsPadding(),
-            color = Color.White,
-            tonalElevation = 8.dp,
-            shadowElevation = 8.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BottomNavItem(
-                    icon = R.drawable.ic_home,
-                    label = stringResource(id = R.string.nav_home),
-                    selected = true,
-                    selectedColor = primaryOrange
-                )
-                BottomNavItem(
-                    icon = R.drawable.ic_listing,
-                    label = stringResource(id = R.string.nav_listing),
-                    selected = false,
-                    selectedColor = primaryOrange
-                )
-                BottomNavItem(
-                    icon = R.drawable.ic_sales,
-                    label = stringResource(id = R.string.nav_sales),
-                    selected = false,
-                    selectedColor = primaryOrange
-                )
-                BottomNavItem(
-                    icon = R.drawable.ic_messages,
-                    label = stringResource(id = R.string.nav_messages),
-                    selected = false,
-                    selectedColor = primaryOrange
-                )
-                BottomNavItem(
-                    icon = R.drawable.ic_profile,
-                    label = stringResource(id = R.string.nav_profile),
-                    selected = false,
-                    selectedColor = primaryOrange
-                )
-            }
-        }
     }
 }
 

@@ -209,51 +209,6 @@ fun UserProfileScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = Color.White,
-            shadowElevation = 8.dp
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp, horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                BottomNavItem(
-                    icon = R.drawable.ic_home,
-                    label = stringResource(id = R.string.nav_home),
-                    selected = false,
-                    selectedColor = primaryOrange
-                )
-                BottomNavItem(
-                    icon = R.drawable.ic_listing,
-                    label = stringResource(id = R.string.nav_market),
-                    selected = false,
-                    selectedColor = primaryOrange
-                )
-                BottomNavItem(
-                    icon = R.drawable.ic_profile,
-                    label = stringResource(id = R.string.nav_community),
-                    selected = false,
-                    selectedColor = primaryOrange
-                )
-                BottomNavItem(
-                    icon = R.drawable.ic_messages,
-                    label = stringResource(id = R.string.nav_messages),
-                    selected = false,
-                    selectedColor = primaryOrange
-                )
-                BottomNavItem(
-                    icon = R.drawable.ic_profile,
-                    label = stringResource(id = R.string.nav_profile),
-                    selected = true,
-                    selectedColor = primaryOrange
-                )
-            }
-        }
     }
 }
 

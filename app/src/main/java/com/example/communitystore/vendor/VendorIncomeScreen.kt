@@ -272,51 +272,6 @@ fun VendorIncomeScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
                     }
-
-                    Surface(
-                        modifier = Modifier.fillMaxWidth(),
-                        color = Color.White,
-                        shadowElevation = 8.dp
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp, horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            PrivateBottomNavItem(
-                                icon = R.drawable.ic_home,
-                                label = stringResource(id = R.string.nav_home),
-                                selected = false,
-                                selectedColor = primaryOrange
-                            )
-                            PrivateBottomNavItem(
-                                icon = R.drawable.ic_listing,
-                                label = stringResource(id = R.string.nav_listing),
-                                selected = false,
-                                selectedColor = primaryOrange
-                            )
-                            PrivateBottomNavItem(
-                                icon = R.drawable.ic_sales,
-                                label = stringResource(id = R.string.nav_sales),
-                                selected = true,
-                                selectedColor = primaryOrange
-                            )
-                            PrivateBottomNavItem(
-                                icon = R.drawable.ic_messages,
-                                label = stringResource(id = R.string.nav_messages),
-                                selected = false,
-                                selectedColor = primaryOrange
-                            )
-                            PrivateBottomNavItem(
-                                icon = R.drawable.ic_profile,
-                                label = stringResource(id = R.string.nav_profile),
-                                selected = false,
-                                selectedColor = primaryOrange
-                            )
-                        }
-                    }
                 }
             }
         }
