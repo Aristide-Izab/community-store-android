@@ -22,11 +22,42 @@
             android:windowSoftInputMode="adjustResize" />
 
 
+
+        <activity
+            android:name=".shared.market.MarketActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.messages.MessagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.profile.ProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.rewards.LeaderboardActivity"
+            android:exported="false" />
+
+
         <!-- STUDENT -->
 
         <activity
             android:name=".student.StudentHomeActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".student.StudentMarketActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentMessagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentProfileActivity"
+            android:exported="false" />
+
 
 
         <!-- FACULTY -->
@@ -51,6 +82,19 @@
             android:name=".shared.checkout.CheckoutActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".faculty.FacultyMarketActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyMessagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyProfileActivity"
+            android:exported="false" />
+
 
         <!-- VENDOR -->
 
