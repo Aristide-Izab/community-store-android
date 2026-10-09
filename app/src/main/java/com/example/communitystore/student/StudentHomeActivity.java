@@ -202,6 +202,12 @@ public class StudentHomeActivity extends AppCompatActivity {
         findViewById(R.id.profileHeaderButton).setOnClickListener(v ->
                 startActivity(new Intent(this, BottomNavHelper.profileFor(this))));
 
+        navCommunity.setOnClickListener(v -> {
+            BottomNavThemeManager.apply(this, "community");
+            Intent intent = new Intent(StudentHomeActivity.this, StudentCommunityBoardActivity.class);
+            startActivity(intent);
+        });
+
         findViewById(R.id.viewRewardsButton).setOnClickListener(v ->
                 startActivity(new Intent(this, StudentLeaderboardActivity.class)));
     }
