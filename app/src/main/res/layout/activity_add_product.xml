@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/addProductRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/residence_purple"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/backButton"
+            style="@style/ResidenceBackButton" />
+
+        <TextView
+            style="@style/ResidenceHeaderTitle"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:text="Add New Product" />
+
+    </LinearLayout>
+
+    <!-- Sheet -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_residence_sheet"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="27dp"
+            android:paddingEnd="26dp"
+            android:paddingBottom="27dp">
+
+            <!-- Photo slots -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="147dp"
+                android:layout_marginStart="14dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginEnd="4dp"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:id="@+id/photoSlot1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_residence_photo_slot"
+                    android:clickable="true"
+                    android:contentDescription="Add photo 1"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/photoImage1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@null"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/photoPlus1"
+                        android:layout_width="29dp"
+                        android:layout_height="37dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_add_photo_plus" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/photoSlot2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_residence_photo_slot"
+                    android:clickable="true"
+                    android:contentDescription="Add photo 2"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/photoImage2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@null"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/photoPlus2"
+                        android:layout_width="29dp"
+                        android:layout_height="37dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_add_photo_plus"
+                        android:visibility="gone" />
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:id="@+id/photoSlot3"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="32dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_residence_photo_slot"
+                    android:clickable="true"
+                    android:contentDescription="Add photo 3"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/photoImage3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@null"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/photoPlus3"
+                        android:layout_width="29dp"
+                        android:layout_height="37dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_add_photo_plus"
+                        android:visibility="gone" />
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/ResidenceFieldLabel"
+                android:layout_marginTop="40dp"
+                android:text="Product Title" />
+
+            <EditText
+                android:id="@+id/titleInput"
+                style="@style/ResidenceFieldInput"
+                android:hint=" eg. Phone 13 136GB"
+                android:importantForAutofill="no"
+                android:inputType="textCapSentences"
+                android:maxLength="80" />
+
+            <TextView
+                style="@style/ResidenceFieldLabel"
+                android:text="Category" />
+
+            <TextView
+                android:id="@+id/categoryInput"
+                style="@style/ResidenceFieldDropdown"
+                android:hint="Select category" />
+
+            <TextView
+                style="@style/ResidenceFieldLabel"
+                android:text="Price" />
+
+            <EditText
+                android:id="@+id/priceInput"
+                style="@style/ResidenceFieldInput"
+                android:hint="R0.00"
+                android:importantForAutofill="no"
+                android:inputType="numberDecimal"
+                android:paddingStart="14dp" />
+
+            <TextView
+                style="@style/ResidenceFieldLabel"
+                android:text="Condition" />
+
+            <TextView
+                android:id="@+id/conditionInput"
+                style="@style/ResidenceFieldDropdown"
+                android:hint="Select condition" />
+
+            <TextView
+                style="@style/ResidenceFieldLabel"
+                android:text="Description" />
+
+            <EditText
+                android:id="@+id/descriptionInput"
+                style="@style/ResidenceFieldInput"
+                android:layout_height="wrap_content"
+                android:minHeight="40dp"
+                android:hint="Tell buyers about the product"
+                android:importantForAutofill="no"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLength="500"
+                android:paddingStart="18dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp" />
+
+            <TextView
+                style="@style/ResidenceFieldLabel"
+                android:text="Location" />
+
+            <AutoCompleteTextView
+                android:id="@+id/locationInput"
+                style="@style/ResidenceFieldDropdown"
+                android:completionThreshold="1"
+                android:hint="eg. Cape Town"
+                android:importantForAutofill="no"
+                android:inputType="textCapWords"
+                android:paddingStart="18dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:layout_marginTop="40dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/previewButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_residence_button"
+                    android:fontFamily="sans-serif-medium"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    android:text="Preview"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@null" />
+
+                <Button
+                    android:id="@+id/publishButton"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="36dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_residence_button"
+                    android:fontFamily="sans-serif-medium"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    android:text="Publish"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@null" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

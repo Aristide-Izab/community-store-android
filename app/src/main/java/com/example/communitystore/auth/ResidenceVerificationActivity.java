@@ -49,6 +49,9 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
 
     private Uri selectedPdfUri;
 
+    // testing only, set to false when done
+    private static final boolean AUTO_APPROVE = true;
+
     private final ActivityResultLauncher<String[]>
             documentLauncher =
             registerForActivityResult(
@@ -266,6 +269,18 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
 
                 .addOnFailureListener(e -> {
 
+                    if (AUTO_APPROVE) {
+
+                        saveResidenceApplication(
+                                user,
+                                residenceName,
+                                wardenEmail,
+                                ""
+                        );
+
+                        return;
+                    }
+
                     submitButton.setEnabled(true);
 
                     submitButton.setText(
@@ -325,12 +340,12 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
 
         data.put(
                 "verificationStatus",
-                "pending"
+                AUTO_APPROVE ? "approved" : "pending"
         );
 
         data.put(
                 "verified",
-                false
+                AUTO_APPROVE
         );
 
         data.put(
@@ -341,6 +356,28 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
         db.collection("residences")
                 .document(user.getUid())
                 .set(data)
+
+                .continueWithTask(task -> {
+
+                    if (!task.isSuccessful() || !AUTO_APPROVE) {
+                        return task;
+                    }
+
+                    Map<String, Object> userData =
+                            new HashMap<>();
+
+                    userData.put("displayName", data.get("displayName"));
+                    userData.put("email", data.get("email"));
+                    userData.put("profileImageUrl", "");
+                    userData.put("role", "residence");
+                    userData.put("verified", true);
+                    userData.put("createdAt", FieldValue.serverTimestamp());
+                    userData.put("verifiedAt", FieldValue.serverTimestamp());
+
+                    return db.collection("users")
+                            .document(user.getUid())
+                            .set(userData);
+                })
 
                 .addOnSuccessListener(unused -> {
 
@@ -383,7 +420,9 @@ public class ResidenceVerificationActivity extends AppCompatActivity {
                         "Application Submitted!"
                 )
                 .setMessage(
-                        "Your residence administrator application has been submitted. A residence team member will review your role within 1–2 working days."
+                        AUTO_APPROVE
+                                ? "Your account has been approved. You can log in now."
+                                : "Your residence administrator application has been submitted. A residence team member will review your role within 1–2 working days."
                 )
                 .setCancelable(false)
                 .setPositiveButton(

@@ -1,6 +1,7 @@
 package com.example.communitystore.auth;
 
 import com.example.communitystore.R;
+import com.example.communitystore.BuildConfig;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -474,7 +475,7 @@ public class VerifyStudentActivity extends AppCompatActivity {
                 ActionCodeSettings.newBuilder()
 
                         .setUrl(
-                                "https://community-store-de45f.firebaseapp.com"
+                                BuildConfig.FIREBASE_AUTH_URL
                         )
 
                         .setHandleCodeInApp(true)

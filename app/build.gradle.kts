@@ -3,6 +3,9 @@ plugins {
     id("com.google.gms.google-services")
 }
 
+// firebase auth domain
+val firebaseAuthHost = "community-store-android.firebaseapp.com"
+
 android {
     namespace = "com.example.communitystore"
 
@@ -18,6 +21,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders["firebaseAuthHost"] = firebaseAuthHost
+
+        buildConfigField(
+            "String",
+            "FIREBASE_AUTH_URL",
+            "\"https://$firebaseAuthHost\""
+        )
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

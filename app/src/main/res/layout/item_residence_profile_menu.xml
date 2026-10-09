@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/menuRow"
+        android:layout_width="match_parent"
+        android:layout_height="59dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="28dp"
+        android:paddingEnd="39dp">
+
+        <ImageView
+            android:layout_width="39dp"
+            android:layout_height="33dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_avatar_background" />
+
+        <TextView
+            android:id="@+id/menuLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="Settings"
+            android:textColor="@color/residence_text"
+            android:textSize="15sp" />
+
+        <ImageView
+            android:layout_width="9.33dp"
+            android:layout_height="18.67dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_chevron_right" />
+
+    </LinearLayout>
+
+    <View
+        style="@style/ResidenceDivider"
+        android:layout_marginStart="21dp"
+        android:layout_marginEnd="16dp" />
+
+</LinearLayout>

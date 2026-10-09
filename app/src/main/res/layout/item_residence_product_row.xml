@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="29dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="25dp"
+        android:paddingBottom="16dp">
+
+        <View
+            android:id="@+id/productThumbnail"
+            android:layout_width="45dp"
+            android:layout_height="46dp"
+            android:background="@color/residence_placeholder" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/productTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="Textbook"
+                android:textColor="@color/residence_text"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/productPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="7dp"
+                android:text="R175"
+                android:textColor="@color/residence_text"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/productStatus"
+            android:layout_width="98dp"
+            android:layout_height="21dp"
+            android:background="@drawable/bg_residence_status_delivered"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Delivered"
+            android:textColor="@color/residence_surface"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <View
+        style="@style/ResidenceDivider"
+        android:layout_marginStart="21dp"
+        android:layout_marginEnd="13dp" />
+
+</LinearLayout>

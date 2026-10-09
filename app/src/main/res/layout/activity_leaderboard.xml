@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/leaderboardRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/residence_purple"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/backButton"
+            style="@style/ResidenceBackButton" />
+
+        <TextView
+            style="@style/ResidenceHeaderTitle"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:text="Leaderboard" />
+
+    </LinearLayout>
+
+    <!-- Sheet -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_residence_sheet"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:id="@+id/leaderboardGreeting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="41dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Good morning , Resident"
+                android:textColor="@color/residence_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="41dp"
+                android:fontFamily="sans-serif-light"
+                android:text="Keep engaging,earn points, BOOST sales"
+                android:textColor="@color/residence_text"
+                android:textSize="14sp" />
+
+            <!-- Score card -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="105dp"
+                android:layout_marginStart="21dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="21dp"
+                android:background="@drawable/bg_residence_card_tint">
+
+                <ImageView
+                    android:id="@+id/scoreDiamond"
+                    android:layout_width="54dp"
+                    android:layout_height="53dp"
+                    android:layout_marginStart="35dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_diamond"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="12dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/scoreDiamond"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/scoreTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Performance Score"
+                        android:textColor="@color/residence_text"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/scoreValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="1,250"
+                        android:textColor="@color/residence_text"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/scoreCaption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="3dp"
+                        android:fontFamily="sans-serif-light"
+                        android:text="next reward at 1500 points"
+                        android:textColor="@color/residence_text"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Segmented control -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="51dp"
+                android:layout_marginStart="27dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/bg_residence_segment_track"
+                android:orientation="horizontal"
+                android:padding="3.5dp">
+
+                <TextView
+                    android:id="@+id/salesRankTab"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_residence_segment"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="Sales Rank"
+                    android:textColor="@color/residence_text"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/merchantPerksTab"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_residence_segment"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="Merchant Perks"
+                    android:textColor="@color/residence_text"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/leaderboardList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="33dp"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
