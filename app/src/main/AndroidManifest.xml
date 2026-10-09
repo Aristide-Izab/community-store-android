@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
@@ -15,7 +14,6 @@
         android:theme="@style/Theme.CommunityStore">
 
         <!-- MAIN / SHARED -->
-
         <activity
             android:name=".MainActivity"
             android:exported="false"
@@ -23,18 +21,55 @@
 
 
         <!-- STUDENT -->
-
         <activity
             android:name=".student.StudentHomeActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".student.StudentCommunityBoardActivity"
+            android:exported="false" />
+
+
+        <activity
+            android:name=".student.StudentMyOrdersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentOrderDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentReviewActivity"
+            android:exported="false" />
+
 
         <!-- FACULTY -->
-
         <activity
             android:name=".faculty.FacultyHomeActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".faculty.FacultyCommunityBoardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyAddPostActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyMyOrdersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyOrderDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyReviewActivity"
+            android:exported="false" />
+
+
+        <!-- SHARED PRODUCTS / CART / CHECKOUT -->
         <activity
             android:name=".shared.product.ProductInfoActivity"
             android:exported="false" />
@@ -52,22 +87,20 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- VENDOR -->
 
+        <!-- VENDOR -->
         <activity
             android:name=".vendor.VendorHomeActivity"
             android:exported="false" />
 
 
         <!-- RESIDENCE -->
-
         <activity
             android:name=".residence.ResidenceHomeActivity"
             android:exported="false" />
 
 
         <!-- AUTHENTICATION -->
-
         <activity
             android:name=".auth.WelcomeActivity"
             android:exported="false" />
@@ -111,52 +144,33 @@
             android:exported="false" />
 
 
-
         <!-- EMAIL VERIFICATION / PASSWORD RESET APP LINK -->
-
         <activity
             android:name=".auth.VerifyStudentActivity"
             android:exported="true"
             android:launchMode="singleTop">
 
-            <intent-filter
-                android:autoVerify="true">
-
-                <action
-                    android:name="android.intent.action.VIEW" />
-
-                <category
-                    android:name="android.intent.category.DEFAULT" />
-
-                <category
-                    android:name="android.intent.category.BROWSABLE" />
-
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
                     android:host="community-store-de45f.firebaseapp.com"
                     android:pathPrefix="/__/auth/links" />
-
             </intent-filter>
-
         </activity>
 
 
         <!-- LAUNCHER -->
-
         <activity
             android:name=".auth.SplashActivity"
             android:exported="true">
 
             <intent-filter>
-
-                <action
-                    android:name="android.intent.action.MAIN" />
-
-                <category
-                    android:name="android.intent.category.LAUNCHER" />
-
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
     </application>
