@@ -1,4 +1,4 @@
-package com.example.communitystore.shared.rewards;
+package com.example.communitystore.faculty;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -14,25 +14,25 @@ import com.example.communitystore.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.RewardHolder> {
+public class FacultyRewardAdapter extends RecyclerView.Adapter<FacultyRewardAdapter.RewardHolder> {
 
     public static final int MODE_REWARDS = 0;
     public static final int MODE_MILESTONES = 1;
 
     public interface Listener {
-        void onRedeem(RewardItem item);
+        void onRedeem(FacultyRewardItem item);
     }
 
-    private final List<RewardItem> items = new ArrayList<>();
+    private final List<FacultyRewardItem> items = new ArrayList<>();
     private final Listener listener;
     private int mode = MODE_REWARDS;
     private int userPoints = 0;
 
-    public RewardAdapter(Listener listener) {
+    public FacultyRewardAdapter(Listener listener) {
         this.listener = listener;
     }
 
-    public void submit(List<RewardItem> newItems, int mode, int userPoints) {
+    public void submit(List<FacultyRewardItem> newItems, int mode, int userPoints) {
         items.clear();
         items.addAll(newItems);
         this.mode = mode;
@@ -44,13 +44,13 @@ public class RewardAdapter extends RecyclerView.Adapter<RewardAdapter.RewardHold
     @Override
     public RewardHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_reward, parent, false);
+                .inflate(R.layout.faculty_item_reward, parent, false);
         return new RewardHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RewardHolder holder, int position) {
-        RewardItem item = items.get(position);
+        FacultyRewardItem item = items.get(position);
 
         holder.title.setText(item.title);
         holder.points.setText(item.pointsRequired + " Points");

@@ -1,4 +1,4 @@
-package com.example.communitystore.shared.messages;
+package com.example.communitystore.student;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,20 +14,20 @@ import com.example.communitystore.shared.utils.ThemeUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatHolder> {
+public class StudentChatAdapter extends RecyclerView.Adapter<StudentChatAdapter.ChatHolder> {
 
     public interface Listener {
-        void onChatClick(ChatPreview chat);
+        void onChatClick(StudentChatPreview chat);
     }
 
-    private final List<ChatPreview> chats = new ArrayList<>();
+    private final List<StudentChatPreview> chats = new ArrayList<>();
     private final Listener listener;
 
-    public ChatAdapter(Listener listener) {
+    public StudentChatAdapter(Listener listener) {
         this.listener = listener;
     }
 
-    public void submit(List<ChatPreview> newChats) {
+    public void submit(List<StudentChatPreview> newChats) {
         chats.clear();
         chats.addAll(newChats);
         notifyDataSetChanged();
@@ -37,13 +37,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatHolder> {
     @Override
     public ChatHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_chat, parent, false);
+                .inflate(R.layout.student_item_chat, parent, false);
         return new ChatHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ChatHolder holder, int position) {
-        ChatPreview chat = chats.get(position);
+        StudentChatPreview chat = chats.get(position);
 
         holder.name.setText(chat.name);
         holder.message.setText(chat.lastMessage);

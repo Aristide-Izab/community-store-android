@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.communitystore.shared.utils.BottomNavHelper;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -196,34 +197,25 @@ public class StudentHomeActivity extends AppCompatActivity {
     }
 
     private void setupNavigation() {
-        navHome.setOnClickListener(v ->
-                BottomNavThemeManager.apply(this, "home")
-        );
+        BottomNavHelper.setup(this, "home");
 
-        navMarket.setOnClickListener(v ->
-                BottomNavThemeManager.apply(this, "market")
-        );
+        findViewById(R.id.profileHeaderButton).setOnClickListener(v ->
+                startActivity(new Intent(this, BottomNavHelper.profileFor(this))));
 
-        // This correctly launches the student community board activity
         navCommunity.setOnClickListener(v -> {
             BottomNavThemeManager.apply(this, "community");
             Intent intent = new Intent(StudentHomeActivity.this, StudentCommunityBoardActivity.class);
             startActivity(intent);
         });
 
-        navMessages.setOnClickListener(v ->
-                BottomNavThemeManager.apply(this, "messages")
-        );
-
-        navProfile.setOnClickListener(v ->
-                BottomNavThemeManager.apply(this, "profile")
-        );
+        findViewById(R.id.viewRewardsButton).setOnClickListener(v ->
+                startActivity(new Intent(this, StudentLeaderboardActivity.class)));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        BottomNavThemeManager.apply(this, "home");
+        BottomNavHelper.setup(this, "home");
     }
 
     private void loadStudentName() {

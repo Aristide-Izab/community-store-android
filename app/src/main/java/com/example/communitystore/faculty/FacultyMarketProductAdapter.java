@@ -1,4 +1,4 @@
-package com.example.communitystore.shared.market;
+package com.example.communitystore.faculty;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -22,30 +22,30 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class MarketProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class FacultyMarketProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public interface Listener {
-        void onProductClick(MarketProduct product);
+        void onProductClick(FacultyMarketProduct product);
 
         void onMyOrdersClick();
     }
 
-    private final List<MarketRow> rows = new ArrayList<>();
+    private final List<FacultyMarketRow> rows = new ArrayList<>();
     private final Set<String> favourites = new HashSet<>();
     private final Listener listener;
 
-    public MarketProductAdapter(Listener listener) {
+    public FacultyMarketProductAdapter(Listener listener) {
         this.listener = listener;
     }
 
-    public void submit(List<MarketRow> newRows) {
+    public void submit(List<FacultyMarketRow> newRows) {
         rows.clear();
         rows.addAll(newRows);
         notifyDataSetChanged();
     }
 
     public int getSpanSize(int position, int totalSpan) {
-        return rows.get(position).type == MarketRow.TYPE_PRODUCT ? 1 : totalSpan;
+        return rows.get(position).type == FacultyMarketRow.TYPE_PRODUCT ? 1 : totalSpan;
     }
 
     @Override
@@ -64,18 +64,18 @@ public class MarketProductAdapter extends RecyclerView.Adapter<RecyclerView.View
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         switch (viewType) {
-            case MarketRow.TYPE_PROMO:
-                return new PromoHolder(inflater.inflate(R.layout.item_market_promo, parent, false));
-            case MarketRow.TYPE_HEADER:
-                return new HeaderHolder(inflater.inflate(R.layout.item_market_header, parent, false));
+            case FacultyMarketRow.TYPE_PROMO:
+                return new PromoHolder(inflater.inflate(R.layout.faculty_item_market_promo, parent, false));
+            case FacultyMarketRow.TYPE_HEADER:
+                return new HeaderHolder(inflater.inflate(R.layout.faculty_item_market_header, parent, false));
             default:
-                return new ProductHolder(inflater.inflate(R.layout.item_market_product, parent, false));
+                return new ProductHolder(inflater.inflate(R.layout.faculty_item_market_product, parent, false));
         }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        MarketRow row = rows.get(position);
+        FacultyMarketRow row = rows.get(position);
 
         if (holder instanceof PromoHolder) {
             ((PromoHolder) holder).bind();
@@ -126,7 +126,7 @@ public class MarketProductAdapter extends RecyclerView.Adapter<RecyclerView.View
             verified = view.findViewById(R.id.productVerified);
         }
 
-        void bind(MarketProduct product) {
+        void bind(FacultyMarketProduct product) {
             Context context = itemView.getContext();
 
             image.setImageResource(product.images[0]);
