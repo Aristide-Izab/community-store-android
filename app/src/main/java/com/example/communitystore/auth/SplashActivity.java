@@ -41,16 +41,13 @@ public class SplashActivity extends AppCompatActivity {
         db =
                 FirebaseFirestore.getInstance();
 
-        sessionManager =
-                new SessionManager(this);
 
-        new Handler(
-                Looper.getMainLooper()
-        )
-                .postDelayed(
-                        this::checkUser,
-                        SPLASH_DELAY
-                );
+        sessionManager = new SessionManager(this);
+
+        new Handler(Looper.getMainLooper()).postDelayed(
+                this::checkUser,
+                SPLASH_DELAY
+        );
     }
 
     private void checkUser() {
