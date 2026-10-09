@@ -90,7 +90,7 @@ public class StudentProfileActivity extends AppCompatActivity {
             View row = getLayoutInflater().inflate(R.layout.student_item_profile_menu, container, false);
             ((TextView) row.findViewById(R.id.menuLabel)).setText(label);
 
-            // TODO: point each row at its real screen as those features are built.
+
             row.setOnClickListener(v -> {
                 if ("My Orders".equals(label)) {
                     openMyOrders();

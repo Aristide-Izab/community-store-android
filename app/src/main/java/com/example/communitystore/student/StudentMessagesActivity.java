@@ -61,7 +61,6 @@ public class StudentMessagesActivity extends AppCompatActivity {
         BottomNavHelper.setup(this, "messages");
     }
 
-    // TODO: replace with Firestore "chats" / "chatRequests" listeners
     private void loadSampleData() {
         chats.add(new StudentChatPreview("Campus Eats", "Hi your order ready for pickup", "10:42", 1));
         chats.add(new StudentChatPreview("Smith", "New items available", "09:15", 1));
