@@ -28,6 +28,27 @@
             android:name=".student.StudentHomeActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".student.StudentMarketActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentMessagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentLeaderboardActivity"
+            android:exported="false" />
+
+
+        <activity
+            android:name=".student.StudentCommunityBoardActivity"
+            android:exported="false" />
+
 
         <!-- FACULTY -->
 
@@ -52,6 +73,31 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".faculty.FacultyMarketActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyMessagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyLeaderboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyCommunityBoardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyAddPostActivity"
+            android:exported="false" />
+
+
         <!-- VENDOR -->
 
         <activity
@@ -64,13 +110,29 @@
         <activity
             android:name=".residence.ResidenceHomeActivity"
             android:exported="false" />
-
+      
         <activity
-            android:name=".residence.AddProductActivity"
+            android:name=".residence.ResidenceDashboardFragment"
             android:exported="false" />
-
+      
         <activity
-            android:name=".residence.LeaderboardActivity"
+            android:name=".residence.ResidenceListingsFragment"
+            android:exported="false" />
+      
+      <activity
+            android:name=".residence.ResidenceMessagesFragment"
+            android:exported="false" />
+      
+      <activity
+            android:name=".residence.ResidenceProfileFragment"
+            android:exported="false" />
+      
+      <activity
+            android:name=".residence.ResidenceSalesFragment"
+            android:exported="false" />
+      
+      <activity
+            android:name=".residence.ResidenceUi"
             android:exported="false" />
 
 
@@ -141,7 +203,7 @@
 
                 <data
                     android:scheme="https"
-                    android:host="${firebaseAuthHost}"
+                    android:host="community-store-de45f.firebaseapp.com"
                     android:pathPrefix="/__/auth/links" />
 
             </intent-filter>
