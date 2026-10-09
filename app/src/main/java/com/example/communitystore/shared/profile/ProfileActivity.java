@@ -71,7 +71,8 @@ public class ProfileActivity extends AppCompatActivity {
 
         if (role != null) {
             String value = role.getValue();
-            profileRole.setText(value.substring(0, 1).toUpperCase() + value.substring(1));
+            String label = value.substring(0, 1).toUpperCase() + value.substring(1);
+            profileRole.setText(label);
         }
     }
 
@@ -91,7 +92,6 @@ public class ProfileActivity extends AppCompatActivity {
             View row = getLayoutInflater().inflate(R.layout.item_profile_menu, container, false);
             ((TextView) row.findViewById(R.id.menuLabel)).setText(label);
 
-            // TODO: point each row at its real screen as those features are built.
             row.setOnClickListener(v -> {
                 if ("My Orders".equals(label)) {
                     openMyOrders();

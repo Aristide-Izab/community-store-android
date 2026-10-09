@@ -79,7 +79,6 @@ public class MarketActivity extends AppCompatActivity {
         BottomNavHelper.setup(this, "market");
     }
 
-    // TODO: replace sample listings with a Firestore "listings" query
     private void loadCatalog() {
         catalog.add(new MarketProduct("b1", "Java Textbook", "Books", 250, "Used",
                 "Textbook in good condition. Ideal for students.", 4.5f, 40, 8,
