@@ -4,7 +4,7 @@ plugins {
 }
 
 // firebase auth domain
-val firebaseAuthHost = "community-store-android.firebaseapp.com"
+val firebaseAuthHost = "community-store-de45f.firebaseapp.com"
 
 android {
     namespace = "com.example.communitystore"

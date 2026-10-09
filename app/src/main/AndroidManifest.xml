@@ -110,30 +110,6 @@
         <activity
             android:name=".residence.ResidenceHomeActivity"
             android:exported="false" />
-      
-        <activity
-            android:name=".residence.ResidenceDashboardFragment"
-            android:exported="false" />
-      
-        <activity
-            android:name=".residence.ResidenceListingsFragment"
-            android:exported="false" />
-      
-      <activity
-            android:name=".residence.ResidenceMessagesFragment"
-            android:exported="false" />
-      
-      <activity
-            android:name=".residence.ResidenceProfileFragment"
-            android:exported="false" />
-      
-      <activity
-            android:name=".residence.ResidenceSalesFragment"
-            android:exported="false" />
-      
-      <activity
-            android:name=".residence.ResidenceUi"
-            android:exported="false" />
 
 
         <!-- AUTHENTICATION -->
@@ -203,7 +179,7 @@
 
                 <data
                     android:scheme="https"
-                    android:host="community-store-de45f.firebaseapp.com"
+                    android:host="${firebaseAuthHost}"
                     android:pathPrefix="/__/auth/links" />
 
             </intent-filter>
