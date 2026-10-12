@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/residenceHomeRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/residence_purple"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/residenceFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/residence_text" />
+
+    <LinearLayout
+        android:id="@+id/residenceBottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/residence_surface"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/navHome"
+            style="@style/ResidenceNavItem"
+            android:layout_height="79dp">
+
+            <ImageView
+                style="@style/ResidenceNavIcon"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_residence_nav_home" />
+
+            <TextView
+                style="@style/ResidenceNavLabel"
+                android:text="Home" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navListing"
+            style="@style/ResidenceNavItem"
+            android:layout_height="79dp">
+
+            <ImageView
+                style="@style/ResidenceNavIcon"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_nav_listing" />
+
+            <TextView
+                style="@style/ResidenceNavLabel"
+                android:text="My Listing" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navSales"
+            style="@style/ResidenceNavItem"
+            android:layout_height="79dp">
+
+            <ImageView
+                style="@style/ResidenceNavIcon"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_nav_sales" />
+
+            <TextView
+                style="@style/ResidenceNavLabel"
+                android:text="Sales" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navMessages"
+            style="@style/ResidenceNavItem"
+            android:layout_height="79dp">
+
+            <ImageView
+                style="@style/ResidenceNavIcon"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_residence_nav_messages" />
+
+            <TextView
+                style="@style/ResidenceNavLabel"
+                android:text="Messages" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navProfile"
+            style="@style/ResidenceNavItem"
+            android:layout_height="79dp">
+
+            <ImageView
+                style="@style/ResidenceNavIcon"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_nav_profile" />
+
+            <TextView
+                style="@style/ResidenceNavLabel"
+                android:text="Profile" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

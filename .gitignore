@@ -1,0 +1,37 @@
+# Android / Gradle
+*.iml
+.gradle/
+**/build/
+local.properties
+.externalNativeBuild/
+.cxx/
+captures/
+
+# Android Studio / IntelliJ
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Firebase local cache / logs
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Local AI/editor helper folders not required by the app
+.agents/
+.claude/
+skills-lock.json
+
+# Secrets / signing files
+*.jks
+*.keystore
+serviceAccount*.json
+*service-account*.json
+
+# Node (only if tools are added later)
+node_modules/
+
+# Firebase local configuration
+app/google-services.json

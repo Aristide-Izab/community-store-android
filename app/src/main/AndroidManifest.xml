@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CommunityStore">
+
+        <!-- MAIN / SHARED -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+
+        <!-- STUDENT -->
+
+        <activity
+            android:name=".student.StudentHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentMarketActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentMessagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentLeaderboardActivity"
+            android:exported="false" />
+
+
+        <activity
+            android:name=".student.StudentCommunityBoardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentMyOrdersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentOrderDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".student.StudentReviewActivity"
+            android:exported="false" />
+
+
+        <!-- FACULTY -->
+
+        <activity
+            android:name=".faculty.FacultyHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.product.ProductInfoActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.seller.SellerProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.cart.CartActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".shared.checkout.CheckoutActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".faculty.FacultyMarketActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyMessagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyLeaderboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyCommunityBoardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyAddPostActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyMyOrdersActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyOrderDetailActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".faculty.FacultyReviewActivity"
+            android:exported="false" />
+
+
+        <!-- VENDOR -->
+
+        <activity
+            android:name=".vendor.VendorHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorManageProductsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorAddProductActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorIncomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorLeaderboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorSalesRankActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorMessagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorProfileActivity"
+            android:exported="false" />
+
+
+        <!-- RESIDENCE -->
+
+        <activity
+            android:name=".residence.ResidenceHomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".residence.AddProductActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".residence.LeaderboardActivity"
+            android:exported="false" />
+
+
+        <!-- AUTHENTICATION -->
+
+        <activity
+            android:name=".auth.WelcomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.ChooseAccountTypeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".auth.RegisterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".auth.ForgotPasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.ResetPasswordActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.AccountVerifiedActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.LogoutActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.VendorVerificationActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.ResidenceVerificationActivity"
+            android:exported="false" />
+
+
+
+        <!-- EMAIL VERIFICATION / PASSWORD RESET APP LINK -->
+
+        <activity
+            android:name=".auth.VerifyStudentActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
+
+            <intent-filter
+                android:autoVerify="true">
+
+                <action
+                    android:name="android.intent.action.VIEW" />
+
+                <category
+                    android:name="android.intent.category.DEFAULT" />
+
+                <category
+                    android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="https"
+                    android:host="${firebaseAuthHost}"
+                    android:pathPrefix="/__/auth/links" />
+
+            </intent-filter>
+
+        </activity>
+
+
+        <!-- LAUNCHER -->
+
+        <activity
+            android:name=".auth.SplashActivity"
+            android:exported="true">
+
+            <intent-filter>
+
+                <action
+                    android:name="android.intent.action.MAIN" />
+
+                <category
+                    android:name="android.intent.category.LAUNCHER" />
+
+            </intent-filter>
+
+        </activity>
+
+    </application>
+
+</manifest>
