@@ -128,6 +128,34 @@
             android:name=".vendor.VendorHomeActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".vendor.VendorManageProductsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorAddProductActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorIncomeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorLeaderboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorSalesRankActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorMessagesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".vendor.VendorProfileActivity"
+            android:exported="false" />
+
 
         <!-- RESIDENCE -->
 

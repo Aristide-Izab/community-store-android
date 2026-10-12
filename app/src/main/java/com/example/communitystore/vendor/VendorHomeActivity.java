@@ -1,58 +1,82 @@
 package com.example.communitystore.vendor;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.communitystore.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class VendorHomeActivity extends AppCompatActivity {
 
-    private ImageView profileButton;
-
-    private TextView viewRewardsButton;
-    private TextView moreOrdersButton;
+    private TextView greetingText;
+    private TextView productCountText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_vendor_home);
 
-        profileButton = findViewById(R.id.profileButton);
-        viewRewardsButton = findViewById(R.id.viewRewardsButton);
-        moreOrdersButton = findViewById(R.id.moreOrdersButton);
+        greetingText = findViewById(R.id.greetingText);
+        productCountText = findViewById(R.id.productCountText);
 
-        setupClicks();
+        findViewById(R.id.profileButton).setOnClickListener(v ->
+                startActivity(new Intent(this, VendorProfileActivity.class))
+        );
+        findViewById(R.id.viewRewardsButton).setOnClickListener(v ->
+                startActivity(new Intent(this, VendorLeaderboardActivity.class))
+        );
+        findViewById(R.id.productsStatCard).setOnClickListener(v ->
+                startActivity(new Intent(this, VendorManageProductsActivity.class))
+        );
+        findViewById(R.id.incomeStatCard).setOnClickListener(v ->
+                startActivity(new Intent(this, VendorIncomeActivity.class))
+        );
+        findViewById(R.id.messagesQuickCard).setOnClickListener(v ->
+                startActivity(new Intent(this, VendorMessagesActivity.class))
+        );
+        findViewById(R.id.leaderboardQuickCard).setOnClickListener(v ->
+                startActivity(new Intent(this, VendorLeaderboardActivity.class))
+        );
+        findViewById(R.id.moreOrdersButton).setOnClickListener(v ->
+                startActivity(new Intent(this, VendorIncomeActivity.class))
+        );
+
+        loadVendorName();
     }
 
-    private void setupClicks() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        productCountText.setText(String.valueOf(VendorProductStore.countActive(this)));
+    }
 
-        profileButton.setOnClickListener(v ->
-                Toast.makeText(
-                        VendorHomeActivity.this,
-                        "Vendor Profile",
-                        Toast.LENGTH_SHORT
-                ).show()
-        );
+    private void loadVendorName() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            return;
+        }
 
-        viewRewardsButton.setOnClickListener(v ->
-                Toast.makeText(
-                        VendorHomeActivity.this,
-                        "Vendor rewards will open here.",
-                        Toast.LENGTH_SHORT
-                ).show()
-        );
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(user.getUid())
+                .get()
+                .addOnSuccessListener(document -> {
+                    String name = document.getString("displayName");
+                    if (name == null || name.trim().isEmpty()) {
+                        name = "Vendor";
+                    }
+                    greetingText.setText("Good morning, " + firstName(name));
+                });
+    }
 
-        moreOrdersButton.setOnClickListener(v ->
-                Toast.makeText(
-                        VendorHomeActivity.this,
-                        "Vendor orders will open here.",
-                        Toast.LENGTH_SHORT
-                ).show()
-        );
+    private String firstName(String name) {
+        String trimmed = name.trim();
+        int space = trimmed.indexOf(' ');
+        return space > 0 ? trimmed.substring(0, space) : trimmed;
     }
 }
