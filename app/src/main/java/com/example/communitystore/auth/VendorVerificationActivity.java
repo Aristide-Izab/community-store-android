@@ -1,7 +1,5 @@
 package com.example.communitystore.auth;
 
-import com.example.communitystore.R;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,18 +14,21 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.communitystore.R;
+import com.example.communitystore.vendor.VendorHomeActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VendorVerificationActivity extends AppCompatActivity {
+public class VendorVerificationActivity
+        extends AppCompatActivity {
 
     private static final long MAX_FILE_SIZE =
             10 * 1024 * 1024;
@@ -40,9 +41,10 @@ public class VendorVerificationActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
-    private FirebaseStorage storage;
 
-    private Uri selectedPdfUri;
+    private Uri selectedDocumentUri;
+    private String selectedDocumentName =
+            "Selected document";
 
     private final ActivityResultLauncher<String[]>
             documentLauncher =
@@ -58,23 +60,29 @@ public class VendorVerificationActivity extends AppCompatActivity {
 
                             Toast.makeText(
                                     this,
-                                    "PDF must be 10MB or smaller.",
+                                    "Document must be 10MB or smaller.",
                                     Toast.LENGTH_LONG
                             ).show();
 
                             return;
                         }
 
-                        selectedPdfUri = uri;
+                        selectedDocumentUri = uri;
+
+                        selectedDocumentName =
+                                getFileName(uri);
 
                         selectedFileText.setText(
-                                getFileName(uri)
+                                selectedDocumentName
                         );
                     }
             );
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(
+            Bundle savedInstanceState
+    ) {
+
         super.onCreate(savedInstanceState);
 
         setContentView(
@@ -86,9 +94,6 @@ public class VendorVerificationActivity extends AppCompatActivity {
 
         db =
                 FirebaseFirestore.getInstance();
-
-        storage =
-                FirebaseStorage.getInstance();
 
         backButton =
                 findViewById(
@@ -114,20 +119,20 @@ public class VendorVerificationActivity extends AppCompatActivity {
                 v -> finish()
         );
 
-        uploadButton.setOnClickListener(v ->
-                documentLauncher.launch(
+        uploadButton.setOnClickListener(
+                v -> documentLauncher.launch(
                         new String[]{
-                                "application/pdf"
+                                "*/*"
                         }
                 )
         );
 
-        submitButton.setOnClickListener(v ->
-                submitVendorApplication()
+        submitButton.setOnClickListener(
+                v -> approveVendorForDemo()
         );
     }
 
-    private void submitVendorApplication() {
+    private void approveVendorForDemo() {
 
         FirebaseUser user =
                 auth.getCurrentUser();
@@ -143,11 +148,11 @@ public class VendorVerificationActivity extends AppCompatActivity {
             return;
         }
 
-        if (selectedPdfUri == null) {
+        if (selectedDocumentUri == null) {
 
             Toast.makeText(
                     this,
-                    "Please upload your business document.",
+                    "Please select a document first.",
                     Toast.LENGTH_SHORT
             ).show();
 
@@ -155,72 +160,54 @@ public class VendorVerificationActivity extends AppCompatActivity {
         }
 
         submitButton.setEnabled(false);
-        submitButton.setText("Uploading...");
+
+        submitButton.setText(
+                "Verifying..."
+        );
 
         String uid =
                 user.getUid();
 
-        StorageReference reference =
-                storage.getReference()
-                        .child(
-                                "vendor_documents/"
-                                        + uid
-                                        + "/business_document.pdf"
-                        );
+        String displayName =
+                PendingRegistrationStore
+                        .getDisplayName(this);
 
-        reference.putFile(selectedPdfUri)
-                .continueWithTask(task -> {
+        String email =
+                PendingRegistrationStore
+                        .getEmail(this);
 
-                    if (!task.isSuccessful()) {
+        if (displayName == null
+                || displayName.trim().isEmpty()) {
 
-                        if (task.getException() != null) {
-                            throw task.getException();
-                        }
-                    }
+            displayName =
+                    user.getDisplayName();
 
-                    return reference.getDownloadUrl();
-                })
-                .addOnSuccessListener(downloadUri ->
+            if (displayName == null
+                    || displayName.trim().isEmpty()) {
 
-                        saveApplication(
-                                user,
-                                downloadUri.toString()
-                        )
-                )
-                .addOnFailureListener(e -> {
+                displayName =
+                        "Vendor";
+            }
+        }
 
-                    submitButton.setEnabled(true);
-                    submitButton.setText(
-                            "Submit for Review"
-                    );
+        if (email == null
+                || email.trim().isEmpty()) {
 
-                    Toast.makeText(
-                            VendorVerificationActivity.this,
-                            "Upload failed: "
-                                    + e.getMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                });
-    }
-
-    private void saveApplication(
-            FirebaseUser user,
-            String documentUrl
-    ) {
+            email =
+                    user.getEmail();
+        }
 
         Map<String, Object> vendor =
                 new HashMap<>();
 
         vendor.put(
                 "displayName",
-                PendingRegistrationStore
-                        .getDisplayName(this)
+                displayName
         );
 
         vendor.put(
                 "email",
-                PendingRegistrationStore
-                        .getEmail(this)
+                email
         );
 
         vendor.put(
@@ -229,23 +216,28 @@ public class VendorVerificationActivity extends AppCompatActivity {
         );
 
         vendor.put(
-                "businessRegDocUrl",
-                documentUrl
+                "documentName",
+                selectedDocumentName
         );
 
         vendor.put(
-                "documentType",
-                "Business Registration/CIPC Doc"
+                "documentSelected",
+                true
         );
 
         vendor.put(
                 "verificationStatus",
-                "pending"
+                "approved"
         );
 
         vendor.put(
                 "verified",
-                false
+                true
+        );
+
+        vendor.put(
+                "demoVerification",
+                true
         );
 
         vendor.put(
@@ -253,65 +245,120 @@ public class VendorVerificationActivity extends AppCompatActivity {
                 FieldValue.serverTimestamp()
         );
 
-        db.collection("vendors")
-                .document(user.getUid())
-                .set(vendor)
-                .addOnSuccessListener(unused -> {
+        vendor.put(
+                "approvedAt",
+                FieldValue.serverTimestamp()
+        );
 
-                    /*
-                     * Vendor is NOT added to users.
-                     *
-                     * They remain pending until
-                     * admin approval.
-                     */
+        Map<String, Object> userDocument =
+                new HashMap<>();
 
-                    PendingRegistrationStore.clear(
-                            VendorVerificationActivity.this
-                    );
+        userDocument.put(
+                "displayName",
+                displayName
+        );
 
-                    auth.signOut();
+        userDocument.put(
+                "email",
+                email
+        );
 
-                    submitButton.setEnabled(true);
-                    submitButton.setText(
-                            "Submit for Review"
-                    );
+        userDocument.put(
+                "role",
+                "vendor"
+        );
 
-                    showSubmittedDialog();
-                })
-                .addOnFailureListener(e -> {
+        userDocument.put(
+                "verified",
+                true
+        );
 
-                    submitButton.setEnabled(true);
-                    submitButton.setText(
-                            "Submit for Review"
-                    );
+        userDocument.put(
+                "verificationStatus",
+                "approved"
+        );
 
-                    Toast.makeText(
-                            VendorVerificationActivity.this,
-                            "Could not submit application: "
-                                    + e.getMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                });
+        userDocument.put(
+                "createdAt",
+                FieldValue.serverTimestamp()
+        );
+
+        DocumentReference vendorReference =
+                db.collection("vendors")
+                        .document(uid);
+
+        DocumentReference userReference =
+                db.collection("users")
+                        .document(uid);
+
+        WriteBatch batch =
+                db.batch();
+
+        batch.set(
+                vendorReference,
+                vendor
+        );
+
+        batch.set(
+                userReference,
+                userDocument
+        );
+
+        batch.commit()
+                .addOnSuccessListener(
+                        unused -> {
+
+                            PendingRegistrationStore.clear(
+                                    VendorVerificationActivity.this
+                            );
+
+                            submitButton.setEnabled(true);
+
+                            submitButton.setText(
+                                    "Submit for Review"
+                            );
+
+                            showApprovedDialog();
+                        }
+                )
+                .addOnFailureListener(
+                        e -> {
+
+                            submitButton.setEnabled(true);
+
+                            submitButton.setText(
+                                    "Submit for Review"
+                            );
+
+                            Toast.makeText(
+                                    VendorVerificationActivity.this,
+                                    "Could not verify vendor: "
+                                            + e.getMessage(),
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                );
     }
 
-    private void showSubmittedDialog() {
+    private void showApprovedDialog() {
 
         new AlertDialog.Builder(this)
                 .setTitle(
-                        "Application Submitted!"
+                        "Vendor Verified!"
                 )
                 .setMessage(
-                        "Your vendor documents have been submitted for review. Reviews typically take 24–48 hours."
+                        "Your document has been accepted for testing. "
+                                + "Your Vendor account is now active."
                 )
                 .setCancelable(false)
                 .setPositiveButton(
-                        "Back to Login",
+                        "Continue",
                         (dialog, which) -> {
 
                             Intent intent =
                                     new Intent(
                                             VendorVerificationActivity.this,
-                                            LoginActivity.class
+                                            VendorHomeActivity.class
                                     );
 
                             intent.addFlags(
@@ -321,6 +368,7 @@ public class VendorVerificationActivity extends AppCompatActivity {
                             );
 
                             startActivity(intent);
+
                             finish();
                         }
                 )
@@ -333,7 +381,8 @@ public class VendorVerificationActivity extends AppCompatActivity {
 
         try {
 
-            android.content.res.AssetFileDescriptor descriptor =
+            android.content.res.AssetFileDescriptor
+                    descriptor =
                     getContentResolver()
                             .openAssetFileDescriptor(
                                     uri,
@@ -349,7 +398,8 @@ public class VendorVerificationActivity extends AppCompatActivity {
 
             descriptor.close();
 
-            return length <= MAX_FILE_SIZE;
+            return length < 0
+                    || length <= MAX_FILE_SIZE;
 
         } catch (IOException e) {
 
@@ -362,7 +412,7 @@ public class VendorVerificationActivity extends AppCompatActivity {
     ) {
 
         String fileName =
-                "Selected PDF";
+                "Selected document";
 
         Cursor cursor =
                 getContentResolver()
