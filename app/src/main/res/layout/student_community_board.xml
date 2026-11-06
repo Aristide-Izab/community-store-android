@@ -12,7 +12,7 @@
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
         android:layout_height="130dp"
-        android:background="#1081B9"
+        android:background="@color/role_student"
         android:paddingTop="19dp"
         app:contentInsetStart="0dp"
         app:contentInsetStartWithNavigation="0dp"
@@ -85,7 +85,7 @@
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textSize="13sp"
-                    app:backgroundTint="#1081B9"
+                    app:backgroundTint="@color/role_student"
                     app:cornerRadius="18dp" />
 
                 <com.google.android.material.button.MaterialButton
@@ -421,7 +421,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="Community"
                 android:src="@drawable/community"
-                app:tint="#1081B9" />
+                app:tint="@color/role_student" />
 
             <TextView
                 android:id="@+id/navCommunityLabel"
@@ -429,7 +429,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Community"
-                android:textColor="#1081B9"
+                android:textColor="@color/role_student"
                 android:textSize="11sp" />
         </LinearLayout>
 

@@ -46,6 +46,9 @@ public final class ResidenceUi {
                 )
         );
 
+        com.example.communitystore.shared.utils.SystemBarInsets
+                .markHandled(activity);
+
         View bottomTarget =
                 bottomBar != null
                         ? bottomBar

@@ -12,7 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.communitystore.R;
 import com.example.communitystore.core.access.AccessManager;
-import com.example.communitystore.core.access.UserRole;
+import com.example.communitystore.core.access.AccountRouter;
+import com.example.communitystore.core.session.AuthSession;
 import com.example.communitystore.core.session.SessionManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -137,7 +138,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 Toast.makeText(
                         this,
-                        "Microsoft login will be added later.",
+                        "Microsoft sign-in isn't available yet. Please use your email and password.",
                         Toast.LENGTH_SHORT
                 ).show()
         );
@@ -228,243 +229,95 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+
+
+
+
+
+
+
+
+
+
     private void loadUserAccount(
             FirebaseUser user
     ) {
 
-        db.collection("users")
-                .document(user.getUid())
-                .get()
-                .addOnSuccessListener(document -> {
+        AccountRouter.resolve(user, (destination, role, profile) -> {
 
-                    if (!document.exists()) {
+            switch (destination) {
 
-                        checkVendorApplication(user);
+                case HOME:
+                    AccountRouter.cacheProfile(this, role, profile);
+                    AccessManager.openHome(LoginActivity.this, role);
+                    break;
 
-                        return;
-                    }
-
-                    Boolean verified =
-                            document.getBoolean(
-                                    "verified"
-                            );
-
-                    String roleString =
-                            document.getString(
-                                    "role"
-                            );
-
-                    UserRole role =
-                            UserRole.fromString(
-                                    roleString
-                            );
-
-                    if (verified == null
-                            || !verified
-                            || role == null) {
-
-                        auth.signOut();
-
-                        sessionManager.clearSession();
-
-                        Toast.makeText(
-                                this,
-                                "Your account is not active.",
-                                Toast.LENGTH_LONG
-                        ).show();
-
-                        resetLoginButton();
-
-                        return;
-                    }
-
-                    if (requiresEmailVerification(role)
-                            && !user.isEmailVerified()) {
-
-                        auth.signOut();
-
-                        sessionManager.clearSession();
-
-                        Toast.makeText(
-                                this,
-                                "Please verify your email first.",
-                                Toast.LENGTH_LONG
-                        ).show();
-
-                        resetLoginButton();
-
-                        return;
-                    }
-
-                    sessionManager.saveUserRole(
-                            role
-                    );
-
-                    AccessManager.openHome(
-                            LoginActivity.this,
-                            role
-                    );
-                })
-
-                .addOnFailureListener(e -> {
-
-                    auth.signOut();
-
-                    sessionManager.clearSession();
-
+                case VERIFY_EMAIL:
+                    AccountRouter.cacheProfile(this, role, profile);
                     Toast.makeText(
                             this,
-                            "Could not load account.",
+                            "Please verify your email address to continue.",
                             Toast.LENGTH_LONG
                     ).show();
+                    AccountRouter.openVerifyEmail(this, role);
+                    break;
 
-                    resetLoginButton();
-                });
-    }
-
-    private void checkVendorApplication(
-            FirebaseUser user
-    ) {
-
-        db.collection("vendors")
-                .document(user.getUid())
-                .get()
-                .addOnSuccessListener(document -> {
-
-                    if (document.exists()) {
-
-                        auth.signOut();
-
-                        sessionManager.clearSession();
-
-                        String status =
-                                document.getString(
-                                        "verificationStatus"
-                                );
-
-                        showPendingStatus(
-                                "vendor",
-                                status
-                        );
-
-                        return;
-                    }
-
-                    checkResidenceApplication(
-                            user
-                    );
-                })
-
-                .addOnFailureListener(e ->
-
-                        checkResidenceApplication(
-                                user
-                        )
-                );
-    }
-
-    private void checkResidenceApplication(
-            FirebaseUser user
-    ) {
-
-        db.collection("residences")
-                .document(user.getUid())
-                .get()
-                .addOnSuccessListener(document -> {
-
-                    auth.signOut();
-
-                    sessionManager.clearSession();
-
-                    if (document.exists()) {
-
-                        String status =
-                                document.getString(
-                                        "verificationStatus"
-                                );
-
-                        showPendingStatus(
-                                "residence",
-                                status
-                        );
-
-                    } else {
-
-                        Toast.makeText(
-                                this,
-                                "Account not found. Please complete registration first.",
-                                Toast.LENGTH_LONG
-                        ).show();
-
-                        resetLoginButton();
-                    }
-                })
-
-                .addOnFailureListener(e -> {
-
-                    auth.signOut();
-
-                    sessionManager.clearSession();
-
+                case DOCUMENTS:
+                    AccountRouter.cacheProfile(this, role, profile);
                     Toast.makeText(
                             this,
-                            "Account not found.",
+                            "Almost done! Submit your verification document to activate your account.",
                             Toast.LENGTH_LONG
                     ).show();
+                    AccountRouter.openDocuments(this, role);
+                    break;
 
+                case PENDING_REVIEW:
+                case REJECTED:
+                    AuthSession.signOut(this);
+                    Toast.makeText(
+                            this,
+                            AccountRouter.blockedMessage(destination, role),
+                            Toast.LENGTH_LONG
+                    ).show();
                     resetLoginButton();
-                });
+                    break;
+
+                case NO_PROFILE:
+                    resumeRegistration();
+                    break;
+
+                case ERROR:
+                default:
+                    AuthSession.signOut(this);
+                    Toast.makeText(
+                            this,
+                            "Could not load your account. Check your connection and try again.",
+                            Toast.LENGTH_LONG
+                    ).show();
+                    resetLoginButton();
+                    break;
+            }
+        });
     }
 
-    private void showPendingStatus(
-            String type,
-            String status
-    ) {
+    /**
+     * The login exists but no profile was saved (for example the app was
+     * closed straight after creating the account). Let the user pick their
+     * account type and finish the profile instead of being stuck.
+     */
+    private void resumeRegistration() {
 
-        if ("pending".equals(status)) {
+        Toast.makeText(
+                this,
+                "Your registration wasn't finished. Choose your account type to complete it.",
+                Toast.LENGTH_LONG
+        ).show();
 
-            String message =
-                    "vendor".equals(type)
-                            ? "Your vendor application is still under review."
-                            : "Your residence administrator application is still under review.";
-
-            Toast.makeText(
-                    this,
-                    message,
-                    Toast.LENGTH_LONG
-            ).show();
-
-        } else if ("rejected".equals(status)) {
-
-            String message =
-                    "vendor".equals(type)
-                            ? "Your vendor application was rejected."
-                            : "Your residence administrator application was rejected.";
-
-            Toast.makeText(
-                    this,
-                    message,
-                    Toast.LENGTH_LONG
-            ).show();
-
-        } else {
-
-            Toast.makeText(
-                    this,
-                    "Your account is not active yet.",
-                    Toast.LENGTH_LONG
-            ).show();
-        }
-
+        Intent intent = new Intent(this, ChooseAccountTypeActivity.class);
+        intent.putExtra(RegisterActivity.EXTRA_RESUME, true);
+        startActivity(intent);
         resetLoginButton();
-    }
-
-    private boolean requiresEmailVerification(
-            UserRole role
-    ) {
-
-        return role == UserRole.STUDENT
-                || role == UserRole.FACULTY;
     }
 
     private void resetLoginButton() {

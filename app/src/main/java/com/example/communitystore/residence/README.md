@@ -1,7 +1,13 @@
 # Residence Feature Package
 
-The residence developer places Residence-only Java classes here.
+Residence screens, hosted as tabs in `ResidenceHomeActivity` (Home, Listing, Sales, Messages, Profile).
 
-Examples: `ResidenceHomeActivity.java`, `ResidenceDashboardActivity.java`.
+- `ResidenceDashboardFragment.java` - points, total sales, orders, products, recent orders
+- `ResidenceListingsFragment.java` - own listings (activate/deactivate, view, long-press to delete)
+- `AddProductActivity.java` - add a listing (photos are preview-only on the free Firebase plan)
+- `ResidenceSalesFragment.java` - income for this week / month / year from orders
+- `ResidenceMessagesFragment.java` - live chats and requests (`shared/chat`)
+- `ResidenceProfileFragment.java` - profile, post announcements, settings, logout
+- `LeaderboardActivity.java` - residence ranking and merchant perks
 
-Note: Residence registration/verification remains in the shared `auth` package because it is part of onboarding.
+Residence registration/verification stays in the `auth` package because it is part of onboarding.

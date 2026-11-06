@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/registerTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="42dp"
             android:layout_marginTop="8dp"
@@ -38,11 +38,13 @@
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/backButton"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="42dp" />
 
         <TextView
             android:id="@+id/registerSubtitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="42dp"
             android:layout_marginTop="5dp"
@@ -50,7 +52,9 @@
             android:textColor="#444444"
             android:textSize="13sp"
             app:layout_constraintTop_toBottomOf="@id/registerTitle"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="42dp" />
 
         <TextView
             android:id="@+id/fullNameLabel"
@@ -245,7 +249,7 @@
             android:textColor="#FFFFFF"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:backgroundTint="#168FC1"
+            android:backgroundTint="@color/role_student"
             app:layout_constraintTop_toBottomOf="@id/termsCheckBox"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -269,7 +273,7 @@
             android:layout_marginTop="5dp"
             android:layout_marginBottom="25dp"
             android:text="Login"
-            android:textColor="#18BE92"
+            android:textColor="@color/brand_green"
             android:textSize="11sp"
             android:clickable="true"
             android:focusable="true"

@@ -12,7 +12,7 @@
         android:id="@+id/sellerHeader"
         android:layout_width="0dp"
         android:layout_height="100dp"
-        android:background="#FF4B2B"
+        android:background="@color/role_faculty"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="20dp"
@@ -69,6 +69,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/sellerAvatarText"
                     android:layout_width="72dp"
                     android:layout_height="72dp"
                     android:background="@drawable/bg_seller_avatar"
@@ -86,6 +87,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                    android:id="@+id/sellerNameText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="John Smith"
@@ -101,6 +103,7 @@
                         android:orientation="horizontal">
 
                         <TextView
+                    android:id="@+id/sellerRoleText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Verified Seller"
@@ -113,7 +116,7 @@
                             android:layout_height="16dp"
                             android:layout_marginStart="5dp"
                             android:src="@drawable/ic_verified_badge"
-                            app:tint="#168FC1" />
+                            app:tint="@color/role_student" />
 
                     </LinearLayout>
 
@@ -130,6 +133,7 @@
                             android:src="@drawable/ic_rating_star" />
 
                         <TextView
+                    android:id="@+id/sellerRatingText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
@@ -184,7 +188,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Follow"
-                        android:textColor="#FF4B2B"
+                        android:textColor="@color/role_faculty"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -209,6 +213,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                    android:id="@+id/statListings"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="12"
@@ -238,6 +243,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                    android:id="@+id/statReviews"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="5"
@@ -267,6 +273,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                    android:id="@+id/statOrders"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="4"
@@ -277,7 +284,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Orders"
+                        android:text="Points"
                         android:textColor="#333333"
                         android:textSize="12sp" />
 
@@ -307,7 +314,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Listings"
-                        android:textColor="#FF4B2B"
+                        android:textColor="@color/role_faculty"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -343,278 +350,15 @@
                 android:layout_marginTop="18dp"
                 android:orientation="vertical">
 
-                <!-- LAPTOP -->
-                <LinearLayout
-                    android:id="@+id/productLaptop"
+                <TextView
+                    android:id="@+id/listingsEmpty"
                     android:layout_width="match_parent"
-                    android:layout_height="118dp"
-                    android:background="@drawable/bg_seller_product_card"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="110dp"
-                        android:layout_height="98dp"
-                        android:background="#F3F3F3"
-                        android:padding="4dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/dell_laptop_1" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Dell Laptop"
-                            android:textColor="#111111"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:id="@+id/sellerLaptopPrice"
-                            android:text="R8,499"
-                            android:textColor="#FF4B2B"
-                            android:textSize="17sp"
-                            android:textStyle="bold" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="17dp"
-                                android:layout_height="17dp"
-                                android:src="@drawable/ic_rating_star" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="5dp"
-                                android:text="4.9 (122 reviews)"
-                                android:textColor="#555555"
-                                android:textSize="11sp" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/sellerFavouriteLaptop"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/bg_favourite_button"
-                        android:contentDescription="Favourite"
-                        android:padding="6dp"
-                        android:src="@drawable/ic_favourite"
-                        app:tint="#555555" />
-
-                </LinearLayout>
-
-                <!-- MOUSE -->
-                <LinearLayout
-                    android:id="@+id/productMouse"
-                    android:layout_width="match_parent"
-                    android:layout_height="118dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_seller_product_card"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="110dp"
-                        android:layout_height="98dp"
-                        android:padding="6dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/hp_mouse_1" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Bluetooth Mouse"
-                            android:textColor="#111111"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:id="@+id/sellerMousePrice"
-                            android:text="R600"
-                            android:textColor="#FF4B2B"
-                            android:textSize="17sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="⭐ 4.8 (86 reviews)"
-                            android:textColor="#555555"
-                            android:textSize="11sp" />
-
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/sellerFavouriteMouse"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/bg_favourite_button"
-                        android:contentDescription="Favourite"
-                        android:padding="6dp"
-                        android:src="@drawable/ic_favourite"
-                        app:tint="#555555" />
-
-                </LinearLayout>
-
-                <!-- HEADPHONES -->
-                <LinearLayout
-                    android:id="@+id/productHeadphones"
-                    android:layout_width="match_parent"
-                    android:layout_height="118dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_seller_product_card"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="110dp"
-                        android:layout_height="98dp"
-                        android:padding="6dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/volkano_headphones_1" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Headphones"
-                            android:textColor="#111111"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:id="@+id/sellerHeadphonesPrice"
-                            android:text="R950"
-                            android:textColor="#FF4B2B"
-                            android:textSize="17sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="⭐ 4.9 (122 reviews)"
-                            android:textColor="#555555"
-                            android:textSize="11sp" />
-
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/sellerFavouriteHeadphones"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/bg_favourite_button"
-                        android:contentDescription="Favourite"
-                        android:padding="6dp"
-                        android:src="@drawable/ic_favourite"
-                        app:tint="#555555" />
-
-                </LinearLayout>
-
-                <!-- CHAIR -->
-                <LinearLayout
-                    android:id="@+id/productChair"
-                    android:layout_width="match_parent"
-                    android:layout_height="118dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_seller_product_card"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:layout_width="110dp"
-                        android:layout_height="98dp"
-                        android:padding="6dp"
-                        android:scaleType="centerInside"
-                        android:src="@drawable/game_chair_1" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Gaming Chair"
-                            android:textColor="#111111"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:id="@+id/sellerChairPrice"
-                            android:text="R2,500"
-                            android:textColor="#FF4B2B"
-                            android:textSize="17sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:text="⭐ 4.9 (57 reviews)"
-                            android:textColor="#555555"
-                            android:textSize="11sp" />
-
-                    </LinearLayout>
-
-                    <ImageView
-                        android:id="@+id/sellerFavouriteChair"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="@drawable/bg_favourite_button"
-                        android:contentDescription="Favourite"
-                        android:padding="6dp"
-                        android:src="@drawable/ic_favourite"
-                        app:tint="#555555" />
-
-                </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:text="Loading listings..."
+                    android:textColor="#666666"
+                    android:textSize="13sp" />
 
             </LinearLayout>
 
@@ -628,56 +372,37 @@
                 android:visibility="gone">
 
                 <TextView
+                    android:id="@+id/reviewsAverage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="4.9"
+                    android:text="0.0"
                     android:textColor="#111111"
                     android:textSize="36sp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/reviewsStars"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="⭐⭐⭐⭐⭐"
+                    android:text="☆☆☆☆☆"
+                    android:textColor="#FFB300"
                     android:textSize="18sp" />
 
                 <TextView
+                    android:id="@+id/reviewsCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="122 reviews"
+                    android:text="No reviews yet"
                     android:textColor="#666666"
                     android:textSize="13sp" />
 
-                <TextView
+                <LinearLayout
+                    android:id="@+id/reviewsList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="22dp"
-                    android:background="@drawable/bg_review_card"
-                    android:padding="16dp"
-                    android:text="Sarah L.     ⭐⭐⭐⭐⭐&#10;&#10;Great product and fast delivery. Highly recommend this seller!"
-                    android:textColor="#222222"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_review_card"
-                    android:padding="16dp"
-                    android:text="Thabo M.     ⭐⭐⭐⭐⭐&#10;&#10;Excellent communication and very reliable."
-                    android:textColor="#222222"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/bg_review_card"
-                    android:padding="16dp"
-                    android:text="Amy N.     ⭐⭐⭐⭐&#10;&#10;Good service and quick response. Happy with my purchase."
-                    android:textColor="#222222"
-                    android:textSize="13sp" />
+                    android:layout_marginTop="10dp"
+                    android:orientation="vertical" />
 
             </LinearLayout>
 

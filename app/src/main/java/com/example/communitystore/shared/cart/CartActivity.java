@@ -79,6 +79,7 @@ public class CartActivity extends AppCompatActivity {
             intent.putExtra("totalAmount", currentTotal);
             intent.putExtra("subtotalAmount", getSubtotal());
             intent.putExtra("deliveryAmount", DELIVERY_FEE);
+            intent.putExtra("orderNote", noteEditText.getText().toString().trim());
             startActivity(intent);
         });
     }
@@ -195,23 +196,9 @@ public class CartActivity extends AppCompatActivity {
                 ColorStateList.valueOf(themeColor)
         );
 
-        getWindow().setStatusBarColor(themeColor);
     }
 
     private int getThemeColor(UserRole role) {
-        if (role == null) return Color.parseColor("#168FC1");
-
-        switch (role) {
-            case STUDENT:
-                return Color.parseColor("#168FC1");
-            case FACULTY:
-                return Color.parseColor("#FF4B2B");
-            case VENDOR:
-                return Color.parseColor("#FFA726");
-            case RESIDENCE:
-                return Color.parseColor("#4B00D1");
-            default:
-                return Color.parseColor("#168FC1");
-        }
+        return com.example.communitystore.shared.utils.ThemeUtils.colorFor(this, role);
     }
 }

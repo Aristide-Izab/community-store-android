@@ -136,7 +136,10 @@ public class StudentMarketProductAdapter extends RecyclerView.Adapter<RecyclerVi
                             ? String.format(Locale.US, "R%,.0f", product.price)
                             : "Message for price"
             );
-            rating.setText(String.format(Locale.US, "%.1f", product.rating));
+            // No per-listing ratings: show whether it's a sample or a member's listing.
+            rating.setText(product.source != null && product.source.sample
+                    ? "Sample"
+                    : (product.condition.isEmpty() ? product.source.category : product.condition));
             verified.setTextColor(ThemeUtils.primary(context));
 
             setFavouriteStyle(favourite, favourites.contains(product.id));

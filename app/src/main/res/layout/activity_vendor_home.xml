@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFA726"
+    android:background="@color/role_vendor"
     android:orientation="vertical">
 
     <LinearLayout
@@ -49,7 +49,7 @@
                 android:focusable="true"
                 android:padding="11dp"
                 android:src="@drawable/ic_profile_outline"
-                android:tint="#FFA726" />
+                android:tint="@color/role_vendor" />
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
@@ -71,11 +71,11 @@
                     app:cardCornerRadius="16dp"
                     app:cardElevation="0dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="16dp">
-                        <ImageView android:layout_width="46dp" android:layout_height="46dp" android:src="@drawable/ic_diamond" android:tint="#FFA726" android:contentDescription="Loyalty points" />
+                        <ImageView android:layout_width="46dp" android:layout_height="46dp" android:src="@drawable/ic_diamond" android:tint="@color/role_vendor" android:contentDescription="Loyalty points" />
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1,240" android:textColor="#111111" android:textSize="20sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/pointsText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="1,240" android:textColor="#111111" android:textSize="20sp" android:textStyle="bold" />
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Loyalty Points" android:textColor="#707070" android:textSize="13sp" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="100 pts/month" android:textColor="#808080" android:textSize="12sp" />
+                            <TextView android:id="@+id/pointsHint" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="100 pts/month" android:textColor="#808080" android:textSize="12sp" />
                         </LinearLayout>
                         <TextView android:id="@+id/viewRewardsButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:padding="6dp" android:text="View Rewards" android:textColor="#4A4A4A" android:textSize="13sp" android:textStyle="bold" />
                     </LinearLayout>
@@ -88,14 +88,14 @@
                         app:cardBackgroundColor="#FFEDD5" app:cardCornerRadius="16dp" app:cardElevation="0dp">
                         <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Total Sales" android:textColor="#555555" android:textSize="12sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="R24,750" android:textColor="#111111" android:textSize="15sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/salesTotalText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="R24,750" android:textColor="#111111" android:textSize="15sp" android:textStyle="bold" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
                     <Space android:layout_width="12dp" android:layout_height="1dp" />
                     <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" app:cardBackgroundColor="#FFEDD5" app:cardCornerRadius="16dp" app:cardElevation="0dp">
                         <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Orders" android:textColor="#555555" android:textSize="12sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="134" android:textColor="#111111" android:textSize="15sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/ordersCountText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="134" android:textColor="#111111" android:textSize="15sp" android:textStyle="bold" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
                     <Space android:layout_width="12dp" android:layout_height="1dp" />
@@ -116,6 +116,10 @@
                         <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="Messages" android:textColor="#111111" android:textStyle="bold" />
                     </com.google.android.material.card.MaterialCardView>
                     <Space android:layout_width="12dp" android:layout_height="1dp" />
+                    <com.google.android.material.card.MaterialCardView android:id="@+id/addProductQuickCard" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:clickable="true" android:focusable="true" app:cardBackgroundColor="#F8FAFC" app:cardCornerRadius="14dp" app:cardElevation="0dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="Add Product" android:textColor="#111111" android:textStyle="bold" />
+                    </com.google.android.material.card.MaterialCardView>
+                    <Space android:layout_width="12dp" android:layout_height="1dp" />
                     <com.google.android.material.card.MaterialCardView android:id="@+id/leaderboardQuickCard" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:clickable="true" android:focusable="true" app:cardBackgroundColor="#F8FAFC" app:cardCornerRadius="14dp" app:cardElevation="0dp">
                         <TextView android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="Leaderboard" android:textColor="#111111" android:textStyle="bold" />
                     </com.google.android.material.card.MaterialCardView>
@@ -126,9 +130,8 @@
                     <TextView android:id="@+id/moreOrdersButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:clickable="true" android:focusable="true" android:padding="6dp" android:text="More" android:textColor="#777777" android:textSize="14sp" />
                 </LinearLayout>
 
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="#F8FAFC" android:padding="16dp" android:text="Textbook\nR175                                              Processing" android:textColor="#111111" />
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#F8FAFC" android:padding="16dp" android:text="Textbook\nR175                                               Delivered" android:textColor="#111111" />
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#F8FAFC" android:padding="16dp" android:text="Textbook\nR175                                               Delivered" android:textColor="#111111" />
+                <LinearLayout android:id="@+id/recentOrdersList" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:orientation="vertical" />
+                <TextView android:id="@+id/recentOrdersEmpty" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="#F8FAFC" android:gravity="center" android:padding="16dp" android:text="No orders yet. Add products so students can find you!" android:textColor="#64748B" />
                 <Space android:layout_width="1dp" android:layout_height="24dp" />
             </LinearLayout>
         </ScrollView>

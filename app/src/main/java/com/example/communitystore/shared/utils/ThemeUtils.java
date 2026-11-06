@@ -5,6 +5,10 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
+import com.example.communitystore.R;
+
 import com.example.communitystore.core.access.UserRole;
 import com.example.communitystore.core.session.SessionManager;
 
@@ -13,24 +17,36 @@ public final class ThemeUtils {
     private ThemeUtils() {
     }
 
+    /** Colour of the signed-in account type (falls back to Student blue). */
     public static int primary(Context context) {
-        UserRole role = new SessionManager(context).getUserRole();
+        return colorFor(context, new SessionManager(context).getUserRole());
+    }
 
+    /**
+     * Single source of truth for account type colours.
+     * The values live in res/values/colors.xml (role_*).
+     */
+    public static int colorFor(Context context, UserRole role) {
         if (role == null) {
-            return Color.parseColor("#168FC1");
+            return ContextCompat.getColor(context, R.color.role_student);
         }
 
         switch (role) {
             case FACULTY:
-                return Color.parseColor("#FF4B2B");
+                return ContextCompat.getColor(context, R.color.role_faculty);
             case VENDOR:
-                return Color.parseColor("#FFA726");
+                return ContextCompat.getColor(context, R.color.role_vendor);
             case RESIDENCE:
-                return Color.parseColor("#4B00D1");
+                return ContextCompat.getColor(context, R.color.role_residence);
             case STUDENT:
             default:
-                return Color.parseColor("#168FC1");
+                return ContextCompat.getColor(context, R.color.role_student);
         }
+    }
+
+    /** Same colour with an alpha (0-255), for light tinted backgrounds. */
+    public static int withAlpha(int color, int alpha) {
+        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
     public static int dp(Context context, float value) {
@@ -57,7 +73,7 @@ public final class ThemeUtils {
         return drawable;
     }
 
-        public static void styleChip(TextView chip, boolean selected) {
+    public static void styleChip(TextView chip, boolean selected) {
         Context context = chip.getContext();
 
         if (selected) {
@@ -71,7 +87,7 @@ public final class ThemeUtils {
         chip.setSelected(selected);
     }
 
-        public static void stylePrimaryButton(TextView button) {
+    public static void stylePrimaryButton(TextView button) {
         Context context = button.getContext();
         button.setBackground(rounded(context, primary(context), Color.TRANSPARENT, 22));
         button.setTextColor(Color.WHITE);

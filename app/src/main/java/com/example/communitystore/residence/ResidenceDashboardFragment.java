@@ -1,6 +1,13 @@
 package com.example.communitystore.residence;
 
 import com.example.communitystore.R;
+import com.example.communitystore.core.session.AuthSession;
+import com.example.communitystore.shared.data.Formatters;
+import com.example.communitystore.shared.data.Order;
+import com.example.communitystore.shared.data.OrderRepository;
+import com.example.communitystore.shared.data.ProductRepository;
+import com.example.communitystore.shared.data.UserDirectory;
+import com.example.communitystore.shared.orders.OrderDetailActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,23 +22,21 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.AggregateSource;
-import com.google.firebase.firestore.FirebaseFirestore;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
 
-// home tab
+// home tab: greeting, points, sales totals and recent orders (all live)
 public class ResidenceDashboardFragment extends Fragment {
 
-    // dummy orders for now (title, price, status)
-    private static final String[][] SAMPLE_RECENT_ORDERS = {
-            {"Textbook", "R175", "Processing"},
-            {"Textbook", "R175", "Delivered"},
-            {"Textbook", "R175", "Delivered"}
-    };
+    private static final int RECENT_ORDERS = 3;
 
     private TextView greetingText;
     private TextView productsCountText;
+    private TextView totalSalesText;
+    private TextView ordersCountText;
+    private TextView loyaltyPointsText;
+    private LinearLayout recentOrdersList;
 
     @Nullable
     @Override
@@ -54,11 +59,15 @@ public class ResidenceDashboardFragment extends Fragment {
             @Nullable Bundle savedInstanceState
     ) {
 
-        greetingText =
-                view.findViewById(R.id.greetingText);
+        greetingText = view.findViewById(R.id.greetingText);
+        productsCountText = view.findViewById(R.id.productsCountText);
+        totalSalesText = view.findViewById(R.id.totalSalesText);
+        ordersCountText = view.findViewById(R.id.ordersCountText);
+        loyaltyPointsText = view.findViewById(R.id.loyaltyPointsText);
+        recentOrdersList = view.findViewById(R.id.recentOrdersList);
 
-        productsCountText =
-                view.findViewById(R.id.productsCountText);
+        ((TextView) view.findViewById(R.id.loyaltyCaption))
+                .setText("Loyalty Points\nEarned on delivered orders");
 
         greetingText.setText(
                 ResidenceUi.greeting()
@@ -93,22 +102,29 @@ public class ResidenceDashboardFragment extends Fragment {
                                 )
                         )
                 );
-
-        showRecentOrders(
-                view.findViewById(R.id.recentOrdersList)
-        );
-
-        loadName();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
-        loadProductCount();
+        load();
     }
 
-    private void loadName() {
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            load();
+        }
+    }
+
+    private void load() {
+
+        String uid = AuthSession.uid();
+
+        if (uid == null) {
+            return;
+        }
 
         ResidenceUi.loadProfile(profile -> {
 
@@ -124,67 +140,77 @@ public class ResidenceDashboardFragment extends Fragment {
                             profile.getString("displayName")
                     )
             );
+
+            loyaltyPointsText.setText(
+                    NumberFormat.getIntegerInstance(Locale.US)
+                            .format(UserDirectory.points(profile))
+            );
+        });
+
+        ProductRepository.loadActiveBySeller(uid, (products, error) -> {
+            if (isAdded()) {
+                productsCountText.setText(String.valueOf(products.size()));
+            }
+        });
+
+        OrderRepository.loadAsSeller(uid, (orders, error) -> {
+            if (!isAdded()) {
+                return;
+            }
+
+            int count = 0;
+            for (Order order : orders) {
+                if (!Order.STATUS_CANCELLED.equals(order.status)) {
+                    count++;
+                }
+            }
+
+            totalSalesText.setText(Formatters.price(OrderRepository.sales(orders)));
+            ordersCountText.setText(String.valueOf(count));
+            showRecentOrders(orders);
         });
     }
 
-    private void loadProductCount() {
-
-        FirebaseUser user =
-                FirebaseAuth.getInstance()
-                        .getCurrentUser();
-
-        if (user == null) {
-            return;
-        }
-
-        FirebaseFirestore.getInstance()
-                .collection("products")
-                .whereEqualTo(
-                        "sellerId",
-                        user.getUid()
-                )
-                .count()
-                .get(AggregateSource.SERVER)
-                .addOnSuccessListener(snapshot -> {
-
-                    if (!isAdded()) {
-                        return;
-                    }
-
-                    productsCountText.setText(
-                            String.valueOf(snapshot.getCount())
-                    );
-                });
-    }
-
     private void showRecentOrders(
-            LinearLayout list
+            List<Order> orders
     ) {
+
+        recentOrdersList.removeAllViews();
 
         LayoutInflater inflater =
                 LayoutInflater.from(requireContext());
 
-        for (String[] order : SAMPLE_RECENT_ORDERS) {
+        if (orders.isEmpty()) {
+            TextView empty = new TextView(requireContext());
+            empty.setText("No orders yet. Your sales will show here.");
+            empty.setPadding(24, 24, 24, 24);
+            recentOrdersList.addView(empty);
+            return;
+        }
+
+        for (int i = 0; i < orders.size() && i < RECENT_ORDERS; i++) {
+
+            Order order = orders.get(i);
 
             View row =
                     inflater.inflate(
                             R.layout.item_residence_product_row,
-                            list,
+                            recentOrdersList,
                             false
                     );
 
             ((TextView) row.findViewById(R.id.productTitle))
-                    .setText(order[0]);
+                    .setText(order.firstTitle());
 
             ((TextView) row.findViewById(R.id.productPrice))
-                    .setText(order[1]);
+                    .setText(Formatters.price(order.total));
 
             TextView status =
                     row.findViewById(R.id.productStatus);
 
-            status.setText(order[2]);
+            status.setText(order.statusLabel());
 
-            if ("Processing".equals(order[2])) {
+            if (order.isOpen()) {
 
                 status.setBackgroundResource(
                         R.drawable.bg_residence_status_processing
@@ -196,9 +222,18 @@ public class ResidenceDashboardFragment extends Fragment {
                                 R.color.residence_orange
                         )
                 );
+
+            } else if (Order.STATUS_CANCELLED.equals(order.status)) {
+
+                status.setBackgroundResource(
+                        R.drawable.bg_residence_status_inactive
+                );
             }
 
-            list.addView(row);
+            row.setOnClickListener(v ->
+                    OrderDetailActivity.open(requireContext(), order.id));
+
+            recentOrdersList.addView(row);
         }
     }
 }

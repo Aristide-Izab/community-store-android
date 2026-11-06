@@ -32,7 +32,7 @@ public class BottomNavThemeManager {
                 sessionManager.getUserRole();
 
         int themeColor =
-                getThemeColor(role);
+                com.example.communitystore.shared.utils.ThemeUtils.colorFor(activity, role);
 
         LinearLayout navHome =
                 activity.findViewById(R.id.navHome);
@@ -176,47 +176,5 @@ public class BottomNavThemeManager {
         }
     }
 
-    private static int getThemeColor(
-            UserRole role
-    ) {
 
-        if (role == null) {
-            return Color.parseColor(
-                    "#168FC1"
-            );
-        }
-
-        switch (role) {
-
-            case STUDENT:
-
-                return Color.parseColor(
-                        "#168FC1"
-                );
-
-            case FACULTY:
-
-                return Color.parseColor(
-                        "#FF4B2B"
-                );
-
-            case VENDOR:
-
-                return Color.parseColor(
-                        "#FFA726"
-                );
-
-            case RESIDENCE:
-
-                return Color.parseColor(
-                        "#4B00D1"
-                );
-
-            default:
-
-                return Color.parseColor(
-                        "#168FC1"
-                );
-        }
-    }
 }

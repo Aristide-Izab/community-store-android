@@ -15,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.communitystore.R;
+import com.example.communitystore.shared.data.Post;
+import com.example.communitystore.shared.data.PostRepository;
 import com.example.communitystore.shared.utils.ThemeUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -85,7 +87,11 @@ public class FacultyAddPostActivity extends AppCompatActivity {
 
         if (btnAddImage != null) {
             btnAddImage.setOnClickListener(v ->
-                    Toast.makeText(this, "Select image clicked", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                            this,
+                            "Post images need Firebase Storage (paid plan), so posts are text-only for now.",
+                            Toast.LENGTH_LONG
+                    ).show()
             );
         }
 
@@ -150,6 +156,7 @@ public class FacultyAddPostActivity extends AppCompatActivity {
                 .show();
     }
 
+    /** Saves the post to Firestore "posts"; the community board updates live. */
     private void publishPost() {
         String title = etPostTitle.getText().toString().trim();
         String category = etCategory.getText().toString().trim();
@@ -157,16 +164,23 @@ public class FacultyAddPostActivity extends AppCompatActivity {
         String location = etLocation.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
 
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra("post_title", title);
-        resultIntent.putExtra("post_category", category);
-        resultIntent.putExtra("post_datetime", dateTime);
-        resultIntent.putExtra("post_location", location);
-        resultIntent.putExtra("post_description", description);
+        if (!Post.CATEGORY_EVENT.equals(category) && !Post.CATEGORY_ANNOUNCEMENT.equals(category)) {
+            Toast.makeText(this, "Choose Event or Announcement as the category", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        setResult(RESULT_OK, resultIntent);
-        Toast.makeText(this, "Published to All & " + category + "!", Toast.LENGTH_SHORT).show();
-        finish();
+        btnPublish.setEnabled(false);
+
+        PostRepository.create(this, category, title, dateTime, location, description)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Published to All & " + category + "!", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    btnPublish.setEnabled(true);
+                    Toast.makeText(this, "Couldn't publish: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     private boolean validateInputs() {

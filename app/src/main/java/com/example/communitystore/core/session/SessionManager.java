@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 
 import com.example.communitystore.core.access.UserRole;
 
+/**
+ * Small local cache of the signed-in account (role and display name),
+ * so screens can theme themselves without waiting for Firestore.
+ */
 public class SessionManager {
 
     private static final String PREF_NAME =
@@ -12,6 +16,9 @@ public class SessionManager {
 
     private static final String KEY_ACCOUNT_TYPE =
             "accountType";
+
+    private static final String KEY_DISPLAY_NAME =
+            "displayName";
 
     private final SharedPreferences preferences;
 
@@ -49,10 +56,30 @@ public class SessionManager {
         return UserRole.fromString(role);
     }
 
+    public void saveDisplayName(String displayName) {
+
+        preferences.edit()
+                .putString(
+                        KEY_DISPLAY_NAME,
+                        displayName == null ? "" : displayName
+                )
+                .apply();
+    }
+
+    /** Cached display name, or "" when unknown. */
+    public String getDisplayName() {
+
+        return preferences.getString(
+                KEY_DISPLAY_NAME,
+                ""
+        );
+    }
+
     public void clearSession() {
 
         preferences.edit()
                 .remove(KEY_ACCOUNT_TYPE)
+                .remove(KEY_DISPLAY_NAME)
                 .apply();
     }
 }

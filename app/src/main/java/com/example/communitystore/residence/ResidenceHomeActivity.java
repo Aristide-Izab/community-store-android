@@ -18,6 +18,9 @@ public class ResidenceHomeActivity extends AppCompatActivity {
     public static final int TAB_MESSAGES = 3;
     public static final int TAB_PROFILE = 4;
 
+    /** Optional extra: which tab to open (TAB_HOME ... TAB_PROFILE). */
+    public static final String EXTRA_TAB = "tab";
+
     private static final String STATE_TAB =
             "selectedTab";
 
@@ -79,9 +82,19 @@ public class ResidenceHomeActivity extends AppCompatActivity {
         int initialTab =
                 savedInstanceState != null
                         ? savedInstanceState.getInt(STATE_TAB, TAB_HOME)
-                        : TAB_HOME;
+                        : getIntent().getIntExtra(EXTRA_TAB, TAB_HOME);
 
         selectTab(initialTab);
+    }
+
+    @Override
+    protected void onNewIntent(android.content.Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        if (intent.hasExtra(EXTRA_TAB)) {
+            selectTab(intent.getIntExtra(EXTRA_TAB, TAB_HOME));
+        }
     }
 
     @Override

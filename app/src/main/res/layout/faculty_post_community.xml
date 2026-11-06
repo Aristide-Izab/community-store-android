@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FF4B26"
+    android:background="@color/role_faculty"
     tools:context=".faculty.FacultyAddPostActivity">
 
     <!-- Top Toolbar Header -->
@@ -13,7 +13,7 @@
         android:id="@+id/topAppBar"
         android:layout_width="0dp"
         android:layout_height="80dp"
-        android:background="#FF4B26"
+        android:background="@color/role_faculty"
         app:contentInsetStart="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -245,11 +245,11 @@
                         android:paddingBottom="0dp"
                         android:text="Preview"
                         android:textAllCaps="false"
-                        android:textColor="#FF4B26"
+                        android:textColor="@color/role_faculty"
                         android:textSize="15sp"
                         android:textStyle="bold"
                         app:cornerRadius="8dp"
-                        app:strokeColor="#FF4B26"
+                        app:strokeColor="@color/role_faculty"
                         app:strokeWidth="1.5dp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -265,7 +265,7 @@
                         android:textColor="@android:color/white"
                         android:textSize="15sp"
                         android:textStyle="bold"
-                        app:backgroundTint="#FF4B26"
+                        app:backgroundTint="@color/role_faculty"
                         app:cornerRadius="8dp" />
                 </LinearLayout>
 

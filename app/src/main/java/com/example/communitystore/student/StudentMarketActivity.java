@@ -18,6 +18,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.communitystore.R;
 import com.example.communitystore.core.access.BottomNavThemeManager;
 import com.example.communitystore.shared.cart.CartActivity;
+import com.example.communitystore.shared.data.Product;
+import com.example.communitystore.shared.data.ProductRepository;
+import com.example.communitystore.shared.orders.OrdersActivity;
 import com.example.communitystore.shared.product.ProductInfoActivity;
 import com.example.communitystore.shared.utils.BottomNavHelper;
 import com.example.communitystore.shared.utils.ThemeUtils;
@@ -39,7 +42,7 @@ public class StudentMarketActivity extends AppCompatActivity {
     private static final int SORT_NEWEST = 3;
     private static final int SORT_POPULAR = 4;
 
-    private static final String[] CATEGORIES = {"Books", "Tech", "Services"};
+    private static final String[] CATEGORIES = {"Books", "Tech", "Services", "Other"};
 
     private final List<StudentMarketProduct> catalog = new ArrayList<>();
     private final Set<String> selectedCategories = new LinkedHashSet<>();
@@ -64,7 +67,6 @@ public class StudentMarketActivity extends AppCompatActivity {
 
         findViewById(R.id.marketRoot).setBackgroundColor(ThemeUtils.primary(this));
 
-        loadCatalog();
         setupRecycler();
         setupSearch();
         setupChips();
@@ -78,48 +80,36 @@ public class StudentMarketActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         BottomNavThemeManager.apply(this, "market");
+        loadCatalog();
     }
 
+    /** Real Firestore listings first, then the built-in sample listings. */
     private void loadCatalog() {
-        catalog.add(new StudentMarketProduct("b1", "Java Textbook", "Books", 250, "Used",
-                "Textbook in good condition. Ideal for students.", 4.5f, 40, 8,
-                R.drawable.textbook_java_1, R.drawable.textbook_java_2));
-        catalog.add(new StudentMarketProduct("b2", "Intro to Java", "Books", 180, "Like New",
-                "Second-hand copy, lightly highlighted.", 4.2f, 22, 6,
-                R.drawable.textbook_java_2, R.drawable.textbook_java_1));
-        catalog.add(new StudentMarketProduct("b3", "Calculus Notes", "Books", 120, "New",
-                "Printed summary notes for first-year calculus.", 4.0f, 10, 9,
-                R.drawable.textbook_java_1));
+        emptyText.setText("Loading listings...");
+        emptyText.setVisibility(View.VISIBLE);
 
-        catalog.add(new StudentMarketProduct("t1", "iPhone 15", "Tech", 16000, "Like New",
-                "Excellent condition. Comes with original accessories.", 4.5f, 95, 7,
-                R.drawable.iphone_15_image_1, R.drawable.iphone_15_image_2));
-        catalog.add(new StudentMarketProduct("t2", "Volkano Headphones", "Tech", StudentMarketProduct.MESSAGE_FOR_PRICE, "New",
-                "Wireless headphones. Message the seller for pricing.", 4.3f, 60, 5,
-                R.drawable.volkano_headphones_1, R.drawable.volkano_headphones_2, R.drawable.volkano_headphones_3));
-        catalog.add(new StudentMarketProduct("t3", "Dell Laptop", "Tech", 7500, "Used",
-                "Reliable student laptop, battery in good health.", 4.6f, 80, 4,
-                R.drawable.dell_laptop_1, R.drawable.dell_laptop_2, R.drawable.dell_laptop_3, R.drawable.dell_laptop_4));
-        catalog.add(new StudentMarketProduct("t4", "HP Mouse", "Tech", 180, "New",
-                "Wireless mouse, unopened.", 4.1f, 18, 3,
-                R.drawable.hp_mouse_1, R.drawable.hp_mouse_2));
-        catalog.add(new StudentMarketProduct("t5", "Gaming Chair", "Tech", 1800, "Used",
-                "Comfortable ergonomic chair.", 4.4f, 35, 2,
-                R.drawable.game_chair_1, R.drawable.game_chair_2, R.drawable.game_chair_3, R.drawable.game_chair_4));
+        ProductRepository.loadMarketplace((products, error) -> {
+            catalog.clear();
 
-        catalog.add(new StudentMarketProduct("s1", "Tutor", "Services", StudentMarketProduct.MESSAGE_FOR_PRICE, "",
-                "Private tutoring available. Contact the seller for more information.", 4.5f, 70, 10,
-                R.drawable.tutor_1, R.drawable.tutor_2));
-        catalog.add(new StudentMarketProduct("s2", "Proofreading", "Services", 120, "",
-                "Assignment and essay proofreading.", 4.0f, 25, 1,
-                R.drawable.tutor_2));
-        catalog.add(new StudentMarketProduct("s3", "Laptop Repairs", "Services", StudentMarketProduct.MESSAGE_FOR_PRICE, "",
-                "Screen, battery and software repairs.", 4.7f, 50, 0,
-                R.drawable.dell_laptop_2));
+            for (Product product : products) {
+                catalog.add(new StudentMarketProduct(product));
+            }
+
+            emptyText.setText("No listings match your search.");
+            refresh();
+
+            if (error != null) {
+                Toast.makeText(
+                        this,
+                        "Couldn't load new listings. Showing samples only.",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
     }
 
     protected void openMyOrders() {
-        startActivity(new Intent(this, StudentMyOrdersActivity.class));
+        OrdersActivity.openPurchases(this);
     }
 
     private void setupRecycler() {
@@ -233,7 +223,7 @@ public class StudentMarketActivity extends AppCompatActivity {
             }
 
             Collections.sort(group, comparator());
-            rows.add(StudentMarketRow.header("Tech".equals(category) ? "Technology" : category));
+            rows.add(StudentMarketRow.header(sectionTitle(category)));
 
             for (StudentMarketProduct product : group) {
                 rows.add(StudentMarketRow.product(product));
@@ -244,6 +234,16 @@ public class StudentMarketActivity extends AppCompatActivity {
         emptyText.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
+    private static String sectionTitle(String category) {
+        if ("Tech".equals(category)) {
+            return "Technology";
+        }
+        if ("Other".equals(category)) {
+            return "More Finds";
+        }
+        return category;
+    }
+
     private boolean matches(StudentMarketProduct p) {
         if (!selectedCategories.isEmpty() && !selectedCategories.contains(p.category)) {
             return false;
@@ -251,7 +251,9 @@ public class StudentMarketActivity extends AppCompatActivity {
 
         if (!query.isEmpty()
                 && !p.title.toLowerCase(Locale.ROOT).contains(query)
-                && !p.category.toLowerCase(Locale.ROOT).contains(query)) {
+                && !p.category.toLowerCase(Locale.ROOT).contains(query)
+                && !p.source.category.toLowerCase(Locale.ROOT).contains(query)
+                && !p.description.toLowerCase(Locale.ROOT).contains(query)) {
             return false;
         }
 
@@ -285,7 +287,7 @@ public class StudentMarketActivity extends AppCompatActivity {
                         b.hasFixedPrice() ? b.price : -1,
                         a.hasFixedPrice() ? a.price : -1);
             case SORT_NEWEST:
-                return (a, b) -> Integer.compare(b.postedOrder, a.postedOrder);
+                return (a, b) -> Long.compare(b.postedAt, a.postedAt);
             case SORT_POPULAR:
                 return (a, b) -> Integer.compare(b.popularity, a.popularity);
             case SORT_RELEVANT:
@@ -302,16 +304,7 @@ public class StudentMarketActivity extends AppCompatActivity {
     }
 
     private void openProduct(StudentMarketProduct product) {
-        Intent intent = new Intent(this, ProductInfoActivity.class);
-        intent.putExtra("productTitle", product.title);
-        intent.putExtra("productPrice",
-                product.hasFixedPrice()
-                        ? String.format(Locale.US, "R%,.0f", product.price)
-                        : "Message for price");
-        intent.putExtra("productDescription", product.description);
-        intent.putExtra("productImage", product.images[0]);
-        intent.putExtra("productImages", product.images);
-        startActivity(intent);
+        ProductInfoActivity.open(this, product.source);
     }
 
     private void showSortSheet() {

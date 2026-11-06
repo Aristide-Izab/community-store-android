@@ -1,13 +1,6 @@
 package com.example.communitystore.auth;
 
-import com.example.communitystore.R;
-
-import android.app.AlertDialog;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,501 +11,139 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
+import com.example.communitystore.R;
+import com.example.communitystore.core.access.UserRole;
+import com.example.communitystore.core.session.AccountStatus;
+import com.example.communitystore.core.session.AuthSession;
+import com.example.communitystore.core.session.SessionManager;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Residence registration step 3: residence details + appointment letter (PDF).
+ * Reached after the residence administrator's email address is verified.
+ */
 public class ResidenceVerificationActivity extends AppCompatActivity {
-
-    private static final long MAX_FILE_SIZE =
-            10 * 1024 * 1024;
-
-    private TextView backButton;
-    private TextView selectedFileText;
 
     private EditText residenceNameInput;
     private EditText wardenEmailInput;
-
-    private Button uploadButton;
+    private TextView selectedFileText;
     private Button submitButton;
 
-    private FirebaseAuth auth;
-    private FirebaseFirestore db;
-    private FirebaseStorage storage;
+    private VerificationDocuments.PickedFile pickedFile;
 
-    private Uri selectedPdfUri;
-
-    // testing only, set to false when done
-    private static final boolean AUTO_APPROVE = true;
-
-    private final ActivityResultLauncher<String[]>
-            documentLauncher =
+    private final ActivityResultLauncher<String[]> documentLauncher =
             registerForActivityResult(
                     new ActivityResultContracts.OpenDocument(),
                     uri -> {
-
                         if (uri == null) {
                             return;
                         }
 
-                        if (!isFileSizeValid(uri)) {
+                        String[] error = new String[1];
+                        VerificationDocuments.PickedFile file =
+                                VerificationDocuments.inspect(this, uri, error);
 
-                            Toast.makeText(
-                                    this,
-                                    "PDF must be 10MB or smaller.",
-                                    Toast.LENGTH_LONG
-                            ).show();
-
+                        if (file == null) {
+                            Toast.makeText(this, error[0], Toast.LENGTH_LONG).show();
                             return;
                         }
 
-                        selectedPdfUri = uri;
-
-                        selectedFileText.setText(
-                                getFileName(uri)
-                        );
+                        pickedFile = file;
+                        selectedFileText.setText(VerificationDocuments.describe(file));
                     }
             );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_auth_residence_verification);
 
-        setContentView(
-                R.layout.activity_auth_residence_verification
-        );
+        if (AuthSession.uid() == null) {
+            Toast.makeText(this, "Please log in to continue your registration.", Toast.LENGTH_LONG).show();
+            AuthSession.logoutToWelcome(this);
+            return;
+        }
 
-        auth =
-                FirebaseAuth.getInstance();
+        new SessionManager(this).saveUserRole(UserRole.RESIDENCE);
 
-        db =
-                FirebaseFirestore.getInstance();
+        residenceNameInput = findViewById(R.id.residenceNameInput);
+        wardenEmailInput = findViewById(R.id.wardenEmailInput);
+        selectedFileText = findViewById(R.id.selectedFileText);
+        submitButton = findViewById(R.id.submitButton);
+        Button uploadButton = findViewById(R.id.uploadButton);
+        TextView reviewInfo = findViewById(R.id.reviewInfo);
 
-        storage =
-                FirebaseStorage.getInstance();
+        if (!AccountStatus.DEMO_AUTO_APPROVE) {
+            reviewInfo.setText("A residence team member will confirm your role within 1–2 working days.");
+            submitButton.setText("Submit for Approval");
+        } else {
+            submitButton.setText("Submit & Activate");
+        }
 
-        backButton =
-                findViewById(
-                        R.id.backButton
-                );
+        findViewById(R.id.backButton).setOnClickListener(v -> {
+            Toast.makeText(this, "You can finish this step later by logging in.", Toast.LENGTH_LONG).show();
+            AuthSession.logoutToWelcome(this);
+        });
 
-        selectedFileText =
-                findViewById(
-                        R.id.selectedFileText
-                );
-
-        residenceNameInput =
-                findViewById(
-                        R.id.residenceNameInput
-                );
-
-        wardenEmailInput =
-                findViewById(
-                        R.id.wardenEmailInput
-                );
-
-        uploadButton =
-                findViewById(
-                        R.id.uploadButton
-                );
-
-        submitButton =
-                findViewById(
-                        R.id.submitButton
-                );
-
-        backButton.setOnClickListener(
-                v -> finish()
-        );
-
-        uploadButton.setOnClickListener(v ->
-
-                documentLauncher.launch(
-                        new String[]{
-                                "application/pdf"
-                        }
-                )
-        );
-
-        submitButton.setOnClickListener(
-                v -> validateAndSubmit()
-        );
+        uploadButton.setOnClickListener(v -> documentLauncher.launch(new String[]{"application/pdf"}));
+        submitButton.setOnClickListener(v -> validateAndSubmit());
     }
 
     private void validateAndSubmit() {
 
-        String residenceName =
-                residenceNameInput
-                        .getText()
-                        .toString()
-                        .trim();
-
-        String wardenEmail =
-                wardenEmailInput
-                        .getText()
-                        .toString()
-                        .trim();
+        String residenceName = residenceNameInput.getText().toString().trim();
+        String wardenEmail = wardenEmailInput.getText().toString().trim();
 
         if (residenceName.isEmpty()) {
-
-            residenceNameInput.setError(
-                    "Enter the residence or campus house"
-            );
-
+            residenceNameInput.setError("Enter the residence or campus house");
             residenceNameInput.requestFocus();
             return;
         }
 
         if (wardenEmail.isEmpty()) {
-
-            wardenEmailInput.setError(
-                    "Enter the warden email"
-            );
-
+            wardenEmailInput.setError("Enter the warden email");
             wardenEmailInput.requestFocus();
             return;
         }
 
-        if (!Patterns.EMAIL_ADDRESS
-                .matcher(wardenEmail)
-                .matches()) {
-
-            wardenEmailInput.setError(
-                    "Enter a valid email address"
-            );
-
+        if (!Patterns.EMAIL_ADDRESS.matcher(wardenEmail).matches()) {
+            wardenEmailInput.setError("Enter a valid email address");
             wardenEmailInput.requestFocus();
             return;
         }
 
-        if (selectedPdfUri == null) {
-
-            Toast.makeText(
-                    this,
-                    "Please upload your appointment letter.",
-                    Toast.LENGTH_SHORT
-            ).show();
-
+        if (pickedFile == null) {
+            Toast.makeText(this, "Please choose your appointment letter (PDF).", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        uploadResidenceApplication(
-                residenceName,
-                wardenEmail
-        );
-    }
-
-    private void uploadResidenceApplication(
-            String residenceName,
-            String wardenEmail
-    ) {
-
-        FirebaseUser user =
-                auth.getCurrentUser();
-
-        if (user == null) {
-
-            Toast.makeText(
-                    this,
-                    "Registration session was lost.",
-                    Toast.LENGTH_LONG
-            ).show();
-
+        if (AuthSession.uid() == null) {
+            Toast.makeText(this, "Your session expired. Please log in again.", Toast.LENGTH_LONG).show();
+            AuthSession.logoutToWelcome(this);
             return;
         }
 
+        String label = submitButton.getText().toString();
         submitButton.setEnabled(false);
-        submitButton.setText("Uploading...");
+        submitButton.setText("Submitting...");
 
-        String uid =
-                user.getUid();
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("residenceName", residenceName);
+        fields.put("wardenEmail", wardenEmail);
 
-        StorageReference reference =
-                storage.getReference()
-                        .child(
-                                "residence_documents/"
-                                        + uid
-                                        + "/appointment_letter.pdf"
-                        );
-
-        reference.putFile(selectedPdfUri)
-
-                .continueWithTask(task -> {
-
-                    if (!task.isSuccessful()) {
-
-                        if (task.getException() != null) {
-
-                            throw task.getException();
-                        }
-                    }
-
-                    return reference.getDownloadUrl();
-                })
-
-                .addOnSuccessListener(downloadUri ->
-
-                        saveResidenceApplication(
-                                user,
-                                residenceName,
-                                wardenEmail,
-                                downloadUri.toString()
-                        )
+        VerificationDocuments.submit(
+                        UserRole.RESIDENCE,
+                        pickedFile,
+                        "Appointment letter",
+                        fields
                 )
-
+                .addOnSuccessListener(unused -> VerificationDocuments.finish(this, UserRole.RESIDENCE))
                 .addOnFailureListener(e -> {
-
-                    if (AUTO_APPROVE) {
-
-                        saveResidenceApplication(
-                                user,
-                                residenceName,
-                                wardenEmail,
-                                ""
-                        );
-
-                        return;
-                    }
-
                     submitButton.setEnabled(true);
-
-                    submitButton.setText(
-                            "Submit for Approval"
-                    );
-
-                    Toast.makeText(
-                            this,
-                            "Upload failed: "
-                                    + e.getMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
+                    submitButton.setText(label);
+                    Toast.makeText(this, "Could not submit: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
-    }
-
-    private void saveResidenceApplication(
-            FirebaseUser user,
-            String residenceName,
-            String wardenEmail,
-            String documentUrl
-    ) {
-
-        Map<String, Object> data =
-                new HashMap<>();
-
-        data.put(
-                "displayName",
-                PendingRegistrationStore
-                        .getDisplayName(this)
-        );
-
-        data.put(
-                "email",
-                PendingRegistrationStore
-                        .getEmail(this)
-        );
-
-        data.put(
-                "role",
-                "residence"
-        );
-
-        data.put(
-                "residenceName",
-                residenceName
-        );
-
-        data.put(
-                "wardenEmail",
-                wardenEmail
-        );
-
-        data.put(
-                "appointmentLetterUrl",
-                documentUrl
-        );
-
-        data.put(
-                "verificationStatus",
-                AUTO_APPROVE ? "approved" : "pending"
-        );
-
-        data.put(
-                "verified",
-                AUTO_APPROVE
-        );
-
-        data.put(
-                "createdAt",
-                FieldValue.serverTimestamp()
-        );
-
-        db.collection("residences")
-                .document(user.getUid())
-                .set(data)
-
-                .continueWithTask(task -> {
-
-                    if (!task.isSuccessful() || !AUTO_APPROVE) {
-                        return task;
-                    }
-
-                    Map<String, Object> userData =
-                            new HashMap<>();
-
-                    userData.put("displayName", data.get("displayName"));
-                    userData.put("email", data.get("email"));
-                    userData.put("profileImageUrl", "");
-                    userData.put("role", "residence");
-                    userData.put("verified", true);
-                    userData.put("createdAt", FieldValue.serverTimestamp());
-                    userData.put("verifiedAt", FieldValue.serverTimestamp());
-
-                    return db.collection("users")
-                            .document(user.getUid())
-                            .set(userData);
-                })
-
-                .addOnSuccessListener(unused -> {
-
-                    PendingRegistrationStore.clear(
-                            ResidenceVerificationActivity.this
-                    );
-
-                    auth.signOut();
-
-                    submitButton.setEnabled(true);
-
-                    submitButton.setText(
-                            "Submit for Approval"
-                    );
-
-                    showSubmittedDialog();
-                })
-
-                .addOnFailureListener(e -> {
-
-                    submitButton.setEnabled(true);
-
-                    submitButton.setText(
-                            "Submit for Approval"
-                    );
-
-                    Toast.makeText(
-                            this,
-                            "Could not submit application: "
-                                    + e.getMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
-                });
-    }
-
-    private void showSubmittedDialog() {
-
-        new AlertDialog.Builder(this)
-                .setTitle(
-                        "Application Submitted!"
-                )
-                .setMessage(
-                        AUTO_APPROVE
-                                ? "Your account has been approved. You can log in now."
-                                : "Your residence administrator application has been submitted. A residence team member will review your role within 1–2 working days."
-                )
-                .setCancelable(false)
-                .setPositiveButton(
-                        "Back to Login",
-                        (dialog, which) -> {
-
-                            Intent intent =
-                                    new Intent(
-                                            ResidenceVerificationActivity.this,
-                                            LoginActivity.class
-                                    );
-
-                            intent.addFlags(
-                                    Intent.FLAG_ACTIVITY_NEW_TASK
-                                            |
-                                            Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            );
-
-                            startActivity(intent);
-
-                            finish();
-                        }
-                )
-                .show();
-    }
-
-    private boolean isFileSizeValid(
-            Uri uri
-    ) {
-
-        try {
-
-            android.content.res.AssetFileDescriptor descriptor =
-                    getContentResolver()
-                            .openAssetFileDescriptor(
-                                    uri,
-                                    "r"
-                            );
-
-            if (descriptor == null) {
-                return false;
-            }
-
-            long length =
-                    descriptor.getLength();
-
-            descriptor.close();
-
-            return length <= MAX_FILE_SIZE;
-
-        } catch (IOException e) {
-
-            return false;
-        }
-    }
-
-    private String getFileName(
-            Uri uri
-    ) {
-
-        String fileName =
-                "Selected PDF";
-
-        Cursor cursor =
-                getContentResolver()
-                        .query(
-                                uri,
-                                null,
-                                null,
-                                null,
-                                null
-                        );
-
-        if (cursor != null) {
-
-            int index =
-                    cursor.getColumnIndex(
-                            OpenableColumns.DISPLAY_NAME
-                    );
-
-            if (cursor.moveToFirst()
-                    && index >= 0) {
-
-                fileName =
-                        cursor.getString(index);
-            }
-
-            cursor.close();
-        }
-
-        return fileName;
     }
 }
