@@ -1,8 +1,14 @@
 package com.example.communitystore.residence;
 
 import com.example.communitystore.R;
-import com.example.communitystore.auth.ForgotPasswordActivity;
 import com.example.communitystore.auth.LogoutActivity;
+import com.example.communitystore.core.session.AuthSession;
+import com.example.communitystore.faculty.FacultyAddPostActivity;
+import com.example.communitystore.shared.data.OrderRepository;
+import com.example.communitystore.shared.data.UserDirectory;
+import com.example.communitystore.shared.orders.OrdersActivity;
+import com.example.communitystore.shared.profile.ProfileActions;
+import com.example.communitystore.shared.seller.SellerProfileActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,10 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 // profile tab
@@ -22,17 +28,18 @@ public class ResidenceProfileFragment extends Fragment {
 
     private static final String[] MENU_ITEMS = {
             "Sales & Order Hub",
-            "Authentication",
+            "Post an Announcement",
+            "Edit Profile",
             "Payment Options",
-            "Reviews & Ratings",
+            "Rewards & Ratings",
             "Settings",
-            "Vendor Support & Guidelines"
+            "Residence Support & Guidelines"
     };
 
     private TextView profileName;
-
-    @Nullable
-    private String email;
+    private TextView salesCountText;
+    private TextView reviewsCountText;
+    private TextView rewardsCountText;
 
     @Nullable
     @Override
@@ -55,8 +62,10 @@ public class ResidenceProfileFragment extends Fragment {
             @Nullable Bundle savedInstanceState
     ) {
 
-        profileName =
-                view.findViewById(R.id.profileName);
+        profileName = view.findViewById(R.id.profileName);
+        salesCountText = view.findViewById(R.id.salesCountText);
+        reviewsCountText = view.findViewById(R.id.reviewsCountText);
+        rewardsCountText = view.findViewById(R.id.rewardsCountText);
 
         ResidenceHomeActivity home =
                 (ResidenceHomeActivity) requireActivity();
@@ -80,6 +89,24 @@ public class ResidenceProfileFragment extends Fragment {
                 view.findViewById(R.id.profileMenu),
                 home
         );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        load();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            load();
+        }
+    }
+
+    private void load() {
+        String uid = AuthSession.uid();
 
         ResidenceUi.loadProfile(profile -> {
 
@@ -97,8 +124,19 @@ public class ResidenceProfileFragment extends Fragment {
                 profileName.setText(displayName.trim());
             }
 
-            email =
-                    profile.getString("email");
+            rewardsCountText.setText(String.valueOf(UserDirectory.points(profile)));
+        });
+
+        OrderRepository.loadAsSeller(uid, (orders, error) -> {
+            if (isAdded()) {
+                salesCountText.setText(String.valueOf(orders.size()));
+            }
+        });
+
+        UserDirectory.sellerRating(uid, (average, count) -> {
+            if (isAdded()) {
+                reviewsCountText.setText(String.valueOf(count));
+            }
         });
     }
 
@@ -136,36 +174,71 @@ public class ResidenceProfileFragment extends Fragment {
             ResidenceHomeActivity home
     ) {
 
-        if ("Sales & Order Hub".equals(item)) {
+        switch (item) {
 
-            home.selectTab(ResidenceHomeActivity.TAB_SALES);
-            return;
-        }
+            case "Sales & Order Hub":
+                OrdersActivity.openSales(requireContext());
+                break;
 
-        if ("Authentication".equals(item)) {
+            case "Post an Announcement":
+                // Residence admins post to the same community board as Faculty.
+                startActivity(new Intent(requireContext(), FacultyAddPostActivity.class));
+                break;
 
-            Intent intent =
-                    new Intent(
-                            requireContext(),
-                            ForgotPasswordActivity.class
-                    );
-
-            if (email != null) {
-
-                intent.putExtra(
-                        "email",
-                        email
+            case "Edit Profile":
+                ProfileActions.editName(
+                        requireActivity(),
+                        profileName.getText().toString(),
+                        profileName::setText
                 );
-            }
+                break;
 
-            startActivity(intent);
-            return;
+            case "Payment Options":
+                ProfileActions.paymentOptions(requireActivity());
+                break;
+
+            case "Rewards & Ratings":
+                showRewardsAndRatings();
+                break;
+
+            case "Settings":
+                ProfileActions.settings(requireActivity());
+                break;
+
+            default:
+                showGuidelines();
+                break;
         }
+    }
 
-        Toast.makeText(
-                requireContext(),
-                item + " will be added soon.",
-                Toast.LENGTH_SHORT
-        ).show();
+    private void showRewardsAndRatings() {
+        String[] options = {"Leaderboard & perks", "My public seller page (ratings)"};
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Rewards & Ratings")
+                .setItems(options, (d, which) -> {
+                    if (which == 0) {
+                        startActivity(new Intent(requireContext(), LeaderboardActivity.class));
+                    } else {
+                        SellerProfileActivity.open(
+                                requireContext(),
+                                AuthSession.uid(),
+                                profileName.getText().toString(),
+                                "residence"
+                        );
+                    }
+                })
+                .show();
+    }
+
+    private void showGuidelines() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Residence Support & Guidelines")
+                .setMessage("• Residence admin accounts are verified so announcements can be trusted.\n\n"
+                        + "• Post announcements and events for residents from this menu; they appear on the community board.\n\n"
+                        + "• List items for sale under Listings and update each order: Packed → Out for delivery → Delivered.\n\n"
+                        + "• Payments in this version are simulated; no money is collected.")
+                .setPositiveButton("OK", null)
+                .show();
     }
 }

@@ -21,15 +21,11 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -478,7 +474,10 @@ public class AddProductActivity extends AppCompatActivity {
         data.put("status", "active");
         data.put("sellerId", user.getUid());
         data.put("sellerRole", "residence");
+        data.put("sellerName", sellerName());
+        data.put("popularity", 0);
         data.put("createdAt", FieldValue.serverTimestamp());
+        data.put("updatedAt", FieldValue.serverTimestamp());
 
         publishButton.setEnabled(false);
         publishButton.setText("Publishing...");
@@ -488,31 +487,19 @@ public class AddProductActivity extends AppCompatActivity {
                         .collection("products")
                         .document();
 
-        uploadPhotos(
-                user.getUid(),
-                productRef.getId()
-        )
-                .continueWithTask(task -> {
+        // Cloud Storage needs the paid Firebase plan, so photos stay on the
+        // phone (preview only) and the listing uses a placeholder image.
+        data.put("imageUrls", new ArrayList<String>());
 
-                    if (!task.isSuccessful()
-                            && task.getException() != null) {
-
-                        throw task.getException();
-                    }
-
-                    data.put(
-                            "imageUrls",
-                            task.getResult()
-                    );
-
-                    return productRef.set(data);
-                })
+        productRef.set(data)
                 .addOnSuccessListener(unused -> {
 
                     Toast.makeText(
                             this,
-                            "Product published!",
-                            Toast.LENGTH_SHORT
+                            selectedPhotos().isEmpty()
+                                    ? "Product published!"
+                                    : "Product published! (Photos aren't uploaded on the free Firebase plan.)",
+                            Toast.LENGTH_LONG
                     ).show();
 
                     finish();
@@ -531,66 +518,15 @@ public class AddProductActivity extends AppCompatActivity {
                 });
     }
 
-    private Task<List<String>> uploadPhotos(
-            String uid,
-            String productId
-    ) {
+    private String sellerName() {
 
-        List<Uri> photos =
-                selectedPhotos();
+        String name =
+                new com.example.communitystore.core.session.SessionManager(this)
+                        .getDisplayName();
 
-        List<Task<Uri>> uploads =
-                new ArrayList<>();
-
-        StorageReference folder =
-                FirebaseStorage.getInstance()
-                        .getReference()
-                        .child(
-                                "product_images/"
-                                        + uid
-                                        + "/"
-                                        + productId
-                        );
-
-        for (int i = 0; i < photos.size(); i++) {
-
-            StorageReference reference =
-                    folder.child("photo_" + (i + 1) + ".jpg");
-
-            uploads.add(
-                    reference.putFile(photos.get(i))
-                            .continueWithTask(task -> {
-
-                                if (!task.isSuccessful()
-                                        && task.getException() != null) {
-
-                                    throw task.getException();
-                                }
-
-                                return reference.getDownloadUrl();
-                            })
-            );
-        }
-
-        return Tasks.whenAllSuccess(uploads)
-                .continueWith(task -> {
-
-                    if (!task.isSuccessful()
-                            && task.getException() != null) {
-
-                        throw task.getException();
-                    }
-
-                    List<String> urls =
-                            new ArrayList<>();
-
-                    for (Object uri : task.getResult()) {
-
-                        urls.add(uri.toString());
-                    }
-
-                    return urls;
-                });
+        return name.isEmpty()
+                ? "Residence seller"
+                : name;
     }
 
     private List<Uri> selectedPhotos() {

@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".CommunityStoreApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -49,17 +50,35 @@
             android:name=".student.StudentCommunityBoardActivity"
             android:exported="false" />
 
+
+        <!-- SHARED: listings, orders, reviews, chat -->
+
         <activity
-            android:name=".student.StudentMyOrdersActivity"
+            android:name=".shared.product.AddListingActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".shared.product.MyListingsActivity"
             android:exported="false" />
 
         <activity
-            android:name=".student.StudentOrderDetailsActivity"
+            android:name=".shared.orders.OrdersActivity"
             android:exported="false" />
 
         <activity
-            android:name=".student.StudentReviewActivity"
+            android:name=".shared.orders.OrderDetailActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".shared.orders.ReviewActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".shared.chat.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
 
         <!-- FACULTY -->
@@ -109,31 +128,11 @@
             android:name=".faculty.FacultyAddPostActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".faculty.FacultyMyOrdersActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".faculty.FacultyOrderDetailActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".faculty.FacultyReviewActivity"
-            android:exported="false" />
-
 
         <!-- VENDOR -->
 
         <activity
             android:name=".vendor.VendorHomeActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".vendor.VendorManageProductsActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".vendor.VendorAddProductActivity"
             android:exported="false" />
 
         <activity
@@ -161,7 +160,8 @@
 
         <activity
             android:name=".residence.ResidenceHomeActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".residence.AddProductActivity"
@@ -221,7 +221,7 @@
         <!-- EMAIL VERIFICATION / PASSWORD RESET APP LINK -->
 
         <activity
-            android:name=".auth.VerifyStudentActivity"
+            android:name=".auth.VerifyEmailActivity"
             android:exported="true"
             android:launchMode="singleTop">
 

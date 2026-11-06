@@ -1,274 +1,364 @@
 package com.example.communitystore.shared.seller;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 
 import com.example.communitystore.R;
 import com.example.communitystore.core.access.UserRole;
-import com.example.communitystore.core.session.SessionManager;
+import com.example.communitystore.shared.chat.ChatActivity;
+import com.example.communitystore.shared.data.Formatters;
+import com.example.communitystore.shared.data.Product;
+import com.example.communitystore.shared.data.ProductRepository;
+import com.example.communitystore.shared.data.SampleProducts;
+import com.example.communitystore.shared.data.UserDirectory;
 import com.example.communitystore.shared.product.ProductInfoActivity;
+import com.example.communitystore.shared.utils.ThemeUtils;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/** Public profile of a seller: details, rating, active listings and reviews. */
 public class SellerProfileActivity extends AppCompatActivity {
 
-    private LinearLayout sellerHeader;
-    private LinearLayout messageButton;
-    private LinearLayout followButton;
+    private static final String EXTRA_SELLER_ID = "sellerId";
+    private static final String EXTRA_SELLER_NAME = "sellerName";
+    private static final String EXTRA_SELLER_ROLE = "sellerRole";
 
+    private static final String FOLLOW_PREFS = "CommunityStoreFollowing";
+
+    private LinearLayout followButton;
     private LinearLayout listingsTab;
     private LinearLayout reviewsTab;
     private LinearLayout listingsContainer;
     private LinearLayout reviewsContainer;
-
+    private LinearLayout reviewsList;
     private TextView listingsTabText;
     private TextView reviewsTabText;
-    private TextView sellerLaptopPrice;
-    private TextView sellerMousePrice;
-    private TextView sellerHeadphonesPrice;
-    private TextView sellerChairPrice;
+    private TextView listingsEmpty;
 
-    private ImageView backButton;
-    private ImageView sellerVerifiedBadge;
-    private ImageView sellerFavouriteLaptop;
-    private ImageView sellerFavouriteMouse;
-    private ImageView sellerFavouriteHeadphones;
-    private ImageView sellerFavouriteChair;
-
-    private LinearLayout productLaptop;
-    private LinearLayout productMouse;
-    private LinearLayout productHeadphones;
-    private LinearLayout productChair;
+    private String sellerId;
+    private String sellerName;
+    private UserRole sellerRole;
 
     private int themeColor;
     private boolean following = false;
+
+    public static void open(Context context, String sellerId, String sellerName, String sellerRole) {
+        Intent intent = new Intent(context, SellerProfileActivity.class);
+        intent.putExtra(EXTRA_SELLER_ID, sellerId);
+        intent.putExtra(EXTRA_SELLER_NAME, sellerName);
+        intent.putExtra(EXTRA_SELLER_ROLE, sellerRole);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_seller_profile);
 
-        sellerHeader = findViewById(R.id.sellerHeader);
-        messageButton = findViewById(R.id.messageButton);
-        followButton = findViewById(R.id.followButton);
+        sellerId = getIntent().getStringExtra(EXTRA_SELLER_ID);
+        if (sellerId == null || sellerId.isEmpty()) {
+            sellerId = SampleProducts.SAMPLE_SELLER_ID;
+        }
+        sellerName = getIntent().getStringExtra(EXTRA_SELLER_NAME);
+        if (sellerName == null || sellerName.isEmpty()) {
+            sellerName = isSample() ? SampleProducts.SAMPLE_SELLER_NAME : "Community seller";
+        }
+        sellerRole = UserRole.fromString(getIntent().getStringExtra(EXTRA_SELLER_ROLE));
 
+        followButton = findViewById(R.id.followButton);
         listingsTab = findViewById(R.id.listingsTab);
         reviewsTab = findViewById(R.id.reviewsTab);
         listingsContainer = findViewById(R.id.listingsContainer);
         reviewsContainer = findViewById(R.id.reviewsContainer);
-
+        reviewsList = findViewById(R.id.reviewsList);
         listingsTabText = findViewById(R.id.listingsTabText);
         reviewsTabText = findViewById(R.id.reviewsTabText);
+        listingsEmpty = findViewById(R.id.listingsEmpty);
 
-        sellerLaptopPrice = findViewById(R.id.sellerLaptopPrice);
-        sellerMousePrice = findViewById(R.id.sellerMousePrice);
-        sellerHeadphonesPrice = findViewById(R.id.sellerHeadphonesPrice);
-        sellerChairPrice = findViewById(R.id.sellerChairPrice);
-
-        backButton = findViewById(R.id.backButton);
-        sellerVerifiedBadge = findViewById(R.id.sellerVerifiedBadge);
-        sellerFavouriteLaptop = findViewById(R.id.sellerFavouriteLaptop);
-        sellerFavouriteMouse = findViewById(R.id.sellerFavouriteMouse);
-        sellerFavouriteHeadphones = findViewById(R.id.sellerFavouriteHeadphones);
-        sellerFavouriteChair = findViewById(R.id.sellerFavouriteChair);
-
-        productLaptop = findViewById(R.id.productLaptop);
-        productMouse = findViewById(R.id.productMouse);
-        productHeadphones = findViewById(R.id.productHeadphones);
-        productChair = findViewById(R.id.productChair);
+        following = followPrefs().getStringSet("ids", new HashSet<>()).contains(sellerId);
 
         applyAccountTheme();
+        bindHeader(sellerName);
         showListings();
-        setupFavouriteButtons();
 
-        backButton.setOnClickListener(v -> finish());
+        findViewById(R.id.backButton).setOnClickListener(v -> finish());
+        findViewById(R.id.messageButton).setOnClickListener(v -> ChatActivity.open(
+                this,
+                sellerId,
+                sellerName,
+                sellerRole == null ? "" : sellerRole.getValue(),
+                null,
+                null
+        ));
 
-        messageButton.setOnClickListener(v ->
-                Toast.makeText(
-                        this,
-                        "Message John Smith",
-                        Toast.LENGTH_SHORT
-                ).show()
-        );
-
-        followButton.setOnClickListener(v -> {
-            following = !following;
-            setFollowButtonStyle();
-        });
-
+        followButton.setOnClickListener(v -> toggleFollow());
         listingsTab.setOnClickListener(v -> showListings());
         reviewsTab.setOnClickListener(v -> showReviews());
 
-        productLaptop.setOnClickListener(v ->
-                openProduct(
-                        "Dell Laptop",
-                        "R8,499",
-                        "Powerful and reliable Dell laptop in excellent condition.",
-                        R.drawable.dell_laptop_1,
-                        R.drawable.dell_laptop_2,
-                        R.drawable.dell_laptop_3,
-                        R.drawable.dell_laptop_4
-                )
-        );
+        loadProfile();
+        loadListings();
+        loadReviews();
+    }
 
-        productMouse.setOnClickListener(v ->
-                openProduct(
-                        "Bluetooth Mouse",
-                        "R600",
-                        "Wireless HP Bluetooth mouse in excellent condition.",
-                        R.drawable.hp_mouse_1,
-                        R.drawable.hp_mouse_2
-                )
-        );
+    private boolean isSample() {
+        return SampleProducts.SAMPLE_SELLER_ID.equals(sellerId);
+    }
 
-        productHeadphones.setOnClickListener(v ->
-                openProduct(
-                        "Headphones",
-                        "R950",
-                        "Comfortable Volkano over-ear headphones with excellent sound.",
-                        R.drawable.volkano_headphones_1,
-                        R.drawable.volkano_headphones_2,
-                        R.drawable.volkano_headphones_3
-                )
-        );
+    private void bindHeader(String name) {
+        ((TextView) findViewById(R.id.sellerNameText)).setText(name);
 
-        productChair.setOnClickListener(v ->
-                openProduct(
-                        "Gaming Chair",
-                        "R2,500",
-                        "Comfortable Razer gaming chair in excellent condition.",
-                        R.drawable.game_chair_1,
-                        R.drawable.game_chair_2,
-                        R.drawable.game_chair_3,
-                        R.drawable.game_chair_4
-                )
+        TextView avatar = findViewById(R.id.sellerAvatarText);
+        avatar.setText(Formatters.initial(name));
+        ViewCompat.setBackgroundTintList(avatar, ColorStateList.valueOf(ThemeUtils.colorFor(this, sellerRole)));
+
+        String roleText;
+        if (isSample()) {
+            roleText = "Sample seller";
+        } else if (sellerRole != null && sellerRole.requiresDocuments()) {
+            roleText = "Verified " + sellerRole.getLabel();
+        } else {
+            roleText = sellerRole == null ? "Seller" : sellerRole.getLabel() + " seller";
+        }
+        ((TextView) findViewById(R.id.sellerRoleText)).setText(roleText);
+
+        findViewById(R.id.sellerVerifiedBadge).setVisibility(
+                sellerRole != null && sellerRole.requiresDocuments() ? View.VISIBLE : View.GONE
         );
     }
 
-    private void setupFavouriteButtons() {
-        configureFavouriteButton(sellerFavouriteLaptop);
-        configureFavouriteButton(sellerFavouriteMouse);
-        configureFavouriteButton(sellerFavouriteHeadphones);
-        configureFavouriteButton(sellerFavouriteChair);
-    }
+    private void loadProfile() {
+        if (isSample()) {
+            ((TextView) findViewById(R.id.statOrders)).setText("—");
+            return;
+        }
 
-    private void configureFavouriteButton(ImageView heart) {
-        setFavouriteStyle(heart, false);
+        UserDirectory.load(sellerId, profile -> {
+            if (profile == null) {
+                return;
+            }
 
-        heart.setOnClickListener(v -> {
-            boolean liked = Boolean.TRUE.equals(heart.getTag());
-            setFavouriteStyle(heart, !liked);
+            if (sellerRole == null) {
+                sellerRole = UserRole.fromString(profile.getString("role"));
+            }
+
+            sellerName = UserDirectory.displayName(profile, sellerName);
+            bindHeader(sellerName);
+            ((TextView) findViewById(R.id.statOrders)).setText(String.valueOf(UserDirectory.points(profile)));
         });
+    }
+
+    private void loadListings() {
+        if (isSample()) {
+            List<Product> samples = SampleProducts.all();
+            showListingRows(samples);
+            return;
+        }
+
+        ProductRepository.loadActiveBySeller(sellerId, (products, error) -> showListingRows(products));
+    }
+
+    private void showListingRows(List<Product> products) {
+        ((TextView) findViewById(R.id.statListings)).setText(String.valueOf(products.size()));
+
+        // Keep the "empty" label (first child) and replace the rest.
+        while (listingsContainer.getChildCount() > 1) {
+            listingsContainer.removeViewAt(1);
+        }
+
+        listingsEmpty.setText("No active listings right now.");
+        listingsEmpty.setVisibility(products.isEmpty() ? View.VISIBLE : View.GONE);
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+
+        for (Product product : products) {
+            View row = inflater.inflate(R.layout.item_seller_listing, listingsContainer, false);
+
+            ((ImageView) row.findViewById(R.id.listingImage)).setImageResource(product.primaryImage());
+            ((TextView) row.findViewById(R.id.listingTitle)).setText(product.title);
+
+            TextView price = row.findViewById(R.id.listingPrice);
+            price.setText(product.priceText());
+            price.setTextColor(themeColor);
+
+            List<String> meta = new ArrayList<>();
+            if (!product.condition.isEmpty()) {
+                meta.add(product.condition);
+            }
+            meta.add(product.category);
+            ((TextView) row.findViewById(R.id.listingMeta)).setText(android.text.TextUtils.join(" • ", meta));
+
+            ImageView heart = row.findViewById(R.id.listingFavourite);
+            setFavouriteStyle(heart, false);
+            heart.setOnClickListener(v -> setFavouriteStyle(heart, !Boolean.TRUE.equals(heart.getTag())));
+
+            row.setOnClickListener(v -> ProductInfoActivity.open(this, product));
+            listingsContainer.addView(row);
+        }
+    }
+
+    private void loadReviews() {
+        TextView average = findViewById(R.id.reviewsAverage);
+        TextView stars = findViewById(R.id.reviewsStars);
+        TextView count = findViewById(R.id.reviewsCount);
+        TextView headerRating = findViewById(R.id.sellerRatingText);
+        TextView statReviews = findViewById(R.id.statReviews);
+
+        if (isSample()) {
+            headerRating.setText("Sample seller");
+            statReviews.setText("0");
+            count.setText("Sample listings can't be reviewed.");
+            return;
+        }
+
+        FirebaseFirestore.getInstance()
+                .collection("reviews")
+                .whereEqualTo("sellerId", sellerId)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    List<DocumentSnapshot> reviews = new ArrayList<>(snapshot.getDocuments());
+                    java.util.Collections.sort(reviews, (a, b) -> {
+                        long ta = a.getTimestamp("createdAt") == null ? 0 : a.getTimestamp("createdAt").toDate().getTime();
+                        long tb = b.getTimestamp("createdAt") == null ? 0 : b.getTimestamp("createdAt").toDate().getTime();
+                        return Long.compare(tb, ta);
+                    });
+
+                    double total = 0;
+                    for (DocumentSnapshot review : reviews) {
+                        total += Product.number(review.get("rating"), 0);
+                    }
+
+                    int n = reviews.size();
+                    double avg = n == 0 ? 0 : total / n;
+
+                    statReviews.setText(String.valueOf(n));
+                    headerRating.setText(UserDirectory.ratingText(avg, n));
+                    average.setText(String.format(java.util.Locale.US, "%.1f", avg));
+                    stars.setText(starText((int) Math.round(avg)));
+                    count.setText(n == 0 ? "No reviews yet" : n + (n == 1 ? " review" : " reviews"));
+
+                    reviewsList.removeAllViews();
+                    for (DocumentSnapshot review : reviews) {
+                        reviewsList.addView(reviewCard(review));
+                    }
+                })
+                .addOnFailureListener(e -> headerRating.setText("No reviews yet"));
+    }
+
+    private View reviewCard(DocumentSnapshot review) {
+        TextView card = new TextView(this);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        params.topMargin = dp(12);
+        card.setLayoutParams(params);
+        card.setBackgroundResource(R.drawable.bg_review_card);
+        card.setPadding(dp(16), dp(16), dp(16), dp(16));
+        card.setTextColor(Color.parseColor("#222222"));
+        card.setTextSize(13);
+
+        String name = review.getString("buyerName");
+        String comment = review.getString("comment");
+        String product = review.getString("productTitle");
+        int rating = (int) Product.number(review.get("rating"), 0);
+
+        StringBuilder text = new StringBuilder();
+        text.append(name == null || name.isEmpty() ? "Customer" : name)
+                .append("     ")
+                .append(starText(rating));
+        if (product != null && !product.isEmpty()) {
+            text.append("\n").append(product);
+        }
+        text.append("\n\n").append(comment == null || comment.isEmpty() ? "No comment." : comment);
+        card.setText(text.toString());
+        return card;
+    }
+
+    private static String starText(int rating) {
+        StringBuilder stars = new StringBuilder();
+        for (int i = 1; i <= 5; i++) {
+            stars.append(i <= rating ? "★" : "☆");
+        }
+        return stars.toString();
     }
 
     private void setFavouriteStyle(ImageView heart, boolean liked) {
         heart.setTag(liked);
-
         ViewCompat.setBackgroundTintList(
                 heart,
-                ColorStateList.valueOf(
-                        liked ? Color.parseColor("#E53935") : Color.WHITE
-                )
+                ColorStateList.valueOf(liked ? Color.parseColor("#E53935") : Color.WHITE)
         );
-
-        heart.setColorFilter(
-                liked ? Color.WHITE : Color.parseColor("#555555")
-        );
+        heart.setColorFilter(liked ? Color.WHITE : Color.parseColor("#555555"));
     }
 
     private void showListings() {
-        listingsContainer.setVisibility(LinearLayout.VISIBLE);
-        reviewsContainer.setVisibility(LinearLayout.GONE);
-
+        listingsContainer.setVisibility(View.VISIBLE);
+        reviewsContainer.setVisibility(View.GONE);
         setTabStyle(listingsTab, listingsTabText, true);
         setTabStyle(reviewsTab, reviewsTabText, false);
     }
 
     private void showReviews() {
-        listingsContainer.setVisibility(LinearLayout.GONE);
-        reviewsContainer.setVisibility(LinearLayout.VISIBLE);
-
+        listingsContainer.setVisibility(View.GONE);
+        reviewsContainer.setVisibility(View.VISIBLE);
         setTabStyle(listingsTab, listingsTabText, false);
         setTabStyle(reviewsTab, reviewsTabText, true);
     }
 
-    private void setTabStyle(
-            LinearLayout tab,
-            TextView label,
-            boolean selected
-    ) {
+    private void setTabStyle(LinearLayout tab, TextView label, boolean selected) {
         GradientDrawable background = new GradientDrawable();
         background.setShape(GradientDrawable.RECTANGLE);
         background.setCornerRadius(dp(8));
-        background.setColor(
-                selected
-                        ? Color.WHITE
-                        : Color.parseColor("#E2E4E8")
-        );
-
+        background.setColor(selected ? Color.WHITE : Color.parseColor("#E2E4E8"));
         tab.setBackground(background);
-        label.setTextColor(
-                selected
-                        ? themeColor
-                        : Color.parseColor("#222222")
-        );
+        label.setTextColor(selected ? themeColor : Color.parseColor("#222222"));
     }
 
-    private void openProduct(
-            String title,
-            String price,
-            String description,
-            int... images
-    ) {
-        int image = images.length > 0
-                ? images[0]
-                : R.drawable.dell_laptop_1;
+    private SharedPreferences followPrefs() {
+        return getSharedPreferences(FOLLOW_PREFS, MODE_PRIVATE);
+    }
 
-        Intent intent = new Intent(this, ProductInfoActivity.class);
-        intent.putExtra("productTitle", title);
-        intent.putExtra("productPrice", price);
-        intent.putExtra("productDescription", description);
-        intent.putExtra("productImage", image);
-        intent.putExtra(
-                "productImages",
-                images.length > 0
-                        ? images
-                        : new int[]{image}
-        );
+    /** Following is saved on this phone. */
+    private void toggleFollow() {
+        following = !following;
 
-        startActivity(intent);
+        Set<String> ids = new HashSet<>(followPrefs().getStringSet("ids", new HashSet<>()));
+        if (following) {
+            ids.add(sellerId);
+        } else {
+            ids.remove(sellerId);
+        }
+        followPrefs().edit().putStringSet("ids", ids).apply();
+
+        setFollowButtonStyle();
     }
 
     private void applyAccountTheme() {
-        SessionManager sessionManager = new SessionManager(this);
-        themeColor = getThemeColor(sessionManager.getUserRole());
+        themeColor = ThemeUtils.primary(this);
 
-        ViewCompat.setBackgroundTintList(
-                sellerHeader,
-                ColorStateList.valueOf(themeColor)
-        );
-
-        ViewCompat.setBackgroundTintList(
-                messageButton,
-                ColorStateList.valueOf(themeColor)
-        );
-
-        sellerLaptopPrice.setTextColor(themeColor);
-        sellerMousePrice.setTextColor(themeColor);
-        sellerHeadphonesPrice.setTextColor(themeColor);
-        sellerChairPrice.setTextColor(themeColor);
-        sellerVerifiedBadge.setColorFilter(themeColor);
+        ViewCompat.setBackgroundTintList(findViewById(R.id.sellerHeader), ColorStateList.valueOf(themeColor));
+        ViewCompat.setBackgroundTintList(findViewById(R.id.messageButton), ColorStateList.valueOf(themeColor));
+        ((ImageView) findViewById(R.id.sellerVerifiedBadge)).setColorFilter(themeColor);
 
         setFollowButtonStyle();
-        getWindow().setStatusBarColor(themeColor);
     }
 
     private void setFollowButtonStyle() {
@@ -281,32 +371,10 @@ public class SellerProfileActivity extends AppCompatActivity {
         background.setCornerRadius(dp(8));
         background.setColor(following ? themeColor : Color.WHITE);
         background.setStroke(dp(1), themeColor);
-
         followButton.setBackground(background);
     }
 
     private int dp(int value) {
-        return Math.round(
-                value * getResources().getDisplayMetrics().density
-        );
-    }
-
-    private int getThemeColor(UserRole role) {
-        if (role == null) {
-            return Color.parseColor("#168FC1");
-        }
-
-        switch (role) {
-            case STUDENT:
-                return Color.parseColor("#168FC1");
-            case FACULTY:
-                return Color.parseColor("#FF4B2B");
-            case VENDOR:
-                return Color.parseColor("#FFA726");
-            case RESIDENCE:
-                return Color.parseColor("#4B00D1");
-            default:
-                return Color.parseColor("#168FC1");
-        }
+        return Math.round(value * getResources().getDisplayMetrics().density);
     }
 }

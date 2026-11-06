@@ -161,14 +161,12 @@ public class ResidenceListingsFragment extends Fragment {
 
         showMessage("Loading products...");
 
+        // One equality filter only (status is filtered on the phone), so no
+        // composite Firestore index is needed.
         db.collection("products")
                 .whereEqualTo(
                         "sellerId",
                         user.getUid()
-                )
-                .whereEqualTo(
-                        "status",
-                        requestedStatus
                 )
                 .get()
                 .addOnSuccessListener(snapshot -> {
@@ -180,7 +178,14 @@ public class ResidenceListingsFragment extends Fragment {
 
                     productsList.removeAllViews();
 
-                    if (snapshot.isEmpty()) {
+                    java.util.List<DocumentSnapshot> matching = new java.util.ArrayList<>();
+                    for (DocumentSnapshot document : snapshot.getDocuments()) {
+                        if (requestedStatus.equals(document.getString("status"))) {
+                            matching.add(document);
+                        }
+                    }
+
+                    if (matching.isEmpty()) {
 
                         showMessage(
                                 STATUS_ACTIVE.equals(requestedStatus)
@@ -193,7 +198,7 @@ public class ResidenceListingsFragment extends Fragment {
 
                     listingsMessage.setVisibility(View.GONE);
 
-                    for (DocumentSnapshot document : snapshot.getDocuments()) {
+                    for (DocumentSnapshot document : matching) {
 
                         addProductRow(document);
                     }
@@ -231,7 +236,7 @@ public class ResidenceListingsFragment extends Fragment {
         ((TextView) row.findViewById(R.id.productPrice))
                 .setText(
                         AddProductActivity.formatPrice(
-                                document.getDouble("price")
+                                (double) com.example.communitystore.shared.data.Product.number(document.get("price"), 0)
                         )
                 );
 
@@ -277,7 +282,38 @@ public class ResidenceListingsFragment extends Fragment {
                 )
         );
 
+        // Tap a listing to see it as buyers do; long press to delete it.
+        row.setOnClickListener(v ->
+                com.example.communitystore.shared.product.ProductInfoActivity.open(
+                        requireContext(),
+                        com.example.communitystore.shared.data.Product.fromDocument(document)
+                ));
+
+        row.setOnLongClickListener(v -> {
+            confirmDelete(document);
+            return true;
+        });
+
         productsList.addView(row);
+    }
+
+    private void confirmDelete(
+            DocumentSnapshot document
+    ) {
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Delete listing?")
+                .setMessage("\"" + document.getString("title") + "\" will be removed from the Market. Existing orders are kept.")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete", (dialog, which) ->
+                        document.getReference()
+                                .delete()
+                                .addOnSuccessListener(unused -> {
+                                    if (isAdded()) {
+                                        loadProducts();
+                                    }
+                                }))
+                .show();
     }
 
     private void confirmStatusChange(

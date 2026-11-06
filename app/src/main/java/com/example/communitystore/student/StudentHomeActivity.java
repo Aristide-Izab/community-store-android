@@ -4,11 +4,10 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-import com.example.communitystore.shared.utils.BottomNavHelper;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -18,186 +17,203 @@ import com.example.communitystore.core.access.BottomNavThemeManager;
 import com.example.communitystore.core.access.QuickAccessThemeManager;
 import com.example.communitystore.core.access.UserRole;
 import com.example.communitystore.core.session.SessionManager;
+import com.example.communitystore.shared.data.Formatters;
+import com.example.communitystore.shared.data.Post;
+import com.example.communitystore.shared.data.Product;
+import com.example.communitystore.shared.data.ProductRepository;
+import com.example.communitystore.shared.data.UserDirectory;
+import com.example.communitystore.shared.orders.OrdersActivity;
+import com.example.communitystore.shared.product.AddListingActivity;
 import com.example.communitystore.shared.product.ProductInfoActivity;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.communitystore.shared.utils.BottomNavHelper;
+import com.example.communitystore.shared.utils.ThemeUtils;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
+
+/**
+ * Home screen for Student accounts (Faculty uses the same screen through
+ * FacultyHomeActivity; colours and labels follow the signed-in role).
+ */
 public class StudentHomeActivity extends AppCompatActivity {
 
     private TextView greetingText;
     private TextView roleText;
+    private TextView pointsText;
+    private TextView pointsHint;
 
-    private LinearLayout postListingButton;
-    private LinearLayout newsButton;
-    private LinearLayout salesButton;
-    private LinearLayout ordersButton;
-
-    private LinearLayout navHome;
-    private LinearLayout navMarket;
-    private LinearLayout navCommunity;
-    private LinearLayout navMessages;
-    private LinearLayout navProfile;
-
-    private LinearLayout productIphone;
-    private LinearLayout productTutor;
-    private LinearLayout productTextbook;
-
-    private ImageView favouriteIphone;
-    private ImageView favouriteTutor;
-    private ImageView favouriteTextbook;
-
-    private FirebaseAuth auth;
-    private FirebaseFirestore db;
+    private final LinearLayout[] recCards = new LinearLayout[3];
+    private final ImageView[] recImages = new ImageView[3];
+    private final TextView[] recTitles = new TextView[3];
+    private final TextView[] recPrices = new TextView[3];
+    private final ImageView[] recHearts = new ImageView[3];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_home);
 
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-
         greetingText = findViewById(R.id.greetingText);
         roleText = findViewById(R.id.roleText);
+        pointsText = findViewById(R.id.pointsText);
+        pointsHint = findViewById(R.id.pointsHint);
 
-        postListingButton = findViewById(R.id.postListingButton);
-        newsButton = findViewById(R.id.newsButton);
-        salesButton = findViewById(R.id.salesButton);
-        ordersButton = findViewById(R.id.ordersButton);
+        recCards[0] = findViewById(R.id.productIphone);
+        recCards[1] = findViewById(R.id.productTutor);
+        recCards[2] = findViewById(R.id.productTextbook);
+        recHearts[0] = findViewById(R.id.favouriteIphone);
+        recHearts[1] = findViewById(R.id.favouriteTutor);
+        recHearts[2] = findViewById(R.id.favouriteTextbook);
+        recImages[0] = findViewById(R.id.rec1Image);
+        recImages[1] = findViewById(R.id.rec2Image);
+        recImages[2] = findViewById(R.id.rec3Image);
+        recTitles[0] = findViewById(R.id.rec1Title);
+        recTitles[1] = findViewById(R.id.rec2Title);
+        recTitles[2] = findViewById(R.id.rec3Title);
+        recPrices[0] = findViewById(R.id.rec1Price);
+        recPrices[1] = findViewById(R.id.rec2Price);
+        recPrices[2] = findViewById(R.id.rec3Price);
 
-        navHome = findViewById(R.id.navHome);
-        navMarket = findViewById(R.id.navMarket);
-        navCommunity = findViewById(R.id.navCommunity);
-        navMessages = findViewById(R.id.navMessages);
-        navProfile = findViewById(R.id.navProfile);
-
-        productIphone = findViewById(R.id.productIphone);
-        productTutor = findViewById(R.id.productTutor);
-        productTextbook = findViewById(R.id.productTextbook);
-
-        favouriteIphone = findViewById(R.id.favouriteIphone);
-        favouriteTutor = findViewById(R.id.favouriteTutor);
-        favouriteTextbook = findViewById(R.id.favouriteTextbook);
-
-        applyRoleLabel();
-        loadStudentName();
+        applyRoleColours();
+        roleText.setText(role().getLabel());
+        String cached = new SessionManager(this).getDisplayName();
+        greetingText.setText(Formatters.greeting() + ", "
+                + (cached.isEmpty() ? role().getLabel() : Formatters.firstName(cached)));
+        pointsHint.setText("Earn points with every order");
 
         QuickAccessThemeManager.apply(this, "post");
 
         setupQuickAccess();
         setupNavigation();
-        setupProducts();
         setupFavouriteButtons();
+
+        findViewById(R.id.highlight1).setOnClickListener(v -> openCommunity());
+        findViewById(R.id.highlight2).setOnClickListener(v -> openCommunity());
     }
 
-    private void setupProducts() {
-        productIphone.setOnClickListener(v ->
-                openProduct(
-                        "iPhone 15",
-                        "R16,000",
-                        "Excellent condition. Comes with original accessories.",
-                        R.drawable.iphone_15_image_1,
-                        R.drawable.iphone_15_image_2
-                )
-        );
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BottomNavThemeManager.apply(this, "home");
+        loadProfile();
+        loadRecommended();
+        loadHighlights();
+    }
 
-        productTutor.setOnClickListener(v ->
-                openProduct(
-                        "Tutor",
-                        "Message for price",
-                        "Private tutoring available for students. Contact the seller for availability.",
-                        R.drawable.tutor_1,
-                        R.drawable.tutor_2
-                )
-        );
+    /**
+     * The layout is shared with Faculty, so every role-coloured part that is not
+     * handled by the bottom nav / quick access managers is coloured here.
+     */
+    private void applyRoleColours() {
+        int color = ThemeUtils.primary(this);
+        findViewById(R.id.homeRoot).setBackgroundColor(color);
 
-        productTextbook.setOnClickListener(v ->
-                openProduct(
-                        "Textbook",
-                        "R250",
-                        "Textbook in good condition. Ideal for students.",
-                        R.drawable.textbook_java_1,
-                        R.drawable.textbook_java_2
-                )
-        );
+        int[] verifiedLabels = {R.id.recVerified1, R.id.recVerified2, R.id.recVerified3};
+        for (int id : verifiedLabels) {
+            ((TextView) findViewById(id)).setTextColor(color);
+        }
+    }
+
+    private UserRole role() {
+        UserRole role = new SessionManager(this).getUserRole();
+        return role == null ? UserRole.STUDENT : role;
+    }
+
+    private void loadProfile() {
+        UserDirectory.loadCurrent(profile -> {
+            if (profile == null) {
+                return;
+            }
+
+            String name = UserDirectory.displayName(profile, role().getLabel());
+            greetingText.setText(Formatters.greeting() + ", " + Formatters.firstName(name));
+            pointsText.setText(NumberFormat.getIntegerInstance(Locale.US).format(UserDirectory.points(profile)));
+        });
+    }
+
+    /** Newest real listings first, topped up with samples. */
+    private void loadRecommended() {
+        ProductRepository.loadMarketplace((products, error) -> {
+            for (int i = 0; i < recCards.length; i++) {
+                if (i >= products.size()) {
+                    recCards[i].setVisibility(View.GONE);
+                    continue;
+                }
+
+                Product product = products.get(i);
+                recCards[i].setVisibility(View.VISIBLE);
+                recImages[i].setImageResource(product.primaryImage());
+                recTitles[i].setText(product.title);
+                recPrices[i].setText(product.priceText());
+                recCards[i].setOnClickListener(v -> ProductInfoActivity.open(this, product));
+            }
+        });
+    }
+
+    /** Shows the two newest community posts (keeps the sample cards if there are none). */
+    private void loadHighlights() {
+        FirebaseFirestore.getInstance()
+                .collection("posts")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(2)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    List<DocumentSnapshot> docs = snapshot.getDocuments();
+                    TextView[] titles = {findViewById(R.id.highlight1Title), findViewById(R.id.highlight2Title)};
+                    TextView[] metas = {findViewById(R.id.highlight1Meta), findViewById(R.id.highlight2Meta)};
+
+                    for (int i = 0; i < docs.size() && i < 2; i++) {
+                        Post post = Post.fromDocument(docs.get(i));
+                        titles[i].setText(post.title);
+                        metas[i].setText(post.eventDate.isEmpty() ? post.category : post.eventDate);
+                    }
+                });
     }
 
     private void setupFavouriteButtons() {
-        configureFavouriteButton(favouriteIphone);
-        configureFavouriteButton(favouriteTutor);
-        configureFavouriteButton(favouriteTextbook);
-    }
-
-    private void configureFavouriteButton(ImageView heart) {
-        setFavouriteStyle(heart, false);
-
-        heart.setOnClickListener(v -> {
-            boolean liked = Boolean.TRUE.equals(heart.getTag());
-            setFavouriteStyle(heart, !liked);
-        });
+        for (ImageView heart : recHearts) {
+            setFavouriteStyle(heart, false);
+            heart.setOnClickListener(v -> setFavouriteStyle(heart, !Boolean.TRUE.equals(heart.getTag())));
+        }
     }
 
     private void setFavouriteStyle(ImageView heart, boolean liked) {
         heart.setTag(liked);
-
         ViewCompat.setBackgroundTintList(
                 heart,
-                ColorStateList.valueOf(
-                        liked ? Color.parseColor("#E53935") : Color.WHITE
-                )
+                ColorStateList.valueOf(liked ? Color.parseColor("#E53935") : Color.WHITE)
         );
-
-        heart.setColorFilter(
-                liked ? Color.WHITE : Color.parseColor("#111111")
-        );
-    }
-
-    private void openProduct(
-            String title,
-            String price,
-            String description,
-            int... imageResources
-    ) {
-        int imageResource = imageResources.length > 0
-                ? imageResources[0]
-                : R.drawable.dell_laptop_1;
-
-        Intent intent = new Intent(this, ProductInfoActivity.class);
-        intent.putExtra("productTitle", title);
-        intent.putExtra("productPrice", price);
-        intent.putExtra("productDescription", description);
-        intent.putExtra("productImage", imageResource);
-        intent.putExtra(
-                "productImages",
-                imageResources.length > 0
-                        ? imageResources
-                        : new int[]{imageResource}
-        );
-
-        startActivity(intent);
+        heart.setColorFilter(liked ? Color.WHITE : Color.parseColor("#111111"));
     }
 
     private void setupQuickAccess() {
-        postListingButton.setOnClickListener(v -> {
+        findViewById(R.id.postListingButton).setOnClickListener(v -> {
             QuickAccessThemeManager.apply(this, "post");
-            Toast.makeText(this, "Post a Listing", Toast.LENGTH_SHORT).show();
+            AddListingActivity.openNew(this);
         });
 
-        newsButton.setOnClickListener(v -> {
+        findViewById(R.id.newsButton).setOnClickListener(v -> {
             QuickAccessThemeManager.apply(this, "news");
-            Toast.makeText(this, "News", Toast.LENGTH_SHORT).show();
+            openCommunity();
         });
 
-        salesButton.setOnClickListener(v -> {
+        findViewById(R.id.salesButton).setOnClickListener(v -> {
             QuickAccessThemeManager.apply(this, "sales");
-            Toast.makeText(this, "Sales", Toast.LENGTH_SHORT).show();
+            OrdersActivity.openSales(this);
         });
 
-        ordersButton.setOnClickListener(v -> {
+        findViewById(R.id.ordersButton).setOnClickListener(v -> {
             QuickAccessThemeManager.apply(this, "orders");
-            Toast.makeText(this, "Orders", Toast.LENGTH_SHORT).show();
+            OrdersActivity.openPurchases(this);
         });
+    }
+
+    private void openCommunity() {
+        BottomNavHelper.open(this, BottomNavHelper.communityFor(this));
     }
 
     private void setupNavigation() {
@@ -207,56 +223,6 @@ public class StudentHomeActivity extends AppCompatActivity {
                 BottomNavHelper.open(this, BottomNavHelper.profileFor(this)));
 
         findViewById(R.id.viewRewardsButton).setOnClickListener(v ->
-                BottomNavHelper.open(this, StudentLeaderboardActivity.class));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        BottomNavThemeManager.apply(this, "home");
-    }
-
-    private void applyRoleLabel() {
-        roleText.setText(getRoleDisplayName());
-    }
-
-    private String getRoleDisplayName() {
-        UserRole role = new SessionManager(this).getUserRole();
-
-        if (role == null) {
-            role = UserRole.STUDENT;
-        }
-
-        String value = role.getValue();
-        return value.substring(0, 1).toUpperCase() + value.substring(1);
-    }
-
-    private void loadStudentName() {
-        FirebaseUser user = auth.getCurrentUser();
-
-        if (user == null) {
-            greetingText.setText("Good morning, " + getRoleDisplayName());
-            return;
-        }
-
-        db.collection("users")
-                .document(user.getUid())
-                .get()
-                .addOnSuccessListener(document -> {
-                    String name = document.getString("displayName");
-
-                    if (name == null || name.trim().isEmpty()) {
-                        name = document.getString("fullName");
-                    }
-
-                    if (name == null || name.trim().isEmpty()) {
-                        name = getRoleDisplayName();
-                    }
-
-                    greetingText.setText("Good morning, " + name);
-                })
-                .addOnFailureListener(e ->
-                        greetingText.setText("Good morning, " + getRoleDisplayName())
-                );
+                startActivity(new Intent(this, BottomNavHelper.rewardsFor(this))));
     }
 }

@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#168FC1">
+    android:id="@+id/homeRoot"
+    android:background="@color/role_student">
 
     <ScrollView
         android:id="@+id/scrollContent"
@@ -140,6 +141,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                                android:id="@+id/pointsText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="1,240"
@@ -155,6 +157,7 @@
                             android:textSize="14sp" />
 
                         <TextView
+                                android:id="@+id/pointsHint"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="100 pts/month"
@@ -322,6 +325,7 @@
                                 android:layout_height="82dp">
 
                                 <ImageView
+                                android:id="@+id/rec1Image"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:padding="8dp"
@@ -343,6 +347,7 @@
                             </FrameLayout>
 
                             <TextView
+                                android:id="@+id/rec1Title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="8dp"
@@ -352,6 +357,7 @@
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/rec1Price"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="8dp"
@@ -386,10 +392,11 @@
                                     android:layout_weight="1" />
 
                                 <TextView
+                                    android:id="@+id/recVerified1"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Verified"
-                                    android:textColor="#168FC1"
+                                    android:textColor="@color/role_student"
                                     android:textSize="10sp" />
 
                             </LinearLayout>
@@ -413,6 +420,7 @@
                                 android:layout_height="82dp">
 
                                 <ImageView
+                                android:id="@+id/rec2Image"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:adjustViewBounds="true"
@@ -435,6 +443,7 @@
                             </FrameLayout>
 
                             <TextView
+                                android:id="@+id/rec2Title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="8dp"
@@ -444,6 +453,7 @@
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/rec2Price"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="8dp"
@@ -477,10 +487,11 @@
                                     android:layout_weight="1" />
 
                                 <TextView
+                                    android:id="@+id/recVerified2"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Verified"
-                                    android:textColor="#168FC1"
+                                    android:textColor="@color/role_student"
                                     android:textSize="10sp" />
 
                             </LinearLayout>
@@ -504,6 +515,7 @@
                                 android:layout_height="82dp">
 
                                 <ImageView
+                                android:id="@+id/rec3Image"
                                     android:layout_width="match_parent"
                                     android:layout_height="match_parent"
                                     android:padding="8dp"
@@ -525,6 +537,7 @@
                             </FrameLayout>
 
                             <TextView
+                                android:id="@+id/rec3Title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="8dp"
@@ -534,6 +547,7 @@
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/rec3Price"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="8dp"
@@ -567,10 +581,11 @@
                                     android:layout_weight="1" />
 
                                 <TextView
+                                    android:id="@+id/recVerified3"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Verified"
-                                    android:textColor="#168FC1"
+                                    android:textColor="@color/role_student"
                                     android:textSize="10sp" />
 
                             </LinearLayout>
@@ -603,6 +618,7 @@
                         android:orientation="horizontal">
 
                         <LinearLayout
+                                android:id="@+id/highlight1"
                             android:layout_width="180dp"
                             android:layout_height="126dp"
                             android:background="@drawable/bg_highlight_card"
@@ -615,6 +631,7 @@
                                 android:src="@drawable/student_breakfast" />
 
                             <TextView
+                                android:id="@+id/highlight1Title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="10dp"
@@ -625,6 +642,7 @@
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/highlight1Meta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="10dp"
@@ -639,6 +657,7 @@
                             android:layout_height="1dp" />
 
                         <LinearLayout
+                                android:id="@+id/highlight2"
                             android:layout_width="180dp"
                             android:layout_height="126dp"
                             android:background="@drawable/bg_highlight_card"
@@ -651,6 +670,7 @@
                                 android:src="@drawable/student_java_highlight" />
 
                             <TextView
+                                android:id="@+id/highlight2Title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="10dp"
@@ -661,6 +681,7 @@
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/highlight2Meta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:paddingStart="10dp"

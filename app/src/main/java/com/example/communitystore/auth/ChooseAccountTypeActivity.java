@@ -1,6 +1,7 @@
 package com.example.communitystore.auth;
 
 import com.example.communitystore.R;
+import com.example.communitystore.core.session.AuthSession;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,6 +37,16 @@ public class ChooseAccountTypeActivity extends AppCompatActivity {
         residenceCard =
                 findViewById(R.id.residenceCard);
 
+        findViewById(R.id.backButton).setOnClickListener(v -> goBack());
+
+        // System back / gesture behaves the same as the on-screen back button.
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                goBack();
+            }
+        });
+
         studentCard.setOnClickListener(
                 v -> openRegister("student")
         );
@@ -53,6 +64,19 @@ public class ChooseAccountTypeActivity extends AppCompatActivity {
         );
     }
 
+    /**
+     * Normal visit: return to the previous screen (Welcome or Login).
+     * "Finish your registration" visit: the user is signed in with an
+     * unfinished account, so sign out first and return to Welcome.
+     */
+    private void goBack() {
+        if (getIntent().getBooleanExtra(RegisterActivity.EXTRA_RESUME, false)) {
+            AuthSession.logoutToWelcome(this);
+        } else {
+            finish();
+        }
+    }
+
     private void openRegister(String accountType) {
 
         Intent intent =
@@ -62,8 +86,14 @@ public class ChooseAccountTypeActivity extends AppCompatActivity {
                 );
 
         intent.putExtra(
-                "accountType",
+                RegisterActivity.EXTRA_ACCOUNT_TYPE,
                 accountType
+        );
+
+        // Passed on when finishing a registration whose profile was never saved.
+        intent.putExtra(
+                RegisterActivity.EXTRA_RESUME,
+                getIntent().getBooleanExtra(RegisterActivity.EXTRA_RESUME, false)
         );
 
         startActivity(intent);

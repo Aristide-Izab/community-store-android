@@ -1,8 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.CommunityStore" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <!--
+        Community Store is designed as a light app. Every screen uses fixed
+        light colours, so the theme is forced to Light (no dark-mode variant).
+        Role colours are applied at runtime through ThemeUtils.
+    -->
+    <style name="Base.Theme.CommunityStore" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/brand_green</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/brand_green</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorAccent">@color/brand_green</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="29">false</item>
     </style>
 
     <style name="Theme.CommunityStore" parent="Base.Theme.CommunityStore" />

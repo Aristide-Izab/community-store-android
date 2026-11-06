@@ -16,11 +16,13 @@ import com.example.communitystore.core.access.UserRole;
 import com.example.communitystore.core.session.SessionManager;
 import com.example.communitystore.faculty.FacultyCommunityBoardActivity;
 import com.example.communitystore.faculty.FacultyHomeActivity;
+import com.example.communitystore.faculty.FacultyLeaderboardActivity;
 import com.example.communitystore.faculty.FacultyMarketActivity;
 import com.example.communitystore.faculty.FacultyMessagesActivity;
 import com.example.communitystore.faculty.FacultyProfileActivity;
 import com.example.communitystore.student.StudentCommunityBoardActivity;
 import com.example.communitystore.student.StudentHomeActivity;
+import com.example.communitystore.student.StudentLeaderboardActivity;
 import com.example.communitystore.student.StudentMarketActivity;
 import com.example.communitystore.student.StudentMessagesActivity;
 import com.example.communitystore.student.StudentProfileActivity;
@@ -86,6 +88,12 @@ public final class BottomNavHelper {
         return role(context) == UserRole.FACULTY
                 ? FacultyProfileActivity.class
                 : StudentProfileActivity.class;
+    }
+
+    public static Class<?> rewardsFor(Context context) {
+        return role(context) == UserRole.FACULTY
+                ? FacultyLeaderboardActivity.class
+                : StudentLeaderboardActivity.class;
     }
 
     public static Class<?> homeFor(Context context) {

@@ -1,52 +1,29 @@
 package com.example.communitystore.auth;
 
 import com.example.communitystore.R;
+import com.example.communitystore.core.session.AuthSession;
+import com.example.communitystore.shared.utils.ThemeUtils;
 
-import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-
+/** Logout confirmation used by every account type. */
 public class LogoutActivity extends AppCompatActivity {
-
-    private Button logoutButton;
-    private Button cancelButton;
-
-    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth_logout);
 
-        auth = FirebaseAuth.getInstance();
+        Button logoutButton = findViewById(R.id.logoutButton);
+        Button cancelButton = findViewById(R.id.cancelButton);
 
-        logoutButton = findViewById(R.id.logoutButton);
-        cancelButton = findViewById(R.id.cancelButton);
+        logoutButton.setBackgroundTintList(ColorStateList.valueOf(ThemeUtils.primary(this)));
 
-        logoutButton.setOnClickListener(v -> logoutUser());
-
+        logoutButton.setOnClickListener(v -> AuthSession.logoutToWelcome(this));
         cancelButton.setOnClickListener(v -> finish());
-    }
-
-    private void logoutUser() {
-
-        auth.signOut();
-
-        Intent intent = new Intent(
-                LogoutActivity.this,
-                WelcomeActivity.class
-        );
-
-        intent.addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK |
-                        Intent.FLAG_ACTIVITY_CLEAR_TASK
-        );
-
-        startActivity(intent);
-        finish();
     }
 }

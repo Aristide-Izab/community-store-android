@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,22 +12,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.communitystore.R;
 import com.example.communitystore.core.access.UserRole;
 import com.example.communitystore.core.session.SessionManager;
+import com.example.communitystore.shared.data.Formatters;
+import com.example.communitystore.shared.data.Product;
+import com.example.communitystore.shared.data.UserDirectory;
+import com.example.communitystore.shared.data.VoucherRepository;
 import com.example.communitystore.shared.utils.ThemeUtils;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Rewards: points balance, vouchers to redeem and tier milestones
+ * (Student; Faculty uses the same screen).
+ *
+ * Points are earned on orders (see OrderRepository). Redeeming creates a
+ * voucher code that can be entered at checkout.
+ */
 public class StudentLeaderboardActivity extends AppCompatActivity {
 
     private final List<StudentRewardItem> rewards = new ArrayList<>();
     private final List<StudentRewardItem> milestones = new ArrayList<>();
 
-    private int userPoints = 1250;
+    private long userPoints = 0;
+    private long lifetimePoints = 0;
     private boolean showingRewards = true;
 
     private TextView greetingText;
@@ -55,8 +65,7 @@ public class StudentLeaderboardActivity extends AppCompatActivity {
 
         loadCatalog();
 
-        adapter = new StudentRewardAdapter(item ->
-                Toast.makeText(this, "Redeeming " + item.title, Toast.LENGTH_SHORT).show());
+        adapter = new StudentRewardAdapter(this::confirmRedeem);
 
         RecyclerView recycler = findViewById(R.id.rewardRecycler);
         recycler.setLayoutManager(new LinearLayoutManager(this));
@@ -66,9 +75,16 @@ public class StudentLeaderboardActivity extends AppCompatActivity {
         tabRewards.setOnClickListener(v -> showTab(true));
         tabMilestones.setOnClickListener(v -> showTab(false));
 
-        greetingText.setText("Good morning, " + defaultName());
-        loadUser();
+        String cached = new SessionManager(this).getDisplayName();
+        greetingText.setText(Formatters.greeting() + ", "
+                + (cached.isEmpty() ? "there" : Formatters.firstName(cached)));
         render();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadUser();
     }
 
     private void loadCatalog() {
@@ -81,46 +97,61 @@ public class StudentLeaderboardActivity extends AppCompatActivity {
         milestones.add(new StudentRewardItem("Gold Tier", 1500));
     }
 
-    private String defaultName() {
-        UserRole role = new SessionManager(this).getUserRole();
-
-        if (role == UserRole.FACULTY) {
-            return "Professor";
+    /** Rand value of each reward voucher. */
+    private static long amountFor(StudentRewardItem item) {
+        if (item.title.startsWith("R100")) {
+            return 100;
         }
-
-        return role == null ? "there" : capitalise(role.getValue());
+        return 50; // R50 voucher and Free Delivery (delivery fee is R50)
     }
 
     private void loadUser() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        UserDirectory.loadCurrent(profile -> {
+            if (profile == null) {
+                return;
+            }
 
-        if (user == null) {
+            String name = UserDirectory.displayName(profile, "there");
+            greetingText.setText(Formatters.greeting() + ", " + Formatters.firstName(name));
+
+            userPoints = UserDirectory.points(profile);
+            lifetimePoints = Math.max(userPoints, Product.number(profile.get("lifetimePoints"), 0));
+            render();
+        });
+    }
+
+    private void confirmRedeem(StudentRewardItem item) {
+        new AlertDialog.Builder(this)
+                .setTitle("Redeem " + item.title + "?")
+                .setMessage("This uses " + item.pointsRequired + " of your "
+                        + userPoints + " points. You'll get a voucher code to enter at checkout.")
+                .setPositiveButton("Redeem", (d, w) -> redeem(item))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void redeem(StudentRewardItem item) {
+        if (userPoints < item.pointsRequired) {
+            Toast.makeText(this, "Not enough points yet.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
-                .addOnSuccessListener(document -> {
-                    String name = document.getString("displayName");
-
-                    if (name == null || name.trim().isEmpty()) {
-                        name = document.getString("fullName");
-                    }
-
-                    if (name != null && !name.trim().isEmpty()) {
-                        greetingText.setText("Good morning, " + name);
-                    }
-
-                    Long points = document.getLong("loyaltyPoints");
-
-                    if (points != null) {
-                        userPoints = points.intValue();
-                    }
-
+        VoucherRepository.redeem(item.title, amountFor(item), item.pointsRequired)
+                .addOnSuccessListener(code -> {
+                    userPoints -= item.pointsRequired;
                     render();
-                });
+
+                    new AlertDialog.Builder(this)
+                            .setTitle("Voucher ready!")
+                            .setMessage("Your code is\n\n" + code
+                                    + "\n\nEnter it in the voucher box at checkout for "
+                                    + Formatters.price(amountFor(item)) + " off.")
+                            .setPositiveButton("OK", null)
+                            .show();
+                })
+                .addOnFailureListener(e -> Toast.makeText(
+                        this, "Couldn't redeem: " + e.getMessage(), Toast.LENGTH_LONG
+                ).show());
     }
 
     private void showTab(boolean rewardsTab) {
@@ -135,10 +166,11 @@ public class StudentLeaderboardActivity extends AppCompatActivity {
         tabRewards.setBackgroundResource(showingRewards ? R.drawable.bg_seller_tab_selected : 0);
         tabMilestones.setBackgroundResource(showingRewards ? 0 : R.drawable.bg_seller_tab_selected);
 
+        // Rewards use the spendable balance; tiers use everything ever earned.
         adapter.submit(
                 showingRewards ? rewards : milestones,
                 showingRewards ? StudentRewardAdapter.MODE_REWARDS : StudentRewardAdapter.MODE_MILESTONES,
-                userPoints
+                (int) Math.min(Integer.MAX_VALUE, showingRewards ? userPoints : lifetimePoints)
         );
     }
 
@@ -152,10 +184,6 @@ public class StudentLeaderboardActivity extends AppCompatActivity {
             }
         }
 
-        nextRewardText.setText("You've unlocked every reward!");
-    }
-
-    private String capitalise(String value) {
-        return value.substring(0, 1).toUpperCase() + value.substring(1);
+        nextRewardText.setText("You can redeem every reward!");
     }
 }

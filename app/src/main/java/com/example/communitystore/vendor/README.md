@@ -1,15 +1,19 @@
 # Vendor Feature Package
 
-Vendor-only screens are implemented in Java + XML to match the rest of the Community Store application.
+Vendor-only screens (Java + XML), themed with `@color/role_vendor`.
 
-Included screens:
-- `VendorHomeActivity.java` - dashboard and navigation hub
-- `VendorManageProductsActivity.java` - active/inactive product list
-- `VendorAddProductActivity.java` - local demo product publishing flow
-- `VendorIncomeActivity.java` - income/revenue overview
-- `VendorLeaderboardActivity.java` - loyalty points and merchant perks
-- `VendorSalesRankActivity.java` - vendor sales ranking
-- `VendorMessagesActivity.java` - chats and message requests
-- `VendorProfileActivity.java` - vendor profile and logout
+- `VendorHomeActivity.java` - dashboard: points, total sales, orders, active products, recent orders
+- `VendorIncomeActivity.java` - income for this week / month / year, worked out from orders
+- `VendorLeaderboardActivity.java` - points and merchant perks (unlock with lifetime points)
+- `VendorSalesRankActivity.java` - vendor ranking by points
+- `VendorMessagesActivity.java` - live chats and message requests (`shared/chat`)
+- `VendorProfileActivity.java` - profile, business name, menu and logout
+- `VendorUi.java` - small row builders shared by the screens above
 
-`VendorVerificationActivity` remains in the shared `auth` package because verification is part of onboarding. The current university-demo flow accepts a selected document without uploading it to Firebase Storage, then creates the approved Vendor records in Firestore.
+Listings are managed with the shared screens `shared/product/MyListingsActivity` and
+`shared/product/AddListingActivity`, and saved to Firestore `products`.
+
+`VendorVerificationActivity` stays in `auth` because verification is part of onboarding:
+after email verification the vendor enters a business name, picks a document type and a PDF.
+The PDF is checked on the phone (Cloud Storage needs the paid Firebase plan) and the
+application is saved to `vendors/{uid}`.

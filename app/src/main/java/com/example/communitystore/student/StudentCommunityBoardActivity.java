@@ -1,6 +1,7 @@
 package com.example.communitystore.student;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -11,52 +12,120 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.communitystore.R;
 import com.example.communitystore.core.access.BottomNavThemeManager;
-import com.example.communitystore.shared.utils.BottomNavHelper;
+import com.example.communitystore.core.access.UserRole;
+import com.example.communitystore.core.session.AuthSession;
 import com.example.communitystore.faculty.FacultyAddPostActivity;
+import com.example.communitystore.shared.data.Formatters;
+import com.example.communitystore.shared.data.Post;
+import com.example.communitystore.shared.data.PostRepository;
+import com.example.communitystore.shared.utils.BottomNavHelper;
+import com.example.communitystore.shared.utils.ThemeUtils;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Community board (Student; Faculty extends this with a "Post" button).
+ *
+ * Shows live posts from Firestore "posts" above the three built-in sample
+ * posts. Filters: All / Events / Announcements. The star marks a post as
+ * "Interested" and is saved per user.
+ */
 public class StudentCommunityBoardActivity extends AppCompatActivity {
 
-    private static final int ADD_POST_REQUEST_CODE = 101;
+    private static final String FILTER_ALL = "All";
 
-    private ImageButton btnBack;
-    private MaterialButton chipAll, chipEvents, chipAnnouncements, btnAddPost;
-    private LinearLayout postsContainer, postLibrary, postCafeteria, postTutor;
-    private ImageButton favoriteLibrary, favoriteCafeteria, favoriteTutor;
+    private MaterialButton chipAll;
+    private MaterialButton chipEvents;
+    private MaterialButton chipAnnouncements;
+    private LinearLayout postsContainer;
+    private LinearLayout postLibrary;
+    private LinearLayout postCafeteria;
+    private LinearLayout postTutor;
 
-    private final List<PostViewHold> dynamicPosts = new ArrayList<>();
+    private final List<PostView> livePosts = new ArrayList<>();
+    private String filter = FILTER_ALL;
+    private ListenerRegistration registration;
 
-    private boolean isLibraryStarred = false;
-    private boolean isCafeteriaStarred = false;
-    private boolean isTutorStarred = false;
+    private static class PostView {
+        final View view;
+        final String category;
 
-    private static class PostViewHold {
-        View view;
-        String category;
-
-        PostViewHold(View view, String category) {
+        PostView(View view, String category) {
             this.view = view;
             this.category = category;
         }
     }
 
+    /** Layout to use. Faculty overrides this with the board that has a Post button. */
+    protected int layoutRes() {
+        return R.layout.student_community_board;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.student_community_board);
+        setContentView(layoutRes());
 
-        initializeViews();
-        setupListeners();
+        chipAll = findViewById(R.id.chipAll);
+        chipEvents = findViewById(R.id.chipEvents);
+        chipAnnouncements = findViewById(R.id.chipAnnouncements);
+        postsContainer = findViewById(R.id.postsContainer);
+        postLibrary = findViewById(R.id.postLibrary);
+        postCafeteria = findViewById(R.id.postCafeteria);
+        postTutor = findViewById(R.id.postTutor);
+
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
+
+        chipAll.setOnClickListener(v -> applyFilter(FILTER_ALL));
+        chipEvents.setOnClickListener(v -> applyFilter(Post.CATEGORY_EVENT));
+        chipAnnouncements.setOnClickListener(v -> applyFilter(Post.CATEGORY_ANNOUNCEMENT));
+
+        MaterialButton btnAddPost = findViewById(R.id.btnAddPost);
+        if (btnAddPost != null) {
+            btnAddPost.setBackgroundTintList(ColorStateList.valueOf(ThemeUtils.primary(this)));
+            btnAddPost.setOnClickListener(v ->
+                    startActivity(new Intent(this, FacultyAddPostActivity.class)));
+        }
+
+        setupSampleStar(R.id.favoriteLibrary);
+        setupSampleStar(R.id.favoriteCafeteria);
+        setupSampleStar(R.id.favoriteTutor);
+
+        applyFilter(FILTER_ALL);
         BottomNavHelper.setup(this, "community");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registration = PostRepository.listen((posts, error) -> {
+            showLivePosts(posts);
+            if (error != null) {
+                Toast.makeText(this, "Couldn't load new posts.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (registration != null) {
+            registration.remove();
+            registration = null;
+        }
     }
 
     @Override
@@ -65,107 +134,77 @@ public class StudentCommunityBoardActivity extends AppCompatActivity {
         BottomNavThemeManager.apply(this, "community");
     }
 
-    private void initializeViews() {
-        btnBack = findViewById(R.id.btnBack);
-        chipAll = findViewById(R.id.chipAll);
-        chipEvents = findViewById(R.id.chipEvents);
-        chipAnnouncements = findViewById(R.id.chipAnnouncements);
-        btnAddPost = findViewById(R.id.btnAddPost);
-
-        postsContainer = findViewById(R.id.postsContainer);
-
-        postLibrary = findViewById(R.id.postLibrary);
-        postCafeteria = findViewById(R.id.postCafeteria);
-        postTutor = findViewById(R.id.postTutor);
-
-        favoriteLibrary = findViewById(R.id.favoriteLibrary);
-        favoriteCafeteria = findViewById(R.id.favoriteCafeteria);
-        favoriteTutor = findViewById(R.id.favoriteTutor);
+    /** Built-in sample posts: the star is only remembered while the screen is open. */
+    private void setupSampleStar(int id) {
+        ImageButton star = findViewById(id);
+        if (star == null) {
+            return;
+        }
+        star.setOnClickListener(v -> {
+            boolean on = !Boolean.TRUE.equals(star.getTag());
+            star.setTag(on);
+            star.setImageResource(on ? R.drawable.star_filled : R.drawable.star);
+            Toast.makeText(this, on ? "Added to Interested posts" : "Removed from Interested posts",
+                    Toast.LENGTH_SHORT).show();
+        });
     }
 
-    private void setupListeners() {
-        if (btnBack != null) {
-            btnBack.setOnClickListener(v -> finish());
+    private void showLivePosts(List<Post> posts) {
+        for (PostView post : livePosts) {
+            postsContainer.removeView(post.view);
+        }
+        livePosts.clear();
+
+        for (int i = 0; i < posts.size(); i++) {
+            Post post = posts.get(i);
+            View card = createPostCardView(post);
+            postsContainer.addView(card, i);
+            livePosts.add(new PostView(card, post.category));
         }
 
-        if (chipAll != null) {
-            chipAll.setOnClickListener(v -> {
-                updateChipSelection(chipAll);
-                showAllPosts();
-            });
+        applyFilter(filter);
+    }
+
+    private void applyFilter(String newFilter) {
+        filter = newFilter;
+
+        boolean all = FILTER_ALL.equals(filter);
+        boolean events = Post.CATEGORY_EVENT.equals(filter);
+        boolean announcements = Post.CATEGORY_ANNOUNCEMENT.equals(filter);
+
+        // Samples: the library post is an event, the other two are announcements.
+        setVisible(postLibrary, all || events);
+        setVisible(postCafeteria, all || announcements);
+        setVisible(postTutor, all || announcements);
+
+        for (PostView post : livePosts) {
+            setVisible(post.view, all || filter.equals(post.category));
         }
 
-        if (chipEvents != null) {
-            chipEvents.setOnClickListener(v -> {
-                updateChipSelection(chipEvents);
-                showEventPosts();
-            });
-        }
+        styleChip(chipAll, all);
+        styleChip(chipEvents, events);
+        styleChip(chipAnnouncements, announcements);
+    }
 
-        if (chipAnnouncements != null) {
-            chipAnnouncements.setOnClickListener(v -> {
-                updateChipSelection(chipAnnouncements);
-                showAnnouncementPosts();
-            });
-        }
-
-        if (btnAddPost != null) {
-            btnAddPost.setOnClickListener(v -> {
-                Intent intent = new Intent(StudentCommunityBoardActivity.this, FacultyAddPostActivity.class);
-                startActivityForResult(intent, ADD_POST_REQUEST_CODE);
-            });
-        }
-
-        if (favoriteLibrary != null) {
-            favoriteLibrary.setOnClickListener(v -> {
-                isLibraryStarred = !isLibraryStarred;
-                favoriteLibrary.setImageResource(isLibraryStarred ? R.drawable.star_filled : R.drawable.star);
-                Toast.makeText(this, isLibraryStarred ? "Added to Interested posts posts" : "Removed from Interested posts", Toast.LENGTH_SHORT).show();
-            });
-        }
-
-        if (favoriteCafeteria != null) {
-            favoriteCafeteria.setOnClickListener(v -> {
-                isCafeteriaStarred = !isCafeteriaStarred;
-                favoriteCafeteria.setImageResource(isCafeteriaStarred ? R.drawable.star_filled : R.drawable.star);
-                Toast.makeText(this, isCafeteriaStarred ? "Added to Interested posts posts" : "Removed from Interested posts", Toast.LENGTH_SHORT).show();
-            });
-        }
-
-        if (favoriteTutor != null) {
-            favoriteTutor.setOnClickListener(v -> {
-                isTutorStarred = !isTutorStarred;
-                favoriteTutor.setImageResource(isTutorStarred ? R.drawable.star_filled : R.drawable.star);
-                Toast.makeText(this, isTutorStarred ? "Added to Interested posts posts" : "Removed from Interested posts", Toast.LENGTH_SHORT).show();
-            });
+    private static void setVisible(View view, boolean visible) {
+        if (view != null) {
+            view.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ADD_POST_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            String title = data.getStringExtra("post_title");
-            String category = data.getStringExtra("post_category");
-            String dateTime = data.getStringExtra("post_datetime");
-            String location = data.getStringExtra("post_location");
-            String description = data.getStringExtra("post_description");
-
-            View newPostView = createPostCardView(title, category, dateTime, location, description);
-
-            if (postsContainer != null) {
-                postsContainer.addView(newPostView, 0);
-            }
-
-            dynamicPosts.add(new PostViewHold(newPostView, category));
-            Toast.makeText(this, "Published successfully!", Toast.LENGTH_SHORT).show();
-
-            showAllPosts();
-            if (chipAll != null) updateChipSelection(chipAll);
+    private void styleChip(MaterialButton chip, boolean selected) {
+        if (chip == null) {
+            return;
         }
+        chip.setBackgroundTintList(ColorStateList.valueOf(
+                selected ? ThemeUtils.primary(this) : Color.parseColor("#E5E7EB")));
+        chip.setTextColor(selected ? Color.WHITE : Color.parseColor("#333333"));
     }
 
-    private View createPostCardView(String title, String category, String dateTime, String location, String description) {
+    private View createPostCardView(Post post) {
+        float density = getResources().getDisplayMetrics().density;
+        String uid = AuthSession.uid();
+
         CardView cardView = new CardView(this);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -184,43 +223,65 @@ public class StudentCommunityBoardActivity extends AppCompatActivity {
         outerLayout.setPadding(24, 24, 24, 24);
 
         ShapeableImageView iconView = new ShapeableImageView(this);
-        int iconSize = (int) (44 * getResources().getDisplayMetrics().density);
+        int iconSize = (int) (44 * density);
         LinearLayout.LayoutParams iconParams = new LinearLayout.LayoutParams(iconSize, iconSize);
         iconParams.setMarginEnd(14);
         iconView.setLayoutParams(iconParams);
         iconView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-
-        if ("Event".equals(category)) {
-            iconView.setImageResource(R.drawable.ic_book);
-        } else {
-            iconView.setImageResource(R.drawable.ic_tutor);
-        }
+        iconView.setImageResource(Post.CATEGORY_EVENT.equals(post.category) ? R.drawable.ic_book : R.drawable.ic_tutor);
         outerLayout.addView(iconView);
 
         LinearLayout textContainer = new LinearLayout(this);
         textContainer.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        textContainer.setLayoutParams(textParams);
+        textContainer.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+        UserRole authorRole = UserRole.fromString(post.authorRole);
+
+        TextView badge = new TextView(this);
+        badge.setText(post.category.toUpperCase(java.util.Locale.ROOT)
+                + (authorRole == null ? "" : " • " + authorRole.getLabel().toUpperCase(java.util.Locale.ROOT)));
+        badge.setTextSize(10f);
+        badge.setTypeface(null, android.graphics.Typeface.BOLD);
+        badge.setTextColor(ThemeUtils.colorFor(this, authorRole));
+        textContainer.addView(badge);
 
         TextView tvTitle = new TextView(this);
-        tvTitle.setText(title);
+        tvTitle.setText(post.title);
         tvTitle.setTextSize(17f);
         tvTitle.setTextColor(Color.parseColor("#111827"));
         tvTitle.setTypeface(null, android.graphics.Typeface.BOLD);
         textContainer.addView(tvTitle);
 
-        TextView tvDetails = new TextView(this);
-        tvDetails.setText(dateTime + " • " + location);
-        tvDetails.setTextSize(13f);
-        tvDetails.setTextColor(Color.parseColor("#1081B9"));
-        tvDetails.setPadding(0, 2, 0, 4);
-        textContainer.addView(tvDetails);
+        List<String> details = new ArrayList<>();
+        if (!post.eventDate.isEmpty()) {
+            details.add(post.eventDate);
+        }
+        if (!post.location.isEmpty()) {
+            details.add(post.location);
+        }
+
+        if (!details.isEmpty()) {
+            TextView tvDetails = new TextView(this);
+            tvDetails.setText(android.text.TextUtils.join(" • ", details));
+            tvDetails.setTextSize(13f);
+            tvDetails.setTextColor(ThemeUtils.primary(this));
+            tvDetails.setPadding(0, 2, 0, 4);
+            textContainer.addView(tvDetails);
+        }
 
         TextView tvDesc = new TextView(this);
-        tvDesc.setText(description);
+        tvDesc.setText(post.description);
         tvDesc.setTextSize(13f);
         tvDesc.setTextColor(Color.parseColor("#4B5563"));
         textContainer.addView(tvDesc);
+
+        TextView tvAuthor = new TextView(this);
+        tvAuthor.setText("By " + (post.authorName.isEmpty() ? "Community member" : post.authorName)
+                + (post.interested.isEmpty() ? "" : " • " + post.interested.size() + " interested"));
+        tvAuthor.setTextSize(11f);
+        tvAuthor.setTextColor(Color.parseColor("#6B7280"));
+        tvAuthor.setPadding(0, 4, 0, 0);
+        textContainer.addView(tvAuthor);
 
         outerLayout.addView(textContainer);
 
@@ -229,89 +290,46 @@ public class StudentCommunityBoardActivity extends AppCompatActivity {
         rightContainer.setGravity(Gravity.END);
 
         TextView tvTimeAgo = new TextView(this);
-        tvTimeAgo.setText("Just now");
+        tvTimeAgo.setText(Formatters.shortTime(post.createdAt));
         tvTimeAgo.setTextSize(12f);
         tvTimeAgo.setTextColor(Color.parseColor("#6B7280"));
         rightContainer.addView(tvTimeAgo);
 
         ImageButton favoriteButton = new ImageButton(this);
-        int starSize = (int) (32 * getResources().getDisplayMetrics().density);
+        int starSize = (int) (32 * density);
         LinearLayout.LayoutParams starParams = new LinearLayout.LayoutParams(starSize, starSize);
         starParams.setMargins(0, 4, 0, 0);
         favoriteButton.setLayoutParams(starParams);
         favoriteButton.setBackgroundColor(Color.TRANSPARENT);
-        favoriteButton.setImageResource(R.drawable.star);
-        favoriteButton.setContentDescription("Save post");
+        favoriteButton.setContentDescription("Interested");
 
-        final boolean[] isStarred = {false};
-        favoriteButton.setOnClickListener(v -> {
-            isStarred[0] = !isStarred[0];
-            favoriteButton.setImageResource(isStarred[0] ? R.drawable.star_filled : R.drawable.star);
-            Toast.makeText(this, isStarred[0] ? "Added to Interested posts" : "Removed from Interested posts", Toast.LENGTH_SHORT).show();
-        });
+        boolean interested = uid != null && post.interested.contains(uid);
+        favoriteButton.setImageResource(interested ? R.drawable.star_filled : R.drawable.star);
+        favoriteButton.setOnClickListener(v ->
+                PostRepository.setInterested(post.id, !interested)
+                        .addOnSuccessListener(unused -> Toast.makeText(
+                                this,
+                                !interested ? "Added to Interested posts" : "Removed from Interested posts",
+                                Toast.LENGTH_SHORT
+                        ).show()));
         rightContainer.addView(favoriteButton);
 
         outerLayout.addView(rightContainer);
         cardView.addView(outerLayout);
 
+        // Authors can remove their own posts with a long press.
+        if (uid != null && uid.equals(post.authorId)) {
+            cardView.setOnLongClickListener(v -> {
+                new AlertDialog.Builder(this)
+                        .setTitle("Delete post?")
+                        .setMessage("\"" + post.title + "\" will be removed for everyone.")
+                        .setPositiveButton("Delete", (d, w) -> PostRepository.delete(post.id))
+                        .setNegativeButton("Cancel", null)
+                        .show();
+                return true;
+            });
+        }
+
         return cardView;
-    }
-
-    private void updateChipSelection(MaterialButton selectedChip) {
-        int greyBg = Color.parseColor("#E5E7EB");
-        int darkText = Color.parseColor("#333333");
-        int activeBlue = Color.parseColor("#1081B9");
-
-        if (chipAll != null) {
-            chipAll.setBackgroundTintList(android.content.res.ColorStateList.valueOf(greyBg));
-            chipAll.setTextColor(darkText);
-        }
-        if (chipEvents != null) {
-            chipEvents.setBackgroundTintList(android.content.res.ColorStateList.valueOf(greyBg));
-            chipEvents.setTextColor(darkText);
-        }
-        if (chipAnnouncements != null) {
-            chipAnnouncements.setBackgroundTintList(android.content.res.ColorStateList.valueOf(greyBg));
-            chipAnnouncements.setTextColor(darkText);
-        }
-
-        if (selectedChip != null) {
-            selectedChip.setBackgroundTintList(android.content.res.ColorStateList.valueOf(activeBlue));
-            selectedChip.setTextColor(Color.WHITE);
-        }
-    }
-
-    private void showAllPosts() {
-        if (postLibrary != null) postLibrary.setVisibility(View.VISIBLE);
-        if (postCafeteria != null) postCafeteria.setVisibility(View.VISIBLE);
-        if (postTutor != null) postTutor.setVisibility(View.VISIBLE);
-
-        for (PostViewHold post : dynamicPosts) {
-            if (post.view != null) post.view.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void showEventPosts() {
-        if (postLibrary != null) postLibrary.setVisibility(View.VISIBLE);
-        if (postCafeteria != null) postCafeteria.setVisibility(View.GONE);
-        if (postTutor != null) postTutor.setVisibility(View.GONE);
-
-        for (PostViewHold post : dynamicPosts) {
-            if (post.view != null) {
-                post.view.setVisibility("Event".equals(post.category) ? View.VISIBLE : View.GONE);
-            }
-        }
-    }
-
-    private void showAnnouncementPosts() {
-        if (postLibrary != null) postLibrary.setVisibility(View.GONE);
-        if (postCafeteria != null) postCafeteria.setVisibility(View.VISIBLE);
-        if (postTutor != null) postTutor.setVisibility(View.VISIBLE);
-
-        for (PostViewHold post : dynamicPosts) {
-            if (post.view != null) {
-                post.view.setVisibility("Announcement".equals(post.category) ? View.VISIBLE : View.GONE);
-            }
-        }
     }
 }

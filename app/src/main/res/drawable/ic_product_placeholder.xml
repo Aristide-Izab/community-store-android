@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Neutral image for listings without photos (photo upload needs Firebase Storage). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <path
+        android:fillColor="#EEF1F4"
+        android:pathData="M0,0h120v120h-120z" />
+    <path
+        android:fillColor="#B8C0C9"
+        android:pathData="M42,46h36l4,40h-44z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#B8C0C9"
+        android:strokeWidth="4"
+        android:pathData="M50,48v-6a10,10 0,0 1,20 0v6" />
+</vector>

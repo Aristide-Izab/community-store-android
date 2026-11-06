@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <solid android:color="#168FC1" />
+    <solid android:color="@color/role_student" />
 
     <corners android:radius="6dp" />
 

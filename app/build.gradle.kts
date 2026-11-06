@@ -54,7 +54,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-storage")
+    // Cloud Storage for Firebase needs the paid Blaze plan, so it is not used.
 
     implementation(libs.activity.ktx)
     implementation(libs.appcompat)

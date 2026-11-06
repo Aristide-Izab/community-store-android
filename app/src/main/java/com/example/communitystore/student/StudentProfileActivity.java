@@ -5,21 +5,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.communitystore.R;
-import com.example.communitystore.core.access.BottomNavThemeManager;
 import com.example.communitystore.auth.LogoutActivity;
+import com.example.communitystore.core.access.BottomNavThemeManager;
 import com.example.communitystore.core.access.UserRole;
+import com.example.communitystore.core.session.AuthSession;
 import com.example.communitystore.core.session.SessionManager;
+import com.example.communitystore.shared.data.OrderRepository;
+import com.example.communitystore.shared.data.UserDirectory;
+import com.example.communitystore.shared.orders.OrdersActivity;
+import com.example.communitystore.shared.product.MyListingsActivity;
+import com.example.communitystore.shared.profile.ProfileActions;
 import com.example.communitystore.shared.utils.BottomNavHelper;
 import com.example.communitystore.shared.utils.ThemeUtils;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/** Profile for Student accounts (Faculty uses the same screen). */
 public class StudentProfileActivity extends AppCompatActivity {
 
     private TextView profileName;
@@ -46,13 +50,17 @@ public class StudentProfileActivity extends AppCompatActivity {
         logOut.setOnClickListener(v -> startActivity(new Intent(this, LogoutActivity.class)));
 
         findViewById(R.id.backButton).setOnClickListener(v -> finish());
-        findViewById(R.id.statRewardsContainer).setOnClickListener(v ->
-                startActivity(new Intent(this, StudentLeaderboardActivity.class)));
+        findViewById(R.id.statRewardsContainer).setOnClickListener(v -> openRewards());
 
-        setupRoleLabel();
+        UserRole role = new SessionManager(this).getUserRole();
+        profileRole.setText(role == null ? UserRole.STUDENT.getLabel() : role.getLabel());
+
+        String cached = new SessionManager(this).getDisplayName();
+        if (!cached.isEmpty()) {
+            profileName.setText(cached);
+        }
+
         buildMenu();
-        loadProfile();
-
         BottomNavHelper.setup(this, "profile");
     }
 
@@ -60,27 +68,22 @@ public class StudentProfileActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         BottomNavThemeManager.apply(this, "profile");
+        loadProfile();
     }
 
-    protected void openMyOrders() {
-        startActivity(new Intent(this, StudentMyOrdersActivity.class));
-    }
-
-    private void setupRoleLabel() {
-        UserRole role = new SessionManager(this).getUserRole();
-
-        if (role != null) {
-            String value = role.getValue();
-            profileRole.setText(value.substring(0, 1).toUpperCase() + value.substring(1));
-        }
+    private void openRewards() {
+        startActivity(new Intent(this, BottomNavHelper.rewardsFor(this)));
     }
 
     private void buildMenu() {
         LinearLayout container = findViewById(R.id.menuContainer);
 
         String[] items = {
+                "Edit Profile",
                 "My Orders",
-                "Authentication",
+                "My Listings",
+                "My Sales",
+                "Rewards",
                 "Payment Options",
                 "Delivery Address",
                 "Settings",
@@ -90,52 +93,63 @@ public class StudentProfileActivity extends AppCompatActivity {
         for (String label : items) {
             View row = getLayoutInflater().inflate(R.layout.student_item_profile_menu, container, false);
             ((TextView) row.findViewById(R.id.menuLabel)).setText(label);
-
-
-            row.setOnClickListener(v -> {
-                if ("My Orders".equals(label)) {
-                    openMyOrders();
-                } else {
-                    Toast.makeText(this, label, Toast.LENGTH_SHORT).show();
-                }
-            });
-
+            row.setOnClickListener(v -> onMenu(label));
             container.addView(row);
         }
     }
 
+    private void onMenu(String label) {
+        switch (label) {
+            case "Edit Profile":
+                ProfileActions.editName(this, profileName.getText().toString(), profileName::setText);
+                break;
+            case "My Orders":
+                OrdersActivity.openPurchases(this);
+                break;
+            case "My Listings":
+                MyListingsActivity.open(this);
+                break;
+            case "My Sales":
+                OrdersActivity.openSales(this);
+                break;
+            case "Rewards":
+                openRewards();
+                break;
+            case "Payment Options":
+                ProfileActions.paymentOptions(this);
+                break;
+            case "Delivery Address":
+                ProfileActions.editDeliveryAddress(this);
+                break;
+            case "Settings":
+                ProfileActions.settings(this);
+                break;
+            default:
+                ProfileActions.help(this);
+                break;
+        }
+    }
+
     private void loadProfile() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = AuthSession.uid();
 
-        if (user == null) {
-            return;
-        }
+        UserDirectory.loadCurrent(profile -> {
+            if (profile == null) {
+                return;
+            }
+            profileName.setText(UserDirectory.displayName(profile, profileName.getText().toString()));
+            statRewards.setText(String.valueOf(UserDirectory.points(profile)));
+        });
 
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(user.getUid())
-                .get()
-                .addOnSuccessListener(document -> {
-                    String name = document.getString("displayName");
+        OrderRepository.loadAsBuyer(uid, (orders, error) ->
+                statOrders.setText(String.valueOf(orders.size())));
 
-                    if (name == null || name.trim().isEmpty()) {
-                        name = document.getString("fullName");
-                    }
-
-                    if (name != null && !name.trim().isEmpty()) {
-                        profileName.setText(name);
-                    }
-
-                    setStat(statOrders, document.getLong("orderCount"));
-                    setStat(statReviews, document.getLong("reviewCount"));
-                    setStat(statRewards, document.getLong("loyaltyPoints"));
-                });
-    }
-
-    private void setStat(TextView view, Long value) {
-        if (value != null) {
-            view.setText(String.valueOf(value));
+        if (uid != null) {
+            FirebaseFirestore.getInstance()
+                    .collection("reviews")
+                    .whereEqualTo("buyerId", uid)
+                    .get()
+                    .addOnSuccessListener(snapshot -> statReviews.setText(String.valueOf(snapshot.size())));
         }
     }
-
 }

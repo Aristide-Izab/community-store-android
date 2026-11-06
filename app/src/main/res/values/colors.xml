@@ -4,9 +4,25 @@
     <color name="primary_green">#00C896</color>
     <color name="white">#FFFFFF</color>
 
+    <!-- Brand colour (welcome, login, shared buttons) -->
+    <color name="brand_green">#18BE92</color>
+
+    <!-- Account type colours. This is the single source of truth:
+         layouts use @color/role_*, Java uses ThemeUtils.colorFor(...). -->
+    <color name="role_student">#168FC1</color>
+    <color name="role_faculty">#FF4B2B</color>
+    <color name="role_vendor">#FFA726</color>
+    <color name="role_residence">#4B00D1</color>
+
+    <!-- Shared neutrals -->
+    <color name="text_primary">#111111</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="surface_light">#F7F8FA</color>
+    <color name="divider_light">#E5E7EB</color>
+
     <!-- Residence account (Figma: Residence account page) -->
-    <color name="residence_purple">#3F00BE</color>
-    <color name="residence_purple_tint">#403F00BE</color>
+    <color name="residence_purple">@color/role_residence</color>
+    <color name="residence_purple_tint">#404B00D1</color>
     <color name="residence_surface">#F5F6F8</color>
     <color name="residence_neutral">#9CA3AF</color>
     <color name="residence_segment_track">#6E9CA3AF</color>

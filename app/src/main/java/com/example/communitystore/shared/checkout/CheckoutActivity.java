@@ -25,6 +25,12 @@ import androidx.core.view.ViewCompat;
 import com.example.communitystore.R;
 import com.example.communitystore.core.access.UserRole;
 import com.example.communitystore.core.session.SessionManager;
+import com.example.communitystore.shared.cart.CartItem;
+import com.example.communitystore.shared.cart.CartManager;
+import com.example.communitystore.shared.data.OrderRepository;
+import com.example.communitystore.shared.data.VoucherRepository;
+import com.example.communitystore.shared.profile.ProfileActions;
+import com.example.communitystore.shared.orders.OrdersActivity;
 
 import java.text.NumberFormat;
 import java.util.List;
@@ -62,8 +68,14 @@ public class CheckoutActivity extends AppCompatActivity {
     private String selectedSavedCardId;
     private boolean savedCardsEditMode = false;
 
-    private int originalAmount = 300;
-    private int totalAmount = 300;
+    private static final int DEFAULT_DELIVERY_FEE = 50;
+
+    private int originalAmount = 0;
+    private int totalAmount = 0;
+    private int deliveryAmount = DEFAULT_DELIVERY_FEE;
+    private boolean placingOrder = false;
+    private String appliedVoucherCode = null;
+    private final java.util.Map<String, VoucherRepository.Voucher> userVouchers = new java.util.HashMap<>();
     private int themeColor;
 
     @Override
@@ -93,6 +105,7 @@ public class CheckoutActivity extends AppCompatActivity {
         cardManager = new CardManager(this);
 
         loadAmount();
+        VoucherRepository.loadUnused(vouchers -> userVouchers.putAll(vouchers));
         applyAccountTheme();
         setupSavedCards();
         setupClicks();
@@ -228,7 +241,7 @@ public class CheckoutActivity extends AppCompatActivity {
         updatePaymentSelection();
         applyVoucher();
         hideKeyboard();
-        showPaymentSuccessDialog();
+        placeOrder("Google Pay (simulated)");
     }
 
     private void selectNewCard() {
@@ -274,6 +287,12 @@ public class CheckoutActivity extends AppCompatActivity {
     private void handlePayment() {
         applyVoucher();
 
+        if (selectedPaymentMethod == PaymentMethod.GOOGLE_PAY) {
+            hideKeyboard();
+            placeOrder("Google Pay (simulated)");
+            return;
+        }
+
         if (selectedPaymentMethod == PaymentMethod.NEW_CARD) {
             if (!validateNewCardFields()) {
                 showMissingCardDetailsDialog();
@@ -299,7 +318,71 @@ public class CheckoutActivity extends AppCompatActivity {
         }
 
         hideKeyboard();
-        showPaymentSuccessDialog();
+        placeOrder(selectedCardLabel() + " (simulated)");
+    }
+
+    private String selectedCardLabel() {
+        for (SavedCard card : cardManager.getCards()) {
+            if (card.getId().equals(selectedSavedCardId)) {
+                return card.getBrand() + " •••• " + card.getLastFour();
+            }
+        }
+        return "Card";
+    }
+
+    /**
+     * Payment is simulated: no money is taken. The cart is turned into real
+     * orders in Firestore (one per seller) and then cleared.
+     */
+    private void placeOrder(String paymentLabel) {
+        if (placingOrder) {
+            return;
+        }
+
+        List<CartItem> cart = new CartManager(this).getItems();
+
+        if (cart.isEmpty()) {
+            Toast.makeText(this, "Your cart is empty.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        placingOrder = true;
+        payButton.setEnabled(false);
+        payButtonText.setText("Processing...");
+
+        String note = getIntent().getStringExtra("orderNote");
+        String saved = ProfileActions.deliveryAddress(this);
+        String address;
+        if (note != null && !note.isEmpty()) {
+            address = saved.isEmpty() ? note : saved + "\nNote: " + note;
+        } else {
+            address = saved.isEmpty() ? "Collect on campus" : saved;
+        }
+
+        OrderRepository.placeOrders(
+                        this,
+                        cart,
+                        deliveryAmount,
+                        originalAmount - totalAmount,
+                        paymentLabel,
+                        address
+                )
+                .addOnSuccessListener(ids -> {
+                    VoucherRepository.markUsed(appliedVoucherCode);
+                    new CartManager(this).clear();
+                    showPaymentSuccessDialog();
+                })
+                .addOnFailureListener(e -> {
+                    placingOrder = false;
+                    payButton.setEnabled(true);
+                    updateAmountLabels();
+                    showMessageDialog(
+                            "Order not placed",
+                            "Nothing was charged. Please check your connection and try again.\n\n"
+                                    + e.getMessage()
+                    );
+                });
     }
 
     private boolean validateNewCardFields() {
@@ -311,10 +394,53 @@ public class CheckoutActivity extends AppCompatActivity {
         return number.length() >= 12
                 && number.length() <= 19
                 && number.matches("\\d+")
-                && expiry.length() >= 4
+                && passesLuhn(number)
+                && isValidExpiry(expiry)
                 && !name.isEmpty()
                 && (cvv.length() == 3 || cvv.length() == 4)
                 && cvv.matches("\\d+");
+    }
+
+    /** Standard card number checksum, so obvious typos are caught. */
+    private boolean passesLuhn(String number) {
+        int sum = 0;
+        boolean alternate = false;
+
+        for (int i = number.length() - 1; i >= 0; i--) {
+            int digit = number.charAt(i) - '0';
+            if (alternate) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+            sum += digit;
+            alternate = !alternate;
+        }
+
+        return sum % 10 == 0;
+    }
+
+    /** Accepts MM/YY or MMYY that is not in the past. */
+    private boolean isValidExpiry(String expiry) {
+        String digits = expiry.replace("/", "").replace(" ", "");
+
+        if (!digits.matches("\\d{4}")) {
+            return false;
+        }
+
+        int month = Integer.parseInt(digits.substring(0, 2));
+        int year = 2000 + Integer.parseInt(digits.substring(2, 4));
+
+        if (month < 1 || month > 12) {
+            return false;
+        }
+
+        java.util.Calendar now = java.util.Calendar.getInstance();
+        int currentYear = now.get(java.util.Calendar.YEAR);
+        int currentMonth = now.get(java.util.Calendar.MONTH) + 1;
+
+        return year > currentYear || (year == currentYear && month >= currentMonth);
     }
 
     private SavedCard saveNewCard() {
@@ -343,7 +469,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private void showMissingCardDetailsDialog() {
         showMessageDialog(
                 "Card details required",
-                "Please fill in the card number, expiry date, CVV and name on card before paying."
+                "Please check the card number, the expiry date (MM/YY, not in the past), the CVV and the name on the card.\n\nPayments are simulated: no money is taken."
         );
     }
 
@@ -362,21 +488,44 @@ public class CheckoutActivity extends AppCompatActivity {
     }
 
     private void loadAmount() {
-        originalAmount = getIntent().getIntExtra("totalAmount", 300);
+        int subtotal = new CartManager(this).getSubtotal();
+
+        if (subtotal <= 0) {
+            Toast.makeText(this, "Your cart is empty.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        deliveryAmount = getIntent().getIntExtra("deliveryAmount", DEFAULT_DELIVERY_FEE);
+        originalAmount = subtotal + deliveryAmount;
         totalAmount = originalAmount;
         updateAmountLabels();
     }
 
+    /**
+     * Vouchers: the demo code SAVE20 (R20 off) or a reward voucher the user
+     * bought with points (see Rewards). Never more than the order total.
+     */
     private void applyVoucher() {
-        String voucher = voucherEditText.getText().toString().trim();
+        String voucher = voucherEditText.getText().toString().trim().toUpperCase(Locale.ROOT);
+        appliedVoucherCode = null;
 
-        if (voucher.equalsIgnoreCase("SAVE20")) {
-            totalAmount = Math.max(0, originalAmount - 20);
-            voucherStatusText.setText("✓ Voucher applied! R20 off");
+        long amount = -1;
+        if (voucher.equals(VoucherRepository.DEMO_CODE)) {
+            amount = VoucherRepository.DEMO_AMOUNT;
+        } else if (userVouchers.containsKey(voucher)) {
+            amount = userVouchers.get(voucher).amount;
+        }
+
+        if (amount > 0) {
+            int discount = (int) Math.min(amount, originalAmount);
+            totalAmount = Math.max(0, originalAmount - discount);
+            appliedVoucherCode = voucher;
+            voucherStatusText.setText("✓ Voucher applied! " + formatPrice(discount) + " off");
             voucherStatusText.setTextColor(Color.parseColor("#188038"));
         } else if (!voucher.isEmpty()) {
             totalAmount = originalAmount;
-            voucherStatusText.setText("Invalid voucher");
+            voucherStatusText.setText("Invalid or already used voucher");
             voucherStatusText.setTextColor(Color.parseColor("#C62828"));
         } else {
             totalAmount = originalAmount;
@@ -409,11 +558,8 @@ public class CheckoutActivity extends AppCompatActivity {
 
         viewOrderButton.setOnClickListener(v -> {
             dialog.dismiss();
-            Toast.makeText(
-                    this,
-                    "Order page will open here",
-                    Toast.LENGTH_SHORT
-            ).show();
+            OrdersActivity.openPurchases(this);
+            finish();
         });
 
         dialog.show();
@@ -460,23 +606,9 @@ public class CheckoutActivity extends AppCompatActivity {
         ViewCompat.setBackgroundTintList(saveCardButton, ColorStateList.valueOf(themeColor));
         ViewCompat.setBackgroundTintList(payButton, ColorStateList.valueOf(themeColor));
         savedMethodsEditButton.setTextColor(themeColor);
-        getWindow().setStatusBarColor(themeColor);
     }
 
     private int getThemeColor(UserRole role) {
-        if (role == null) return Color.parseColor("#168FC1");
-
-        switch (role) {
-            case STUDENT:
-                return Color.parseColor("#168FC1");
-            case FACULTY:
-                return Color.parseColor("#FF4B2B");
-            case VENDOR:
-                return Color.parseColor("#FFA726");
-            case RESIDENCE:
-                return Color.parseColor("#4B00D1");
-            default:
-                return Color.parseColor("#168FC1");
-        }
+        return com.example.communitystore.shared.utils.ThemeUtils.colorFor(this, role);
     }
 }

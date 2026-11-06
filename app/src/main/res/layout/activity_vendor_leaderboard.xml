@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFA726"
+    android:background="@color/role_vendor"
     android:orientation="vertical">
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="20dp">
@@ -20,16 +20,16 @@
         app:cardElevation="0dp">
         <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Good morning, Vendor" android:textColor="#111111" android:textSize="20sp" android:textStyle="bold" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Keep engaging, earn points, boost sales" android:textColor="#64748B" />
+                <TextView android:id="@+id/greetingText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Good morning, Vendor" android:textColor="#111111" android:textSize="20sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Earn points for every delivered order. Perks unlock as your lifetime points grow." android:textColor="#64748B" />
 
                 <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" app:cardBackgroundColor="#FFEDD5" app:cardCornerRadius="16dp" app:cardElevation="0dp">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal" android:padding="18dp">
-                        <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_diamond" android:tint="#FFA726" android:contentDescription="Loyalty points" />
+                        <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_diamond" android:tint="@color/role_vendor" android:contentDescription="Loyalty points" />
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="14dp" android:layout_weight="1" android:orientation="vertical">
                             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Loyalty Points" android:textColor="#64748B" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="1,250" android:textColor="#111111" android:textSize="26sp" android:textStyle="bold" />
-                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Next reward at 1,500 points" android:textColor="#64748B" android:textSize="12sp" />
+                            <TextView android:id="@+id/pointsValue" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="0" android:textColor="#111111" android:textSize="26sp" android:textStyle="bold" />
+                            <TextView android:id="@+id/nextRewardText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Next perk at 500 points" android:textColor="#64748B" android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -44,14 +44,14 @@
                     app:cardBackgroundColor="#F8FAFC"
                     app:cardCornerRadius="14dp"
                     app:cardElevation="0dp">
-                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Sales Rank                                      View ›" android:textColor="#111111" android:textStyle="bold" />
+                    <TextView android:id="@+id/salesRankText" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="18dp" android:text="Sales Rank  ›" android:textColor="#111111" android:textStyle="bold" />
                 </com.google.android.material.card.MaterialCardView>
 
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:text="Merchant Perks" android:textColor="#111111" android:textSize="17sp" android:textStyle="bold" />
 
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="#F8FAFC" android:padding="16dp" android:text="Commission Reduction\n500 points                                  Claimed" android:textColor="#111111" />
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#F8FAFC" android:padding="16dp" android:text="Premium Store Listing\n2,000 points                         In Progress" android:textColor="#111111" />
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#F8FAFC" android:padding="16dp" android:text="Campus Banner Feature\n5,000 points                                  Locked" android:textColor="#111111" />
+                <TextView android:id="@+id/perk1" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="#F8FAFC" android:padding="16dp" android:text="Commission Reduction" android:textColor="#111111" />
+                <TextView android:id="@+id/perk2" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#F8FAFC" android:padding="16dp" android:text="Premium Store Listing" android:textColor="#111111" />
+                <TextView android:id="@+id/perk3" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:background="#F8FAFC" android:padding="16dp" android:text="Campus Banner Feature" android:textColor="#111111" />
             </LinearLayout>
         </ScrollView>
     </com.google.android.material.card.MaterialCardView>

@@ -7,6 +7,23 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
+    <!-- BACK (same style as the Login and Register screens) -->
+    <TextView
+        android:id="@+id/backButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:contentDescription="Back"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="‹"
+        android:textColor="#111111"
+        android:textSize="40sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:id="@+id/accountTypeContent"
         android:layout_width="0dp"

@@ -10,7 +10,7 @@
         android:id="@+id/cartHeader"
         android:layout_width="0dp"
         android:layout_height="100dp"
-        android:background="#168FC1"
+        android:background="@color/role_student"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="20dp"
